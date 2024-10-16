@@ -25,5 +25,6 @@ dist-ssr
 *.env
 *.venv
 
-/backend
-/frontend
+/backend-test
+/frontend-test
+/api_collection-test

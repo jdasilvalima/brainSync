@@ -1,32 +1,41 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios';
 
 interface FlashcardSet {
   id: string
   name: string
-  itemCount: number
+  flashcards: []
 }
-
-const initialFlashcardSets: FlashcardSet[] = [
-  { id: '1', name: 'PYTHON', itemCount: 51 },
-  { id: '2', name: 'JS', itemCount: 32 },
-  { id: '3', name: 'BLENDER', itemCount: 5 },
-  { id: '4', name: 'REACT', itemCount: 40 },
-  { id: '5', name: 'NODE.JS', itemCount: 28 },
-  { id: '6', name: 'CSS', itemCount: 20 },
-]
 
 export default function FlashcardCollection() {
   const [newSetName, setNewSetName] = useState('')
-  const [flashcardSets, setFlashcardSets] = useState<FlashcardSet[]>(initialFlashcardSets)
+  const [flashcardSets, setFlashcardSets] = useState<FlashcardSet[]>([])
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate()
+
+  useEffect(() => {
+    const fetchFlashcardSets = async () => {
+      try {
+        const response = await axios.get('http://127.0.0.1:5000/api/flashcard-topics')
+        setFlashcardSets(response.data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Error fetching data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFlashcardSets();
+  }, []);
 
   const handleCreate = () => {
     if (newSetName.trim()) {
       const newSet: FlashcardSet = {
         id: Date.now().toString(),
         name: newSetName.trim(),
-        itemCount: 0
+        flashcards: []
       }
       setFlashcardSets([...flashcardSets, newSet])
       setNewSetName('')
@@ -37,6 +46,9 @@ export default function FlashcardCollection() {
   const handleSelectSet = (id: string) => {
     navigate(`/flashcard-list?setId=${id}`)
   }
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -71,7 +83,7 @@ export default function FlashcardCollection() {
               className="bg-white rounded-lg border-2 border-gray-300 p-4 cursor-pointer hover:border-indigo-500 transition-colors"
             >
               <h3 className="text-xl font-semibold mb-2">{set.name}</h3>
-              <p className="text-gray-600">{set.itemCount} items</p>
+              <p className="text-gray-600">{set.flashcards.length} items</p>
             </div>
           ))}
         </div>
