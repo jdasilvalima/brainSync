@@ -1,0 +1,15 @@
+meta {
+  name: Upload PDF
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:8080/pdf
+  body: multipartForm
+  auth: none
+}
+
+body:multipart-form {
+  file: @file(C:\Users\jaded\Documents\CODING\brainSync\monopoly_instruction.pdf)
+}

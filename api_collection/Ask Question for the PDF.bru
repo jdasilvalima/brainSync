@@ -1,0 +1,19 @@
+meta {
+  name: Ask Question for the PDF
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://localhost:8080/ask_pdf
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    //"query": "What happens when the player's token passes over GO in Monopoly game ?"
+    "query": "How many dollars have each players at the beggining of the game ?"
+    //"query": "What is the signification of the bus ?"
+  }
+}

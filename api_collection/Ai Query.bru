@@ -1,0 +1,17 @@
+meta {
+  name: Ai Query
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://localhost:8080/ai
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "query": "Can you give a learning path to learn TouchDesigner ?"
+  }
+}
