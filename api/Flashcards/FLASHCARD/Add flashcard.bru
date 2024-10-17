@@ -1,0 +1,21 @@
+meta {
+  name: Add flashcard
+  type: http
+  seq: 2
+}
+
+post {
+  url: http://127.0.0.1:5000/api/add_flashcard
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+  "question": "What does DOM stand for and what is its purpose?",
+    "answer": "DOM stands for Document Object Model. It is a programming interface for web documents that represents the structure of a document as a tree of objects.",
+    "status": "UNSTUDIED",
+    "study_date": null,
+    "topic_id": 1
+  }
+}

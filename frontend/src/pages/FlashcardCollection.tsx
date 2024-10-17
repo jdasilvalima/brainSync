@@ -18,7 +18,7 @@ export default function FlashcardCollection() {
   useEffect(() => {
     const fetchFlashcardSets = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:5000/api/flashcard-topics')
+        const response = await axios.get('http://127.0.0.1:5000/api/topics')
         setFlashcardSets(response.data);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Error fetching data');

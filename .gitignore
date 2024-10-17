@@ -25,6 +25,9 @@ dist-ssr
 *.env
 *.venv
 
+*.pyc
+__pycache__/
+
 /backend-test
 /frontend-test
 /api_collection-test
