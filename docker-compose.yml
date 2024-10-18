@@ -1,4 +1,19 @@
 services:
+  
+  ollama_server:
+    container_name: ollama_server
+    image: ollama/ollama:latest
+    ports:
+      - "11434:11434"
+    volumes:
+        - ollama_data:/root/.ollama
+        - ./ollama/entrypoint.sh:/entrypoint.sh
+    entrypoint: ["/usr/bin/bash", "/entrypoint.sh"]
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+    networks:
+        - app_network
+
   flask_db:
     container_name: flask_db
     image: postgres:17
@@ -8,6 +23,8 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app_network
 
   flask_api:
     container_name: flask_api
@@ -18,8 +35,16 @@ services:
       - "5000:5000"
     depends_on:
       - flask_db
+      - ollama_server
     env_file:
       - ./backend/.env
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
 
 volumes:
   postgres_data:
+  ollama_data:

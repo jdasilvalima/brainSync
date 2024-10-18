@@ -1,0 +1,19 @@
+meta {
+  name: Verify models
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:11434/api/generate
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "model": "llama3.2",
+    "prompt": "You are an expert on the topic: Python. Generate 5 flashcards as JSON related to the topic: Python. The JSON should be an array of objects, where each object contains 'question' and 'answer' fields.",
+    "stream": false
+  }
+}

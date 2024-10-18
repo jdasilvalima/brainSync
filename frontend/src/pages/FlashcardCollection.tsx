@@ -9,7 +9,7 @@ interface FlashcardSet {
 }
 
 export default function FlashcardCollection() {
-  const [newSetName, setNewSetName] = useState('')
+  const [newTopic, setNewTopic] = useState('')
   const [flashcardSets, setFlashcardSets] = useState<FlashcardSet[]>([])
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -30,18 +30,29 @@ export default function FlashcardCollection() {
     fetchFlashcardSets();
   }, []);
 
-  const handleCreate = () => {
-    if (newSetName.trim()) {
-      const newSet: FlashcardSet = {
-        id: Date.now().toString(),
-        name: newSetName.trim(),
-        flashcards: []
+  const handleCreate = async () => {
+    if (newTopic.trim()) {
+      try {
+        const responseTopic = await axios.post('http://127.0.0.1:5000/api/add_topic', {
+          name: newTopic.trim(),
+        });
+  
+        const newSet: FlashcardSet = {
+          id: responseTopic.data.id,
+          name: newTopic.trim(),
+          flashcards: []
+        };
+
+        const responseFlashcards = await axios.post(`http://127.0.0.1:5000/api/create_flashcards_ai/${newSet.id}`) 
+        setFlashcardSets([...responseFlashcards.data.flashcards, newSet]);
+        setNewTopic('');
+        navigate(`/flashcard-list?setId=${newSet.id}`);
+      } catch (error) {
+        console.error('Error creating topic:', error);
+        setError(error instanceof Error ? error.message : 'Error creating topic');
       }
-      setFlashcardSets([...flashcardSets, newSet])
-      setNewSetName('')
-      navigate(`/flashcard-list?setId=${newSet.id}`)
     }
-  }
+  };
 
   const handleSelectSet = (id: string) => {
     navigate(`/flashcard-list?setId=${id}`)
@@ -62,8 +73,8 @@ export default function FlashcardCollection() {
         <div className="flex mb-8">
           <input
             type="text"
-            value={newSetName}
-            onChange={(e) => setNewSetName(e.target.value)}
+            value={newTopic}
+            onChange={(e) => setNewTopic(e.target.value)}
             placeholder="I want to practice..."
             className="flex-grow px-4 py-2 rounded-l-lg border-2 border-r-0 border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
           />

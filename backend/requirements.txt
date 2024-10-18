@@ -2,4 +2,5 @@ flask
 Flask-SQLAlchemy
 psycopg2-binary
 flask-cors
+langchain_ollama
 python-dotenv

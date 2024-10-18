@@ -1,11 +1,14 @@
 from flask import Flask, jsonify, request, abort
 from flask_sqlalchemy import SQLAlchemy
+from langchain_ollama.llms import OllamaLLM
 from datetime import datetime
 from flask_cors import CORS
 import os
 from enum import Enum
 
 app = Flask(__name__)
+
+cached_llm = OllamaLLM(model="llama3.2")
 
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 db = SQLAlchemy(app)
@@ -29,14 +32,14 @@ flashcard_data = [
                 "id": 1,
                 "question": "What is the output of print(2 ** 3)?",
                 "answer": "8",
-                "status": "correct",
+                "status": "GOOD",
                 "study_date": datetime(2024, 10, 1).isoformat()
             },
             {
                 "id": 2,
                 "question": "How do you create a list in Python?",
                 "answer": "By using square brackets []",
-                "status": "incorrect",
+                "status": "HARD",
                 "study_date": datetime(2024, 10, 2).isoformat()
             },
         ]
@@ -49,7 +52,7 @@ flashcard_data = [
                 "id": 1,
                 "question": "What is the correct syntax for referring to an external script called 'script.js'?",
                 "answer": "<script src='script.js'></script>",
-                "status": "correct",
+                "status": "AGAIN",
                 "study_date": datetime(2024, 10, 3).isoformat()
             },
         ]
@@ -62,7 +65,7 @@ flashcard_data = [
                 "id": 1,
                 "question": "What is TouchDesigner primarily used for?",
                 "answer": "Visual programming for interactive media systems.",
-                "status": "correct",
+                "status": "EASY",
                 "study_date": datetime(2024, 10, 4).isoformat()
             },
         ]
@@ -87,12 +90,14 @@ class Flashcard(db.Model):
 with app.app_context():
     db.create_all()
 
+
 @app.route("/")
 def hello_world():
     return jsonify(hello="world working !!!")
 
+
 @app.route('/api/topics', methods=['GET'])
-def get_flashcards():
+def get_topics():
     topics = Topic.query.all()
     result = []
     for topic in topics:
@@ -104,8 +109,9 @@ def get_flashcards():
         })
     return jsonify(result)
 
+
 @app.route('/get_topic_id', methods=['GET'])
-def get_topic_id():
+def get_topic_id_by_name():
     topic_name = request.args.get('name')
     
     if not topic_name:
@@ -117,6 +123,21 @@ def get_topic_id():
         return jsonify({"id": topic.id}), 200
     else:
         return jsonify({"message": "Topic not found"}), 404
+    
+
+@app.route('/get_topic_name/<int:topic_id>', methods=['GET'])
+def get_topic_name_by_id(topic_id):
+    
+    if not topic_id:
+        return jsonify({"message": "Topic id is required"}), 400
+    
+    topic = Topic.query.filter_by(id=topic_id).first()
+    
+    if topic:
+        return jsonify({"name": topic.name}), 200
+    else:
+        return jsonify({"message": "Topic not found"}), 404
+
 
 @app.route('/api/add_topic', methods=['POST'])
 def add_topic():
@@ -124,7 +145,7 @@ def add_topic():
     new_topic = Topic(name=data['name'])
     db.session.add(new_topic)
     db.session.commit()
-    return jsonify({"message": "Topic added", "id": new_topic.id}), 201
+    return jsonify({"id": new_topic.id, "name": new_topic.name}), 201
 
 
 @app.route('/api/flashcards-topic/<int:topic_id>', methods=['GET'])
@@ -133,6 +154,7 @@ def get_flashcard_topic(topic_id):
     if topic is None:
         abort(404)
     return jsonify(topic)
+
 
 @app.route('/api/add_flashcard', methods=['POST'])
 def add_flashcard():
@@ -151,6 +173,84 @@ def add_flashcard():
     db.session.add(new_flashcard)
     db.session.commit() 
     return jsonify({"message": "Flashcard added", "id": new_flashcard.id}), 201
+
+
+@app.route('/api/create_flashcards_ai/<int:topic_id>', methods=['POST'])
+def create_flashcard_list_with_ai(topic_id):
+
+    if(topic_id is None):
+        return jsonify({"message": "Invalid topic id"}), 400
+    
+    topic = Topic.query.filter_by(id=topic_id).first()
+    query = f"You are an expert about the topic: {topic.name}. Generate 10 flashcards as JSON related to the topic: {topic.name}. The JSON should be an array of objects, where each object contains 'question' and 'answer' fields."
+    response = cached_llm.invoke(query)
+
+    if response.status_code != 200:
+        return jsonify({"message": "Error generating flashcards from AI"}), 500
+
+    flashcard_data = response.json()
+
+    if not flashcard_data or not isinstance(flashcard_data, list):
+        return jsonify({"message": "No flashcards generated"}), 500
+
+    for fc in flashcard_data:
+        question = fc.get('question')
+        answer = fc.get('answer')
+        
+        if question and answer:
+            new_flashcard = Flashcard(
+                question=question,
+                answer=answer,
+                status=FlashcardStatus.UNSTUDIED,
+                topic_id=topic_id
+            )
+            db.session.add(new_flashcard)
+
+    db.session.commit()
+    return jsonify({"id": topic_id, "name": topic.name, "flashcards": flashcard_data}), 201
+
+
+@app.route('/api/create_flashcards_ai_TEST/<int:topic_id>', methods=['POST'])
+def create_flashcard_list_with_ai_TEST(topic_id):
+
+    if(topic_id is None):
+        return jsonify({"message": "Invalid topic id"}), 400
+    
+    topic = Topic.query.filter_by(id=topic_id).first()
+    query = (
+        f"You are an expert on the topic: {topic.name}. "
+        f"Generate 10 flashcards as JSON related to the topic: {topic.name}. "
+        "The JSON should be an array of objects, where each object contains 'question' and 'answer' fields."
+    )
+    #response = cached_llm.invoke(query)
+
+    try:
+        response = cached_llm.invoke(query)
+    except Exception as e:
+        print(f"Error calling the LLM: {e}")
+        return jsonify({"message": "Failed to generate flashcards", "error": str(e)}), 500
+    
+    flashcard_data = response.json()
+
+    # if not flashcard_data or not isinstance(flashcard_data, list):
+    #     return jsonify({"message": "No flashcards generated"}), 500
+
+    # for fc in flashcard_data:
+    #     question = fc.get('question')
+    #     answer = fc.get('answer')
+        
+    #     if question and answer:
+    #         new_flashcard = Flashcard(
+    #             question=question,
+    #             answer=answer,
+    #             status=FlashcardStatus.UNSTUDIED,
+    #             topic_id=topic_id
+    #         )
+    #         db.session.add(new_flashcard)
+
+    # db.session.commit()
+    return flashcard_data, 201
+
 
 if __name__ == '__main__':
     app.run(debug=True)
