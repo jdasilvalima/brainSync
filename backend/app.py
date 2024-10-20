@@ -3,12 +3,14 @@ from flask_sqlalchemy import SQLAlchemy
 from langchain_ollama.llms import OllamaLLM
 from datetime import datetime
 from flask_cors import CORS
-import os
 from enum import Enum
+import json
+import os
+import re
 
 app = Flask(__name__)
 
-cached_llm = OllamaLLM(model="llama3.2")
+cached_llm = OllamaLLM(model="llama3.2", base_url="http://ollama_server:11434")
 
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 db = SQLAlchemy(app)
@@ -182,16 +184,26 @@ def create_flashcard_list_with_ai(topic_id):
         return jsonify({"message": "Invalid topic id"}), 400
     
     topic = Topic.query.filter_by(id=topic_id).first()
-    query = f"You are an expert about the topic: {topic.name}. Generate 10 flashcards as JSON related to the topic: {topic.name}. The JSON should be an array of objects, where each object contains 'question' and 'answer' fields."
-    response = cached_llm.invoke(query)
+    query = (
+        f"You are an expert on the topic: {topic.name}. "
+        f"Generate 10 flashcards as JSON related to the topic: {topic.name}. "
+        "The JSON should be an array of objects, where each object contains 'question' and 'answer' fields."
+        "Here is an example of the expected JSON format:\n"
+        "[{\"question\": \"Question 1 ?\", \"answer\": \"Answer 1\"}, {\"question\": \"Question 2 ?\", \"answer\": \"Answer 2\"},{...}]"
+        "Do not include any additional text, explanations, or examples. Only output the JSON array."
+    )
 
-    if response.status_code != 200:
-        return jsonify({"message": "Error generating flashcards from AI"}), 500
-
-    flashcard_data = response.json()
-
-    if not flashcard_data or not isinstance(flashcard_data, list):
-        return jsonify({"message": "No flashcards generated"}), 500
+    try:
+        response = cached_llm.invoke(query)
+        json_match = re.search(r"\[\s*\{.*\}\s*\]", response, re.DOTALL)
+        flashcard_json = json_match.group(0)
+        flashcard_data = json.loads(flashcard_json)
+    except json.JSONDecodeError as json_err:
+        print(f"Failed to parse JSON: {json_err}")
+        return jsonify({"message": "Failed to get flashcards json", "error": str(json_err), "data": flashcard_json}), 500
+    except Exception as e:
+        print(f"Error calling the LLM: {e}")
+        return jsonify({"message": "Failed to generate flashcards", "error": str(e)}), 500
 
     for fc in flashcard_data:
         question = fc.get('question')
@@ -208,48 +220,6 @@ def create_flashcard_list_with_ai(topic_id):
 
     db.session.commit()
     return jsonify({"id": topic_id, "name": topic.name, "flashcards": flashcard_data}), 201
-
-
-@app.route('/api/create_flashcards_ai_TEST/<int:topic_id>', methods=['POST'])
-def create_flashcard_list_with_ai_TEST(topic_id):
-
-    if(topic_id is None):
-        return jsonify({"message": "Invalid topic id"}), 400
-    
-    topic = Topic.query.filter_by(id=topic_id).first()
-    query = (
-        f"You are an expert on the topic: {topic.name}. "
-        f"Generate 10 flashcards as JSON related to the topic: {topic.name}. "
-        "The JSON should be an array of objects, where each object contains 'question' and 'answer' fields."
-    )
-    #response = cached_llm.invoke(query)
-
-    try:
-        response = cached_llm.invoke(query)
-    except Exception as e:
-        print(f"Error calling the LLM: {e}")
-        return jsonify({"message": "Failed to generate flashcards", "error": str(e)}), 500
-    
-    flashcard_data = response.json()
-
-    # if not flashcard_data or not isinstance(flashcard_data, list):
-    #     return jsonify({"message": "No flashcards generated"}), 500
-
-    # for fc in flashcard_data:
-    #     question = fc.get('question')
-    #     answer = fc.get('answer')
-        
-    #     if question and answer:
-    #         new_flashcard = Flashcard(
-    #             question=question,
-    #             answer=answer,
-    #             status=FlashcardStatus.UNSTUDIED,
-    #             topic_id=topic_id
-    #         )
-    #         db.session.add(new_flashcard)
-
-    # db.session.commit()
-    return flashcard_data, 201
 
 
 if __name__ == '__main__':
