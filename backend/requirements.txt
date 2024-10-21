@@ -1,6 +1,8 @@
 flask
-Flask-SQLAlchemy
-psycopg2-binary
+flask-SQLAlchemy
+flask_marshmallow
+marshmallow-sqlalchemy
 flask-cors
+psycopg2-binary
 langchain_ollama
 python-dotenv
