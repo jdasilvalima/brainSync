@@ -5,17 +5,21 @@ meta {
 }
 
 post {
-  url: http://127.0.0.1:5000/api/add_flashcard
+  url: http://127.0.0.1:5000/api/flashcards/topic/{{topic_id}}
   body: json
   auth: none
 }
 
 body:json {
   {
-  "question": "What does DOM stand for and what is its purpose?",
-    "answer": "DOM stands for Document Object Model. It is a programming interface for web documents that represents the structure of a document as a tree of objects.",
+    "question": "What are Python's built-in data types?",
+    "answer": "Numeric Types, Sequence Types, ...",
     "status": "UNSTUDIED",
     "study_date": null,
-    "topic_id": 1
+    "topic_id": 2
   }
+}
+
+vars:pre-request {
+  topic_id: 2
 }

@@ -1,5 +1,5 @@
 from .model import Topic
-from utils.exceptions import ResourceNotFoundError, ValidationError
+from utils.exceptions import ResourceNotFoundError
 from extensions import db
 from typing import List
 
@@ -13,16 +13,14 @@ class TopicService:
             raise ResourceNotFoundError(f"Topic with ID {topic_id} not found")
         return topic
 
-    def create_topic(self, topic_data: dict) -> Topic:
-        topic = Topic(**topic_data)
+    def create_topic(self, topic: Topic) -> Topic:
         db.session.add(topic)
         db.session.commit()
         return topic
 
-    def update_topic(self, topic_id: int, updates: dict) -> Topic:
+    def update_topic(self, topic_id: int, updates: Topic) -> Topic:
         topic = self.get_topic_by_id(topic_id)
-        for key, value in updates.items():
-            setattr(topic, key, value)
+        topic.name = updates.name
         db.session.commit()
         return topic
 

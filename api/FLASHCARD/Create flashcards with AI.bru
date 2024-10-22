@@ -5,11 +5,11 @@ meta {
 }
 
 post {
-  url: http://127.0.0.1:5000/api/create_flashcards_ai/{{topic_id}}
+  url: http://127.0.0.1:5000/api/flashcards/topic/{{topic_id}}/ai
   body: none
   auth: none
 }
 
 vars:pre-request {
-  topic_id: 3
+  topic_id: 2
 }

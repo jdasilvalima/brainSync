@@ -20,4 +20,4 @@ class TopicSchema(ma.SQLAlchemyAutoSchema):
     
     id = ma.auto_field()
     name = ma.auto_field()
-    flashcards = ma.Nested(FlashcardSchema, many=True)
+    flashcards = ma.Nested(FlashcardSchema, many=True, allow_none=True)

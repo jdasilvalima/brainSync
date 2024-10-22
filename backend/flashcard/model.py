@@ -1,5 +1,6 @@
 from enum import Enum
 from extensions import db, ma
+from marshmallow import fields
 
 
 class FlashcardStatus(Enum):
@@ -15,7 +16,7 @@ class Flashcard(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     question = db.Column(db.String(200), nullable=False)
     answer = db.Column(db.String(200), nullable=False)
-    status = db.Column(db.Enum(FlashcardStatus), nullable=False)
+    status = db.Column(db.Enum(FlashcardStatus), default=FlashcardStatus.UNSTUDIED, nullable=False)
     study_date = db.Column(db.DateTime, nullable=True, default=None)
     topic_id = db.Column(db.Integer, db.ForeignKey('topic.id'), nullable=False)
 
@@ -32,6 +33,6 @@ class FlashcardSchema(ma.SQLAlchemyAutoSchema):
     id = ma.auto_field()
     question = ma.auto_field()
     answer = ma.auto_field()
-    status = ma.auto_field()
+    status = fields.Enum(FlashcardStatus)
     study_date = ma.auto_field()
     topic_id = ma.auto_field()

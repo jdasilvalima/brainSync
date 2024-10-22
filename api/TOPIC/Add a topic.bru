@@ -5,13 +5,17 @@ meta {
 }
 
 post {
-  url: http://127.0.0.1:5000/api/add_topic
+  url: http://127.0.0.1:5000/api/topics
   body: json
   auth: none
 }
 
+headers {
+  Content-Type: application/json
+}
+
 body:json {
   {
-      "name": "C#"
+      "name": "TypeScript"
   }
 }

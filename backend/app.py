@@ -1,15 +1,10 @@
 from flask import Flask
-import logging
-import json
-import os
-import re
-
 from extensions import db, ma, cors
 from config import Config
 from flashcard.controller import flashcard_bp
 from topic.controller import topic_bp
 
-logging.basicConfig(filename='record.log', level=logging.DEBUG, format='%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
+#logging.basicConfig(filename='record.log', level=logging.DEBUG, format='%(asctime)s %(levelname)s %(name)s %(threadName)s : %(message)s')
 # app = Flask(__name__)
 
 # cached_llm = OllamaLLM(model="llama3.2", base_url="http://ollama_server:11434")
@@ -247,7 +242,7 @@ def register_extensions(app):
 
 def register_blueprints(app):
     app.register_blueprint(topic_bp, url_prefix='/api/topics')
-    app.register_blueprint(flashcard_bp, url_prefix='/api/flaschcards')
+    app.register_blueprint(flashcard_bp, url_prefix='/api/flashcards')
 
 
 app = create_app()
