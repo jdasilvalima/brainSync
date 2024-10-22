@@ -1,0 +1,15 @@
+meta {
+  name: Get topic by id
+  type: http
+  seq: 2
+}
+
+get {
+  url: http://127.0.0.1:5000/api/topics/{{topic_id}}
+  body: none
+  auth: none
+}
+
+vars:pre-request {
+  topic_id: 2
+}

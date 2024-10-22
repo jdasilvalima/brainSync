@@ -1,0 +1,21 @@
+meta {
+  name: Delete a topic
+  type: http
+  seq: 5
+}
+
+delete {
+  url: http://127.0.0.1:5000/api/topics/{{topic_id}}
+  body: none
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Golang"
+  }
+}
+
+vars:pre-request {
+  topic_id: 4
+}

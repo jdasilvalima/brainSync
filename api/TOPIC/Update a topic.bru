@@ -1,0 +1,21 @@
+meta {
+  name: Update a topic
+  type: http
+  seq: 4
+}
+
+put {
+  url: http://127.0.0.1:5000/api/topics/{{topic_id}}
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "name": "Golang"
+  }
+}
+
+vars:pre-request {
+  topic_id: 37
+}
