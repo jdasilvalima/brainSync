@@ -1,41 +1,24 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Lightbulb, Pen, Save, BookOpen } from 'lucide-react'
+import { useSearchParams } from 'react-router-dom'
+import { useTopics } from '../contexts/TopicContext';
+import { Flashcard, FlashcardStatus } from '../contexts/FlashcardContext';
 
-interface FlashCard {
-  question: string
-  answer: string
-}
-
-const initialFlashcards: FlashCard[] = [
-  {
-    question: "Where do you put the JavaScript so that it will execute properly in your documents?",
-    answer: "In the <script> tag or in an external .js file"
-  },
-  {
-    question: "What is the difference between '==' and '===' in JavaScript?",
-    answer: "'==' compares values with type coercion, while '===' compares both value and type without coercion"
-  },
-  {
-    question: "What is a closure in JavaScript?",
-    answer: "A closure is a function that has access to variables in its outer (enclosing) lexical scope, even after the outer function has returned"
-  },
-  {
-    question: "What is the purpose of the 'use strict' directive in JavaScript?",
-    answer: "'use strict' enables strict mode, which catches common coding errors and prevents the use of certain error-prone features"
-  },
-  {
-    question: "What is the difference between 'let' and 'var' in JavaScript?",
-    answer: "'let' has block scope and doesn't allow redeclaration, while 'var' has function scope and allows redeclaration"
-  }
-]
 
 export default function Flashcards() {
-  const [flashcards, setFlashcards] = useState(initialFlashcards)
+  const { getTopic } = useTopics();
+  const [flashcardsTest, setFlashcardsTest] = useState<Flashcard[]>([])
+  //const [currentCard, setCurrentCard] = useState<Flashcard>({id:1, question: "Fake question?", answer: "Fake answer.", status: FlashcardStatus.UNSTUDIED, topic_id: 1})
   const [currentCardIndex, setCurrentCardIndex] = useState(0)
   const [showAnswer, setShowAnswer] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [editedText, setEditedText] = useState('')
   const [showHint, setShowHint] = useState(false)
+  const [searchParams] = useSearchParams();
+  const topicId = searchParams.get('id');
+
+  const flashcards = topicId ? getTopic(parseInt(topicId))?.flashcards : undefined
+  const currentCard = flashcards ? flashcards[currentCardIndex] : {id:1, question: "Fake question?", answer: "Fake answer.", status: FlashcardStatus.UNSTUDIED, topic_id: 1}
 
   const handleCardClick = () => {
     if (!isEditing) {
@@ -56,7 +39,7 @@ export default function Flashcards() {
     } else {
       updatedFlashcards[currentCardIndex].question = editedText
     }
-    setFlashcards(updatedFlashcards)
+    setFlashcardsTest(updatedFlashcards)
     setIsEditing(false)
   }
 
@@ -76,7 +59,9 @@ export default function Flashcards() {
     return words.slice(0, 3).join(' ') + '...'
   }
 
-  const currentCard = flashcards[currentCardIndex]
+  if (!flashcards || !currentCard) {
+    return <div>Flashcards not found</div>
+  }
 
   return (
     <div className="flex flex-col h-screen bg-gray-100">

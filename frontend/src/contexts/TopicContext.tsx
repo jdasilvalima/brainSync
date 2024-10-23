@@ -3,7 +3,7 @@ import axios from 'axios';
 import { Flashcard } from './FlashcardContext.tsx';
 
 export interface Topic {
-    id: string;
+    id: number;
     name: string;
     flashcards: Flashcard[];
 }
@@ -15,7 +15,7 @@ interface TopicContextType {
     setTopics: React.Dispatch<React.SetStateAction<Topic[]>>;
     fetchTopics: () => Promise<void>;
     createTopic: (name: string) => Promise<Topic>;
-    getTopic: (id: string) => Topic | undefined;
+    getTopic: (id: number) => Topic | undefined;
 }
 
 const TopicContext = createContext<TopicContextType | undefined>(undefined);
@@ -53,7 +53,7 @@ export const TopicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       }
     };
   
-    const getTopic = (id: string) => {
+    const getTopic = (id: number) => {
       return topics.find(set => set.id === id);
     };
 

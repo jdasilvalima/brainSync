@@ -1,7 +1,7 @@
 import React, { createContext, useState, useContext } from 'react';
 import axios from 'axios';
 
-enum FlashcardStatus {
+export enum FlashcardStatus {
     AGAIN = 'AGAIN',
     HARD = 'HARD',
     GOOD = 'GOOD',
@@ -10,7 +10,7 @@ enum FlashcardStatus {
 }
 
 export interface Flashcard {
-  id: string;
+  id: number;
   question: string;
   answer: string;
   status: FlashcardStatus;
@@ -26,7 +26,7 @@ interface FlashcardContextType {
   setFlashcards: React.Dispatch<React.SetStateAction<Flashcard[]>>;
   fetchFlashcardsByTopicId: (topicId: string) => Promise<void>;
   createFlashcardsWithAi: (topicId: string) => Promise<Flashcard[]>;
-  getFlashcard: (id: string) => Flashcard | undefined;
+  getFlashcard: (id: number) => Flashcard | undefined;
 }
 
 const FlashcardContext = createContext<FlashcardContextType | undefined>(undefined);
@@ -61,7 +61,7 @@ export const FlashcardProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     }
   };
 
-  const getFlashcard = (id: string) => {
+  const getFlashcard = (id: number) => {
     return flashcards.find(set => set.id === id);
   };
 

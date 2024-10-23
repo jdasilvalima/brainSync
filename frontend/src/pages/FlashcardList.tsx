@@ -1,62 +1,37 @@
-import React, { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ChevronDown } from 'lucide-react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useTopics } from '../contexts/TopicContext';
+import { Flashcard } from '../contexts/FlashcardContext';
 
-interface Flashcard {
-  id: number
-  question: string
-  answer: string
-  status: 'AGAIN' | 'HARD' | 'GOOD' | 'EASY' | 'NOT STUDIED'
-}
-
-const initialFlashcards: Flashcard[] = [
-  {
-    id: 1,
-    question: "Dans firefox différence entre la console web (web console) et l'ardoise (scratchpad) ?",
-    answer: "web console: ligne par ligne scratchpad: on peut écrire et jouer un script complet",
-    status: 'AGAIN'
-  },
-  {
-    id: 2,
-    question: "JavaScript est-il sensible à la casse ? (différence entre un nom de variable contenant ou non des majuscules)",
-    answer: "oui",
-    status: 'GOOD'
-  },
-  {
-    id: 3,
-    question: "En JavaScript, les instructions sont séparées par des...",
-    answer: "points-virgules (semi colon)",
-    status: 'NOT STUDIED'
-  },
-  {
-    id: 4,
-    question: "chercher l'erreur : var x = 1; var 4L = 2;",
-    answer: "Ligne 2 ! Un identifiant JavaScript doit commencer par une lettre, un tiret bas (_) ou un symbole dollar ($) !",
-    status: 'EASY'
-  },
-  {
-    id: 5,
-    question: "Quelle est la différence entre '==' et '===' en JavaScript?",
-    answer: "'==' compare les valeurs, '===' compare les valeurs et les types",
-    status: 'NOT STUDIED'
-  }
-]
 
 export default function FlashcardList() {
-  const [flashcards] = useState<Flashcard[]>(initialFlashcards)
+  const { getTopic } = useTopics();
+  const [flashcards, setFlashcards] = useState<Flashcard[]>([])
   const [filter, setFilter] = useState<string>('ALL')
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams();
+  const topicId = searchParams.get('setId');
 
   const statusColors = {
     'AGAIN': 'bg-red-500',
     'HARD': 'bg-orange-500',
     'GOOD': 'bg-green-500',
     'EASY': 'bg-blue-500',
-    'NOT STUDIED': 'bg-gray-500'
+    'UNSTUDIED': 'bg-gray-500'
   }
 
-  const handleStartClick = () => {
-    navigate('/flashcards')
+  useEffect(() => {
+    if (topicId) {
+      const topic = getTopic(parseInt(topicId));
+      if (topic?.flashcards) {
+        setFlashcards(topic.flashcards);
+      }
+    }
+  }, [topicId, getTopic]);
+
+  const handleStartClick = (id: string | null) => {
+    navigate(`/flashcards?id=${id}`)
   }
 
   const filteredFlashcards = filter === 'ALL' 
@@ -74,7 +49,7 @@ export default function FlashcardList() {
           <h2 className="text-2xl font-bold">{flashcards.length} FLASHCARDS</h2>
           <div className="flex space-x-4">
             <button
-              onClick={handleStartClick}
+              onClick={() => handleStartClick(topicId)}
               className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition-colors"
             >
               START

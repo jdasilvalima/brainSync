@@ -17,6 +17,7 @@ export default function FlashcardCollection() {
   const handleCreate = async () => {
     if (newTopic.trim()) {
       try {
+
         const topicCreated = await createTopic(newTopic.trim());
         const flashcardsCreated = await createFlashcardsWithAi(topicCreated.id);
         const topicWithFlashcards: Topic = {
@@ -38,8 +39,8 @@ export default function FlashcardCollection() {
     navigate(`/flashcard-list?setId=${id}`)
   }
 
-  // if (loading) return <div>Loading...</div>;
-  // if (error) return <div>Error: {error}</div>;
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -70,7 +71,7 @@ export default function FlashcardCollection() {
           {topics.map((set) => (
             <div
               key={set.id}
-              onClick={() => handleSelectSet(set.id)}
+              onClick={() => handleSelectSet(set.id.toString())}
               className="bg-white rounded-lg border-2 border-gray-300 p-4 cursor-pointer hover:border-indigo-500 transition-colors"
             >
               <h3 className="text-xl font-semibold mb-2">{set.name}</h3>
