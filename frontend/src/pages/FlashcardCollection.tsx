@@ -1,55 +1,35 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useTopics, Topic } from '../contexts/TopicContext';
+import { useFlashcards } from '../contexts/FlashcardContext';
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios';
-
-interface FlashcardSet {
-  id: string
-  name: string
-  flashcards: []
-}
 
 export default function FlashcardCollection() {
   const [newTopic, setNewTopic] = useState('')
-  const [flashcardSets, setFlashcardSets] = useState<FlashcardSet[]>([])
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate()
+  const { topics, loading, fetchTopics, createTopic, setTopics } = useTopics();
+  const { createFlashcardsWithAi } = useFlashcards();
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchFlashcardSets = async () => {
-      try {
-        const response = await axios.get('http://127.0.0.1:5000/api/topics')
-        setFlashcardSets(response.data);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Error fetching data');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchFlashcardSets();
-  }, []);
+    fetchTopics();
+  }, [fetchTopics]);
 
   const handleCreate = async () => {
     if (newTopic.trim()) {
       try {
-        const responseTopic = await axios.post('http://127.0.0.1:5000/api/add_topic', {
+        const topicCreated = await createTopic(newTopic.trim());
+        const flashcardsCreated = await createFlashcardsWithAi(topicCreated.id);
+        const topicWithFlashcards: Topic = {
+          id: topicCreated.id,
           name: newTopic.trim(),
-        });
-  
-        const newSet: FlashcardSet = {
-          id: responseTopic.data.id,
-          name: newTopic.trim(),
-          flashcards: []
+          flashcards: flashcardsCreated
         };
-
-        const responseFlashcards = await axios.post(`http://127.0.0.1:5000/api/create_flashcards_ai/${newSet.id}`) 
-        setFlashcardSets([...responseFlashcards.data.flashcards, newSet]);
+        setTopics(prevTopics => [...prevTopics, topicWithFlashcards]);
         setNewTopic('');
-        navigate(`/flashcard-list?setId=${newSet.id}`);
+        navigate(`/flashcard-list?setId=${topicCreated.id}`);
       } catch (error) {
         console.error('Error creating topic:', error);
-        setError(error instanceof Error ? error.message : 'Error creating topic');
+        setError(error instanceof Error ? error.message : 'Error creating topic with its flashcards by AI');
       }
     }
   };
@@ -58,8 +38,8 @@ export default function FlashcardCollection() {
     navigate(`/flashcard-list?setId=${id}`)
   }
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  // if (loading) return <div>Loading...</div>;
+  // if (error) return <div>Error: {error}</div>;
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -87,7 +67,7 @@ export default function FlashcardCollection() {
         </div>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {flashcardSets.map((set) => (
+          {topics.map((set) => (
             <div
               key={set.id}
               onClick={() => handleSelectSet(set.id)}

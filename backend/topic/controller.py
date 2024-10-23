@@ -25,7 +25,7 @@ def get_topic(topic_id):
         return jsonify({"error": str(e)}), 404
 
 
-@topic_bp.route('/', methods=['POST'])
+@topic_bp.route('', methods=['POST'])
 def create_topic():
     try:
         data = topic_schema.load(request.json)
