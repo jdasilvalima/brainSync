@@ -1,7 +1,7 @@
 from .model import Flashcard, FlashcardStatus
 from topic.model import Topic
-from utils.exceptions import ResourceNotFoundError, ValidationError
-from extensions import db, cached_llm
+from utils.exceptions import ResourceNotFoundError
+from extensions import db, cached_llm, logger
 from typing import List
 import json
 import re
@@ -27,6 +27,8 @@ class FlashcardService:
         topic = Topic.query.get(topic_id)
         if not topic:
             raise ResourceNotFoundError(f"Topic with ID {topic_id} not found")
+        
+        logger.info(f"topic name : {topic.name}")
 
         flashcard_data = self._get_flashcards_json_from_ai(topic.name)
         flashcards_to_add = []
@@ -45,22 +47,33 @@ class FlashcardService:
 
         db.session.bulk_save_objects(flashcards_to_add)
         db.session.commit()
+        logger.info(f"flashcards_to_add : {flashcards_to_add}")
         return flashcards_to_add
 
     
     def _get_flashcards_json_from_ai(self, topic_name: str) -> List[dict[str, str]]:
+        # query = (
+        #     f"You are an expert on the topic: {topic_name}. "
+        #     f"Generate 10 flashcards as JSON related to the topic: {topic_name}. "
+        #     "The JSON should be an array of objects, where each object contains 'question' and 'answer' fields."
+        #     "Ensure the JSON is valid and correctly formatted as an array of objects."
+        #     "The output must be a well-formed JSON array like this:\n"
+        #     "[{\"question\": \"Question 1 ?\", \"answer\": \"Answer 1\"}, {\"question\": \"Question 2 ?\", \"answer\": \"Answer 2\"}]"
+        #     "Return only the JSON array without any additional text, explanation, or examples."
+        #     "Be sure to close the JSON array properly to make it valid ]."
+        # )
         query = (
             f"You are an expert on the topic: {topic_name}. "
-            f"Generate 10 flashcards as JSON related to the topic: {topic_name}. "
-            "The JSON should be an array of objects, where each object contains 'question' and 'answer' fields."
-            "Here is an example of the expected JSON format:\n"
-            "[{\"question\": \"Question 1 ?\", \"answer\": \"Answer 1\"}, {\"question\": \"Question 2 ?\", \"answer\": \"Answer 2\"},{...}]"
-            "Do not include any additional text, explanations, or examples. Only output the JSON array."
+            f"Generate 20 flashcards as JSON related to the topic: {topic_name}. "
+            "The JSON should be an array of 20 objects, where each object contains \"question\" and \"answer\" fields."
+            "Please use \"flashcards\" as a root key for the json."
         )
+        logger.info(f"start llm invoke : {query}")
         response = cached_llm.invoke(query)
-        json_match = re.search(r"\[\s*\{.*\}\s*\]", response, re.DOTALL)
-        flashcard_json = json_match.group(0)
-        return  json.loads(flashcard_json)
+        logger.info(f"end llm invoke")
+        logger.info(f"response {response}")
+        flashcards_created = json.loads(response)
+        return flashcards_created.get('flashcards')
 
 
     def update_flashcard(self, flashcard_id: int, updates: dict) -> Flashcard:

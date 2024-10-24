@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useTopics, Topic } from '../contexts/TopicContext';
+import { useTopics } from '../contexts/TopicContext';
 import { useFlashcards } from '../contexts/FlashcardContext';
 import { useNavigate } from 'react-router-dom'
 
@@ -19,15 +19,9 @@ export default function FlashcardCollection() {
       try {
 
         const topicCreated = await createTopic(newTopic.trim());
-        const flashcardsCreated = await createFlashcardsWithAi(topicCreated.id);
-        const topicWithFlashcards: Topic = {
-          id: topicCreated.id,
-          name: newTopic.trim(),
-          flashcards: flashcardsCreated
-        };
-        setTopics(prevTopics => [...prevTopics, topicWithFlashcards]);
+        await createFlashcardsWithAi(topicCreated.id);
+        await fetchTopics();
         setNewTopic('');
-        navigate(`/flashcard-list?setId=${topicCreated.id}`);
       } catch (error) {
         console.error('Error creating topic:', error);
         setError(error instanceof Error ? error.message : 'Error creating topic with its flashcards by AI');
