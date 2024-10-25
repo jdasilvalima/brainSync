@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom'
 export default function FlashcardCollection() {
   const [newTopic, setNewTopic] = useState('')
   const navigate = useNavigate()
-  const { topics, loading, fetchTopics, createTopic, setTopics } = useTopics();
+  const { topics, loading, fetchTopics, createTopic } = useTopics();
   const { createFlashcardsWithAi } = useFlashcards();
   const [error, setError] = useState<string | null>(null);
 
@@ -37,11 +37,7 @@ export default function FlashcardCollection() {
   if (error) return <div>Error: {error}</div>;
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <header className="bg-indigo-600 text-white p-4">
-        <h1 className="text-2xl font-bold">Flashcards</h1>
-      </header>
-      
+    <div className="min-h-screen mt-16">  
       <main className="container mx-auto px-4 py-8 w-full max-w-2xl">
         <h2 className="text-3xl font-bold mb-6">FLASHCARDS COLLECTION</h2>
         

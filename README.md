@@ -24,7 +24,7 @@ BrainSync's goal is to make studying more efficient and effective, promoting lon
 ### I.2 Requirements
 - [Docker](https://www.docker.com/) neeeds to be installed
 - [Node.js](https://nodejs.org/en) and a package manager like 'npm'
-- Optional - [Bruno](https://www.usebruno.com/) can utilize the API collection located in the api folder to make HTTP/HTTPS requests to the backend
+- Optional - [Bruno](https://www.usebruno.com/) can utilize the API collection located in the 'api' folder to make HTTP/HTTPS requests to the backend
 - Clone this project
   ```sh
   git clone git@github.com:jdasilvalima/brainSync.git

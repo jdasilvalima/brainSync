@@ -27,8 +27,6 @@ class FlashcardService:
         topic = Topic.query.get(topic_id)
         if not topic:
             raise ResourceNotFoundError(f"Topic with ID {topic_id} not found")
-        
-        logger.info(f"topic name : {topic.name}")
 
         flashcard_data = self._get_flashcards_json_from_ai(topic.name)
         flashcards_to_add = []
@@ -47,7 +45,6 @@ class FlashcardService:
 
         db.session.bulk_save_objects(flashcards_to_add)
         db.session.commit()
-        logger.info(f"flashcards_to_add : {flashcards_to_add}")
         return flashcards_to_add
 
     
@@ -64,13 +61,11 @@ class FlashcardService:
         # )
         query = (
             f"You are an expert on the topic: {topic_name}. "
-            f"Generate 20 flashcards as JSON related to the topic: {topic_name}. "
-            "The JSON should be an array of 20 objects, where each object contains \"question\" and \"answer\" fields."
+            f"Generate 15 flashcards as JSON related to the topic: {topic_name}. "
+            "The JSON should be an array of 15 objects, where each object contains \"question\" and \"answer\" fields."
             "Please use \"flashcards\" as a root key for the json."
         )
-        logger.info(f"start llm invoke : {query}")
         response = cached_llm.invoke(query)
-        logger.info(f"end llm invoke")
         logger.info(f"response {response}")
         flashcards_created = json.loads(response)
         return flashcards_created.get('flashcards')

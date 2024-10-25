@@ -33,10 +33,8 @@ def create_flashcard(topic_id):
 @flashcard_bp.route('/topic/<int:topic_id>/ai', methods=['POST'])
 @measure_time
 def create_flashcards_ai(topic_id):
-    logger.info("start method create_flashcards_ai")
     try:
         new_flashcard = flashcard_service.create_flashcards_with_ai(topic_id)
-        logger.info(f"new_flashcard {new_flashcard}")
         return jsonify(flashcard_schema.dump(new_flashcard, many=True)), 201
     except ResourceNotFoundError as e:
         return jsonify({"error": str(e)}), 400

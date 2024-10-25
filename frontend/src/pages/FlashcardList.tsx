@@ -39,11 +39,7 @@ export default function FlashcardList() {
     : flashcards.filter(card => card.status === filter)
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <header className="bg-indigo-600 text-white p-4">
-        <h1 className="text-2xl font-bold">JavaScript Flashcards</h1>
-      </header>
-      
+    <div className="min-h-screen mt-16">
       <main className="container mx-auto px-4 py-8 w-full max-w-2xl">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold">{flashcards.length} FLASHCARDS</h2>

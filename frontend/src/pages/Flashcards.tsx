@@ -64,12 +64,8 @@ export default function Flashcards() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-gray-100">
-      <header className="bg-indigo-600 text-white p-4">
-        <h1 className="text-2xl font-bold">JavaScript Flashcards</h1>
-      </header>
-      
-      <main className="flex-grow flex items-center justify-center p-4">
+    <div className="flex flex-col h-screen">
+      <main className="flex-grow flex items-center justify-center">
         <div className="w-full max-w-2xl">
           <div 
             className={`rounded-xl shadow-lg p-8 w-full h-[400px] flex flex-col ${
