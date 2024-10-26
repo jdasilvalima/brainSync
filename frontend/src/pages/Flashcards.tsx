@@ -2,11 +2,12 @@ import { useState } from 'react'
 import { Lightbulb, Pen, Save, BookOpen } from 'lucide-react'
 import { useSearchParams } from 'react-router-dom'
 import { useTopics } from '../contexts/TopicContext';
-import { Flashcard, FlashcardStatus } from '../contexts/FlashcardContext';
+import { Flashcard, FlashcardStatus, useFlashcards } from '../contexts/FlashcardContext';
 
 
 export default function Flashcards() {
   const { getTopic } = useTopics();
+  const { updateFlashcard } = useFlashcards();
   const [flashcardsTest, setFlashcardsTest] = useState<Flashcard[]>([])
   //const [currentCard, setCurrentCard] = useState<Flashcard>({id:1, question: "Fake question?", answer: "Fake answer.", status: FlashcardStatus.UNSTUDIED, topic_id: 1})
   const [currentCardIndex, setCurrentCardIndex] = useState(0)
@@ -43,7 +44,17 @@ export default function Flashcards() {
     setIsEditing(false)
   }
 
-  const handleDifficultyClick = (difficulty: string) => {
+  const handleDifficultyClick = async (difficulty: string) => {
+    console.log("difficulty ", difficulty)
+    const status = FlashcardStatus[difficulty as keyof typeof FlashcardStatus]
+    console.log("status ", status)
+    const cardToUpdate = {
+      ...currentCard,
+      status: FlashcardStatus[difficulty as keyof typeof FlashcardStatus],
+      study_date: new Date(),
+    }
+    console.log(cardToUpdate)
+    await updateFlashcard(cardToUpdate)
     setCurrentCardIndex((prevIndex) => (prevIndex + 1) % flashcards.length)
     setShowAnswer(false)
     setShowHint(false)
@@ -122,16 +133,16 @@ export default function Flashcards() {
             {currentCardIndex + 1} / {flashcards.length}
           </div>
           <div className="flex">
-            <button onClick={() => handleDifficultyClick('again')} className="px-4 py-2 bg-red-500 text-white rounded-l hover:bg-red-600 transition-colors duration-300">
+            <button onClick={() => handleDifficultyClick('AGAIN')} className="px-4 py-2 bg-red-500 text-white rounded-l hover:bg-red-600 transition-colors duration-300">
               &lt; 10 min<br />AGAIN
             </button>
-            <button onClick={() => handleDifficultyClick('hard')} className="px-4 py-2 bg-orange-500 text-white hover:bg-orange-600 transition-colors duration-300">
+            <button onClick={() => handleDifficultyClick('HARD')} className="px-4 py-2 bg-orange-500 text-white hover:bg-orange-600 transition-colors duration-300">
               9 d<br />HARD
             </button>
-            <button onClick={() => handleDifficultyClick('good')} className="px-4 py-2 bg-green-500 text-white hover:bg-green-600 transition-colors duration-300">
+            <button onClick={() => handleDifficultyClick('GOOD')} className="px-4 py-2 bg-green-500 text-white hover:bg-green-600 transition-colors duration-300">
               20 d<br />GOOD
             </button>
-            <button onClick={() => handleDifficultyClick('easy')} className="px-4 py-2 bg-blue-500 text-white rounded-r hover:bg-blue-600 transition-colors duration-300">
+            <button onClick={() => handleDifficultyClick('EASY')} className="px-4 py-2 bg-blue-500 text-white rounded-r hover:bg-blue-600 transition-colors duration-300">
               26 d<br />EASY
             </button>
           </div>

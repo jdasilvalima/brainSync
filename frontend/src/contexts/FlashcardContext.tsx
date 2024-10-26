@@ -27,6 +27,7 @@ interface FlashcardContextType {
   fetchFlashcardsByTopicId: (topicId: string) => Promise<void>;
   createFlashcardsWithAi: (topicId: string) => Promise<Flashcard[]>;
   getFlashcard: (id: number) => Flashcard | undefined;
+  updateFlashcard: (flashcard: Flashcard) => Promise<Flashcard>;
 }
 
 const FlashcardContext = createContext<FlashcardContextType | undefined>(undefined);
@@ -61,6 +62,22 @@ export const FlashcardProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     }
   };
 
+  const updateFlashcard = async (flashcard: Flashcard): Promise<Flashcard> => {
+    try {
+      const responseFlashcard = await axios.put(`http://127.0.0.1:5000/api/flashcards/${flashcard.id}`, flashcard);
+      const updatedFlashcard = responseFlashcard.data;
+      setFlashcards(prevSets => 
+        prevSets.map(flashcard => 
+          flashcard.id === updatedFlashcard.id ? updatedFlashcard : flashcard
+        )
+      );
+      return updatedFlashcard;
+    } catch (error) {
+      console.error('Error updating flashcard :', error);
+      throw error;
+    }
+  };
+
   const getFlashcard = (id: number) => {
     return flashcards.find(set => set.id === id);
   };
@@ -73,7 +90,8 @@ export const FlashcardProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       setFlashcards: setFlashcards,
       fetchFlashcardsByTopicId: fetchFlashcardsByTopicId,
       createFlashcardsWithAi: createFlashcardsWithAi,
-      getFlashcard: getFlashcard
+      getFlashcard: getFlashcard,
+      updateFlashcard: updateFlashcard
     }}>
       {children}
     </FlashcardContext.Provider>

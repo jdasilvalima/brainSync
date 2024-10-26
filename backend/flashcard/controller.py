@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify, request
 from .service import FlashcardService
 from .model import FlashcardSchema
 from utils.exceptions import ResourceNotFoundError, ValidationError
-from extensions import logger
+from extensions import logger, db
 from utils.decorators import measure_time
 
 
@@ -43,17 +43,20 @@ def create_flashcards_ai(topic_id):
         return jsonify({"error": str(e)}), 500
 
 
-#ToDo : endpoint to verify
 @flashcard_bp.route('/<int:flashcard_id>', methods=['PUT'])
 def update_flashcard(flashcard_id):
     try:
-        data = flashcard_schema.load(request.json)
+        data = flashcard_schema.load(request.json, session=db.session)
+        logger.info(f"data update_flashcard : {data}")
         updated_flashcard = flashcard_service.update_flashcard(flashcard_id, data)
+        logger.info(f"Working updated_flashcard : {updated_flashcard}")
         return jsonify(flashcard_schema.dump(updated_flashcard)), 200
     except ResourceNotFoundError as e:
         return jsonify({"error": str(e)}), 404
     except ValidationError as e:
         return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 #ToDo : endpoint to verify

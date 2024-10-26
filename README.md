@@ -10,16 +10,15 @@
 
 ## I. PROJECT DESCRIPTION
 ### I.1 Introduction
-**BrainSync** - is a web application designed to enhance the studying experience by creating personalized learning paths, flashcards, and quizzes. The platform is built on the principles of **spaced repetition**, a scientifically-proven learning technique that optimizes memory retention by reviewing information at strategically timed intervals.
+**BrainSync** is a web application designed to enhance the study experience by providing **AI-generated** personalized learning paths, flashcards, and quizzes. Based on the principles of **spaced repetition**, the platform optimizes memory retention by revisiting information at strategically timed intervals.
 
 **Features :**
 
-- **Personalized Learning Paths:** Users can generate customized learning paths tailored to their goals and progress.
-- **Flashcards:** Create, manage, and review flashcards for active recall practice.
-- **Quizzes:** Take adaptive quizzes that adjust based on performance, helping reinforce weaker areas.
+- **Personalized Learning Paths:** AI generates tailored study paths based on user goals and progress, ensuring an effective learning journey.
+- **Flashcards:** AI-created flashcards allow users to practice active recall, with options to manage and review them for better retention.
+- **Adaptive Quizzes:** AI-driven quizzes adapt to individual needs, reinforcing areas that require improvement.
 
-BrainSync's goal is to make studying more efficient and effective, promoting long-term knowledge retention for students and lifelong learners.
-
+BrainSync’s mission is to make studying more efficient and impactful, supporting long-term knowledge retention for students and lifelong learners alike.
 
 ### I.2 Requirements
 - [Docker](https://www.docker.com/) neeeds to be installed
@@ -32,6 +31,8 @@ BrainSync's goal is to make studying more efficient and effective, promoting lon
   ```
 
 ## II. BACKEND
+This project is using Flask + Python + PostgreSQL.
+There is an Ollama server using Llama3.2 model.
 
 Build and run locally :
 ```sh
@@ -41,7 +42,8 @@ docker-compose up --build
 ![Backend Docker Containers](./readme-doc/backend-containers.png)
 
 ## III. FRONTEND
-This project is using React + TypeScript + Vite
+This project is using React + TypeScript + Vite.
+
 To run locally :
 ```sh
 cd .\frontend\

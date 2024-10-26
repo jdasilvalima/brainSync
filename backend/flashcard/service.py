@@ -4,7 +4,6 @@ from utils.exceptions import ResourceNotFoundError
 from extensions import db, cached_llm, logger
 from typing import List
 import json
-import re
 
 class FlashcardService:
     def get_flashcards_by_topic(self, topic_id: int) -> List[Flashcard]:
@@ -71,13 +70,12 @@ class FlashcardService:
         return flashcards_created.get('flashcards')
 
 
-    def update_flashcard(self, flashcard_id: int, updates: dict) -> Flashcard:
+    def update_flashcard(self, flashcard_id: int, updates: Flashcard) -> Flashcard:
         flashcard = Flashcard.query.get(flashcard_id)
         if not flashcard:
             raise ResourceNotFoundError(f"Flashcard with ID {flashcard_id} not found")
-
-        for key, value in updates.items():
-            setattr(flashcard, key, value)
+        flashcard.status = updates.status
+        flashcard.study_date = updates.study_date
         db.session.commit()
         return flashcard
 
