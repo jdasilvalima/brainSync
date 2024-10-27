@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Lightbulb, Pen, Save, BookOpen } from 'lucide-react'
-import { useSearchParams } from 'react-router-dom'
+import { useSearchParams, useNavigate } from 'react-router-dom'
 import { useTopics } from '../contexts/TopicContext';
 import { Flashcard, FlashcardStatus, useFlashcards } from '../contexts/FlashcardContext';
 
@@ -16,6 +16,7 @@ export default function Flashcards() {
   const [editedText, setEditedText] = useState('')
   const [showHint, setShowHint] = useState(false)
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate()
   const topicId = searchParams.get('id');
 
   const flashcards = topicId ? getTopic(parseInt(topicId))?.flashcards : undefined
@@ -45,20 +46,21 @@ export default function Flashcards() {
   }
 
   const handleDifficultyClick = async (difficulty: string) => {
-    console.log("difficulty ", difficulty)
-    const status = FlashcardStatus[difficulty as keyof typeof FlashcardStatus]
-    console.log("status ", status)
     const cardToUpdate = {
       ...currentCard,
       status: FlashcardStatus[difficulty as keyof typeof FlashcardStatus],
       study_date: new Date(),
     }
-    console.log(cardToUpdate)
     await updateFlashcard(cardToUpdate)
-    setCurrentCardIndex((prevIndex) => (prevIndex + 1) % flashcards.length)
-    setShowAnswer(false)
-    setShowHint(false)
-    setIsEditing(false)
+    if (currentCardIndex === flashcards.length - 1) {
+      navigate(`/flashcard-list?setId=${topicId}`)
+    } 
+    else {
+      setCurrentCardIndex((prevIndex) => prevIndex + 1)
+      setShowAnswer(false)
+      setShowHint(false)
+      setIsEditing(false)
+    }
   }
 
   const handleHint = () => {

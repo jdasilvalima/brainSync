@@ -1,6 +1,6 @@
 export default function LearningPath() {
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-2xl mx-auto mt-20">
       <h1 className="text-3xl font-bold mb-4">Learning Path</h1>
       <p className="text-gray-600 mb-4">
         Welcome to your Learning Path! This feature is coming soon.
