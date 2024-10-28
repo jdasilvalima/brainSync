@@ -2,12 +2,10 @@ import { useState, useEffect } from 'react'
 import { ChevronDown } from 'lucide-react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTopics } from '../contexts/TopicContext';
-import { Flashcard } from '../contexts/FlashcardContext';
 
 
 export default function FlashcardList() {
-  const { getTopic } = useTopics();
-  const [flashcards, setFlashcards] = useState<Flashcard[]>([])
+  const { getTopic, selectedTopic } = useTopics();
   const [filter, setFilter] = useState<string>('ALL')
   const navigate = useNavigate()
   const [searchParams] = useSearchParams();
@@ -22,27 +20,28 @@ export default function FlashcardList() {
   }
 
   useEffect(() => {
-    if (topicId) {
-      const topic = getTopic(parseInt(topicId));
-      if (topic?.flashcards) {
-        setFlashcards(topic.flashcards);
+    const fetchData = async () => {
+      if (topicId) {
+        await getTopic(parseInt(topicId));
       }
-    }
+    };
+
+    fetchData();
   }, [topicId, getTopic]);
 
   const handleStartClick = (id: string | null) => {
-    navigate(`/flashcards?id=${id}`)
+    navigate(`/flashcard-details?id=${id}`)
   }
 
   const filteredFlashcards = filter === 'ALL' 
-    ? flashcards 
-    : flashcards.filter(card => card.status === filter)
+    ? selectedTopic?.flashcards 
+    : selectedTopic?.flashcards.filter(card => card.status === filter)
 
   return (
     <div className="min-h-screen mt-16">
       <main className="container mx-auto px-4 py-8 w-full max-w-2xl">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold">{flashcards.length} FLASHCARDS</h2>
+          <h2 className="text-2xl font-bold">{selectedTopic?.flashcards.length} {selectedTopic?.name.toUpperCase()} FLASHCARDS</h2>
           <div className="flex space-x-4">
             <button
               onClick={() => handleStartClick(topicId)}
@@ -71,7 +70,7 @@ export default function FlashcardList() {
         </div>
         
         <div className="space-y-4">
-          {filteredFlashcards.map((card) => (
+          {filteredFlashcards?.map((card) => (
             <div key={card.id} className="bg-white rounded-lg shadow-md p-6 flex justify-between items-start">
               <div className="flex-1">
                 <h3 className="font-semibold text-lg mb-2">{card.question}</h3>

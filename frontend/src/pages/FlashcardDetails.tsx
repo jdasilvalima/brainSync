@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Lightbulb, Pen, Save, BookOpen } from 'lucide-react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { useTopics } from '../contexts/TopicContext';
@@ -6,11 +6,10 @@ import { Flashcard, FlashcardStatus, useFlashcards } from '../contexts/Flashcard
 
 
 export default function Flashcards() {
-  const { getTopic } = useTopics();
+  const { getTopic, selectedTopic } = useTopics();
   const { updateFlashcard } = useFlashcards();
-  const [flashcardsTest, setFlashcardsTest] = useState<Flashcard[]>([])
-  //const [currentCard, setCurrentCard] = useState<Flashcard>({id:1, question: "Fake question?", answer: "Fake answer.", status: FlashcardStatus.UNSTUDIED, topic_id: 1})
   const [currentCardIndex, setCurrentCardIndex] = useState(0)
+  const [currentCard, setCurrentCard] = useState<Flashcard>({id:1, question: "Fake question?", answer: "Fake answer.", status: FlashcardStatus.UNSTUDIED, topic_id: 1})
   const [showAnswer, setShowAnswer] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [editedText, setEditedText] = useState('')
@@ -19,8 +18,18 @@ export default function Flashcards() {
   const navigate = useNavigate()
   const topicId = searchParams.get('id');
 
-  const flashcards = topicId ? getTopic(parseInt(topicId))?.flashcards : undefined
-  const currentCard = flashcards ? flashcards[currentCardIndex] : {id:1, question: "Fake question?", answer: "Fake answer.", status: FlashcardStatus.UNSTUDIED, topic_id: 1}
+  useEffect(() => {
+    const fetchData = async () => {
+      if (topicId) {
+        await getTopic(parseInt(topicId));
+
+        if(selectedTopic?.flashcards && selectedTopic?.flashcards.length > 0)
+          setCurrentCard(selectedTopic.flashcards[currentCardIndex]);
+      }
+    };
+
+    fetchData();
+  }, [topicId, getTopic]);
 
   const handleCardClick = () => {
     if (!isEditing) {
@@ -35,13 +44,13 @@ export default function Flashcards() {
   }
 
   const handleSave = () => {
-    const updatedFlashcards = [...flashcards]
+    // ToDo
     if (showAnswer) {
-      updatedFlashcards[currentCardIndex].answer = editedText
+      currentCard.answer = editedText
     } else {
-      updatedFlashcards[currentCardIndex].question = editedText
+      currentCard.question = editedText
     }
-    setFlashcardsTest(updatedFlashcards)
+    setCurrentCard(currentCard)
     setIsEditing(false)
   }
 
@@ -52,8 +61,8 @@ export default function Flashcards() {
       study_date: new Date(),
     }
     await updateFlashcard(cardToUpdate)
-    if (currentCardIndex === flashcards.length - 1) {
-      navigate(`/flashcard-list?setId=${topicId}`)
+    if (currentCardIndex === selectedTopic?.flashcards?.length - 1) {
+      navigate(`/flashcards-topic?setId=${topicId}`)
     } 
     else {
       setCurrentCardIndex((prevIndex) => prevIndex + 1)
@@ -72,7 +81,7 @@ export default function Flashcards() {
     return words.slice(0, 3).join(' ') + '...'
   }
 
-  if (!flashcards || !currentCard) {
+  if (!selectedTopic?.flashcards || !currentCard) {
     return <div>Flashcards not found</div>
   }
 
@@ -80,8 +89,9 @@ export default function Flashcards() {
     <div className="flex flex-col h-screen">
       <main className="flex-grow flex items-center justify-center">
         <div className="w-full max-w-2xl">
+        <h2 className="text-2xl font-bold mb-5">{selectedTopic?.name.toUpperCase()} FLASHCARDS</h2>
           <div 
-            className={`rounded-xl shadow-lg p-8 w-full h-[400px] flex flex-col ${
+            className={`rounded-xl shadow-lg p-8 w-full h-[400px] flex flex-col cursor-pointer ${
               showAnswer ? 'bg-indigo-50' : 'bg-white'
             }`}
             onClick={handleCardClick}
@@ -119,8 +129,8 @@ export default function Flashcards() {
               </div>
             )}
             {showHint && !showAnswer && (
-              <div className="mt-4 bg-indigo-100 p-4 rounded w-full">
-                <span className="text-indigo-600 font-medium block w-full">
+              <div className="bg-indigo-100 p-4 rounded w-full">
+                <span className="text-indigo-600 font-medium">
                   Hint: {getHint(currentCard.answer)}
                 </span>
               </div>
@@ -129,10 +139,10 @@ export default function Flashcards() {
         </div>
       </main>
       
-      <footer className="bg-gray-200 p-4">
+      <footer className="bg-gray-200 p-4 w-full">
         <div className="flex justify-between items-center max-w-2xl mx-auto">
           <div className="text-lg font-semibold text-gray-700">
-            {currentCardIndex + 1} / {flashcards.length}
+            {currentCardIndex + 1} / {selectedTopic?.flashcards.length}
           </div>
           <div className="flex">
             <button onClick={() => handleDifficultyClick('AGAIN')} className="px-4 py-2 bg-red-500 text-white rounded-l hover:bg-red-600 transition-colors duration-300">

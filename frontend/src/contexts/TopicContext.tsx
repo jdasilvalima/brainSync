@@ -10,18 +10,20 @@ export interface Topic {
 
 interface TopicContextType {
     topics: Topic[];
+    selectedTopic: Topic | undefined;
     loading: boolean;
     error: string | null;
     setTopics: React.Dispatch<React.SetStateAction<Topic[]>>;
     fetchTopics: () => Promise<void>;
     createTopic: (name: string) => Promise<Topic>;
-    getTopic: (id: number) => Topic | undefined;
+    getTopic: (topicId: number) => Promise<Topic>;
 }
 
 const TopicContext = createContext<TopicContextType | undefined>(undefined);
 
 export const TopicProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [topics, setTopics] = useState<Topic[]>([]);
+    const [selectedTopic, setSelectedTopic] = useState<Topic>();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
   
@@ -53,14 +55,22 @@ export const TopicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       }
     };
   
-    const getTopic = (id: number) => {
-      return topics.find(set => set.id === id);
+    const getTopic = async (topicId: number): Promise<Topic> => {
+      try {
+        const responseTopic = await axios.get(`http://127.0.0.1:5000/api/topics/${topicId}`);
+        setSelectedTopic(responseTopic.data);
+        return responseTopic.data;
+      } catch (error) {
+        console.error('Error creating topic:', error);
+        throw error;
+      }
     };
 
   
     return (
       <TopicContext.Provider value={{
         topics: topics,
+        selectedTopic: selectedTopic,
         loading,
         error,
         setTopics: setTopics,
