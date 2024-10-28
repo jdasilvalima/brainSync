@@ -28,6 +28,19 @@ def create_flashcard(topic_id):
         return jsonify(flashcard_schema.dump(new_flashcard)), 201
     except ResourceNotFoundError as e:
         return jsonify({"error": str(e)}), 400
+    
+
+@flashcard_bp.route('/topic/<int:topic_id>/bulk', methods=['POST'])
+def add_flashcard_list(topic_id):
+    try:
+        flashcards_data = flashcard_schema.load(request.json, many=True)
+        new_flashcards = flashcard_service.add_flashcard_list(topic_id, flashcards_data)
+        return jsonify(flashcard_schema.dump(new_flashcards, many=True)), 201
+    except ResourceNotFoundError as e:
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        logger.error(f"error while calling method add_flashcard_list : {e}")
+        return jsonify({"error": str(e)}), 500
 
 
 @flashcard_bp.route('/topic/<int:topic_id>/ai', methods=['POST'])
@@ -39,7 +52,7 @@ def create_flashcards_ai(topic_id):
     except ResourceNotFoundError as e:
         return jsonify({"error": str(e)}), 400
     except Exception as e:
-        logger.error(f"error while calling method create_flashcards_ai - 500 : {e}")
+        logger.error(f"error while calling method create_flashcards_ai : {e}")
         return jsonify({"error": str(e)}), 500
 
 

@@ -22,6 +22,26 @@ class FlashcardService:
         return flashcard
     
 
+    def add_flashcard_list(self, topic_id: int, flashcards: List[Flashcard]) -> List[Flashcard]:
+        topic = Topic.query.get(topic_id)
+        if not topic:
+            raise ResourceNotFoundError(f"Topic with ID {topic_id} not found")
+        new_flashcards = []
+        for flashcard in flashcards:
+            new_flashcard = Flashcard(
+                question=flashcard.question,
+                answer=flashcard.answer,
+                status=flashcard.status,
+                study_date=flashcard.study_date,
+                topic_id=topic_id
+            )
+            db.session.add(new_flashcard)
+            new_flashcards.append(new_flashcard)
+        
+        db.session.commit()
+        return new_flashcards
+    
+
     def create_flashcards_with_ai(self, topic_id: int) -> List[Flashcard]:
         topic = Topic.query.get(topic_id)
         if not topic:
