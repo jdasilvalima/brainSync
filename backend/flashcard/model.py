@@ -17,11 +17,13 @@ class Flashcard(db.Model):
     question = db.Column(db.String(200), nullable=False)
     answer = db.Column(db.String(200), nullable=False)
     status = db.Column(db.Enum(FlashcardStatus), default=FlashcardStatus.UNSTUDIED, nullable=False)
-    study_date = db.Column(db.DateTime, nullable=True, default=None)
+    next_study_date = db.Column(db.DateTime, nullable=True, default=None)
+    repetitions = db.Column(db.Integer, nullable=False, default=0)
+    interval_days = db.Column(db.Integer, nullable=False, default=1)
     topic_id = db.Column(db.Integer, db.ForeignKey('topic.id'), nullable=False)
 
     def __repr__(self):
-        return f"<Flashcard id={self.id}, question={self.question}, answer={self.answer}, status={self.status}, study_date={self.study_date}>"
+        return f"<Flashcard id={self.id}, question={self.question}, answer={self.answer}, status={self.status}, next_study_date={self.next_study_date}>"
 
 
 class FlashcardSchema(ma.SQLAlchemyAutoSchema):
@@ -34,5 +36,4 @@ class FlashcardSchema(ma.SQLAlchemyAutoSchema):
     question = ma.auto_field()
     answer = ma.auto_field()
     status = fields.Enum(FlashcardStatus)
-    study_date = ma.auto_field()
     topic_id = ma.auto_field()

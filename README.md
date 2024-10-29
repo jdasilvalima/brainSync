@@ -20,11 +20,16 @@
 
 BrainSync’s mission is to make studying more efficient and impactful, supporting long-term knowledge retention for students and lifelong learners alike.
 
-### I.2 Requirements
+### I.2 Web Application Overview
+WIP
+
+## II. PROJECT SETUP
+Requirements
 - [Docker](https://www.docker.com/) neeeds to be installed
 - [Node.js](https://nodejs.org/en) and a package manager like 'npm'
 - Optional - [Bruno](https://www.usebruno.com/) can utilize the API collection located in the 'api' folder to make HTTP/HTTPS requests to the backend
-- Clone this project
+
+Clone this project
   ```sh
   git clone git@github.com:jdasilvalima/brainSync.git
   cd brainSync
@@ -53,3 +58,8 @@ npm run dev
 
 ![Frontend topic / flashcards presentation](./readme-doc/frontend-flashcards-topic.png)
 ![Flashcards presentation](./readme-doc/frontend-flashcards.png)
+
+## IV. REFERENCES
+### IV.1 Spaced Repetition Learning
+- [How to Remember Anything](https://rachel.fast.ai/posts/2023-02-21-anki/)
+- [Implementation of SM-2 in DART](https://github.com/thyagoluciano/sm2)

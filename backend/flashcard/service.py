@@ -1,4 +1,5 @@
 from .model import Flashcard, FlashcardStatus
+from .reviewService import FlashcardReviewService
 from topic.model import Topic
 from utils.exceptions import ResourceNotFoundError
 from extensions import db, cached_llm, logger
@@ -6,6 +7,10 @@ from typing import List
 import json
 
 class FlashcardService:
+    def __init__(self):
+        self.review_service = FlashcardReviewService()
+
+
     def get_flashcards_by_topic(self, topic_id: int) -> List[Flashcard]:
         topic = Topic.query.get(topic_id)
         if not topic:
@@ -31,8 +36,7 @@ class FlashcardService:
             new_flashcard = Flashcard(
                 question=flashcard.question,
                 answer=flashcard.answer,
-                status=flashcard.status,
-                study_date=flashcard.study_date,
+                status=FlashcardStatus.UNSTUDIED,
                 topic_id=topic_id
             )
             db.session.add(new_flashcard)
@@ -94,9 +98,12 @@ class FlashcardService:
         flashcard = Flashcard.query.get(flashcard_id)
         if not flashcard:
             raise ResourceNotFoundError(f"Flashcard with ID {flashcard_id} not found")
-        flashcard.status = updates.status
-        flashcard.study_date = updates.study_date
+        logger.info(f"before updated_flashcard")
+        updated_flashcard = self.review_service.review_flashcard(flashcard, updates)
+        logger.info(f"after updated_flashcard : {updated_flashcard}")
+        flashcard = updated_flashcard
         db.session.commit()
+        logger.info(f"flashcard : {flashcard}")
         return flashcard
 
 

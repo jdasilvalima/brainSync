@@ -14,7 +14,6 @@ export interface Flashcard {
   question: string;
   answer: string;
   status: FlashcardStatus;
-  study_date?: Date | null;
   topic_id: number
 }
 

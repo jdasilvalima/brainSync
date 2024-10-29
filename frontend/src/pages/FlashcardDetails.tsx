@@ -57,8 +57,7 @@ export default function Flashcards() {
   const handleDifficultyClick = async (difficulty: string) => {
     const cardToUpdate = {
       ...currentCard,
-      status: FlashcardStatus[difficulty as keyof typeof FlashcardStatus],
-      study_date: new Date(),
+      status: FlashcardStatus[difficulty as keyof typeof FlashcardStatus]
     }
     await updateFlashcard(cardToUpdate)
     if (currentCardIndex === selectedTopic?.flashcards?.length - 1) {
@@ -146,16 +145,16 @@ export default function Flashcards() {
           </div>
           <div className="flex">
             <button onClick={() => handleDifficultyClick('AGAIN')} className="px-4 py-2 bg-red-500 text-white rounded-l hover:bg-red-600 transition-colors duration-300">
-              &lt; 10 min<br />AGAIN
+              1 d<br />AGAIN
             </button>
             <button onClick={() => handleDifficultyClick('HARD')} className="px-4 py-2 bg-orange-500 text-white hover:bg-orange-600 transition-colors duration-300">
-              9 d<br />HARD
+              2 d<br />HARD
             </button>
             <button onClick={() => handleDifficultyClick('GOOD')} className="px-4 py-2 bg-green-500 text-white hover:bg-green-600 transition-colors duration-300">
-              20 d<br />GOOD
+              *2 d<br />GOOD
             </button>
             <button onClick={() => handleDifficultyClick('EASY')} className="px-4 py-2 bg-blue-500 text-white rounded-r hover:bg-blue-600 transition-colors duration-300">
-              26 d<br />EASY
+              *2.5 d<br />EASY
             </button>
           </div>
         </div>

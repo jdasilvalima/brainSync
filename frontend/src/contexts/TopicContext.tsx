@@ -55,7 +55,7 @@ export const TopicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       }
     };
   
-    const getTopic = async (topicId: number): Promise<Topic> => {
+    const getTopic = useCallback(async (topicId: number): Promise<Topic> => {
       try {
         const responseTopic = await axios.get(`http://127.0.0.1:5000/api/topics/${topicId}`);
         setSelectedTopic(responseTopic.data);
@@ -64,7 +64,7 @@ export const TopicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         console.error('Error creating topic:', error);
         throw error;
       }
-    };
+    }, []);
 
   
     return (
