@@ -39,8 +39,25 @@ Clone this project
 This project is using Flask + Python + PostgreSQL.
 There is an Ollama server using Llama3.2 model.
 
+Create and set-up .env file :
+```sh
+cd .\backend\
+
+touch .env
+
+# PostgreSQL
+POSTGRES_USER=postgres_user
+POSTGRES_PASSWORD=postgres_password
+POSTGRES_DB=brainsync
+
+# Flask
+FLASK_ENV=development
+DATABASE_URL=postgresql://postgres_user:postgres_password@flask_db:5432/brainsync
+```
+
 Build and run locally :
 ```sh
+cd brainSync
 docker-compose up --build
 ```
 

@@ -65,6 +65,7 @@ export default function Flashcards() {
     } 
     else {
       setCurrentCardIndex((prevIndex) => prevIndex + 1)
+      setCurrentCard(selectedTopic?.flashcards[currentCardIndex]);
       setShowAnswer(false)
       setShowHint(false)
       setIsEditing(false)
@@ -144,17 +145,17 @@ export default function Flashcards() {
             {currentCardIndex + 1} / {selectedTopic?.flashcards.length}
           </div>
           <div className="flex">
-            <button onClick={() => handleDifficultyClick('AGAIN')} className="px-4 py-2 bg-red-500 text-white rounded-l hover:bg-red-600 transition-colors duration-300">
-              1 d<br />AGAIN
+            <button onClick={() => handleDifficultyClick('AGAIN')} className="px-6 py-4 bg-red-500 text-white rounded-l hover:bg-red-600 transition-colors duration-300">
+              AGAIN
             </button>
-            <button onClick={() => handleDifficultyClick('HARD')} className="px-4 py-2 bg-orange-500 text-white hover:bg-orange-600 transition-colors duration-300">
-              2 d<br />HARD
+            <button onClick={() => handleDifficultyClick('HARD')} className="px-6 py-4 bg-orange-500 text-white hover:bg-orange-600 transition-colors duration-300">
+              HARD
             </button>
-            <button onClick={() => handleDifficultyClick('GOOD')} className="px-4 py-2 bg-green-500 text-white hover:bg-green-600 transition-colors duration-300">
-              *2 d<br />GOOD
+            <button onClick={() => handleDifficultyClick('GOOD')} className="px-6 py-4 bg-green-500 text-white hover:bg-green-600 transition-colors duration-300">
+              GOOD
             </button>
-            <button onClick={() => handleDifficultyClick('EASY')} className="px-4 py-2 bg-blue-500 text-white rounded-r hover:bg-blue-600 transition-colors duration-300">
-              *2.5 d<br />EASY
+            <button onClick={() => handleDifficultyClick('EASY')} className="px-6 py-4 bg-blue-500 text-white rounded-r hover:bg-blue-600 transition-colors duration-300">
+              EASY
             </button>
           </div>
         </div>

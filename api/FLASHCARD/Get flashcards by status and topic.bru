@@ -1,0 +1,16 @@
+meta {
+  name: Get flashcards by status and topic
+  type: http
+  seq: 3
+}
+
+get {
+  url: http://127.0.0.1:5000/api/flashcards/topic/{{topicId}}/status/{{status}}
+  body: none
+  auth: none
+}
+
+vars:pre-request {
+  topicId: 2
+  status: UNSTUDIED
+}

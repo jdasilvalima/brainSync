@@ -20,6 +20,27 @@ def get_flashcards_by_topic(topic_id):
         return jsonify({"error": str(e)}), 500
 
 
+@flashcard_bp.route('/topic/<int:topic_id>/daily-reviews', methods=['GET'])
+def get_daily_reviews_by_topic(topic_id):
+    try:
+        flashcards = flashcard_service.get_daily_reviews_by_topic(topic_id)
+        return jsonify(flashcard_schema.dump(flashcards, many=True)), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@flashcard_bp.route('/topic/<int:topic_id>/status/<string:status>', methods=['GET'])
+def get_flashcards_by_topic_and_status(topic_id, status):
+    try:
+        if(status == 'ALL'):
+            flashcards = flashcard_service.get_flashcards_by_topic(topic_id)
+        else:
+            flashcards = flashcard_service.get_flashcards_by_topic_and_status(topic_id, status)
+        return jsonify(flashcard_schema.dump(flashcards, many=True)), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @flashcard_bp.route('/topic/<int:topic_id>', methods=['POST'])
 def create_flashcard(topic_id):
     try:

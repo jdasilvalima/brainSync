@@ -6,7 +6,7 @@ import { useTopics } from '../contexts/TopicContext';
 
 export default function FlashcardList() {
   const { getTopic, selectedTopic } = useTopics();
-  const [filter, setFilter] = useState<string>('ALL')
+  const [filter, setFilter] = useState<string>('SPACED REPETITION')
   const navigate = useNavigate()
   const [searchParams] = useSearchParams();
   const topicId = searchParams.get('setId');
@@ -33,12 +33,12 @@ export default function FlashcardList() {
     navigate(`/flashcard-details?id=${id}`)
   }
 
-  const filteredFlashcards = filter === 'ALL' 
+  const filteredFlashcards = filter === 'ALL' || filter === 'SPACED REPETITION'
     ? selectedTopic?.flashcards 
     : selectedTopic?.flashcards.filter(card => card.status === filter)
 
   return (
-    <div className="min-h-screen mt-16">
+    <div className="mt-16">
       <main className="container mx-auto px-4 py-8 w-full max-w-2xl">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold">{selectedTopic?.flashcards.length} {selectedTopic?.name.toUpperCase()} FLASHCARDS</h2>
@@ -55,6 +55,7 @@ export default function FlashcardList() {
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
               >
+                <option>SPACED REPETITION</option>
                 <option>ALL</option>
                 <option>NOT STUDIED</option>
                 <option>AGAIN</option>

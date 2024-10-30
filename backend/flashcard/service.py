@@ -4,6 +4,7 @@ from topic.model import Topic
 from utils.exceptions import ResourceNotFoundError
 from extensions import db, cached_llm, logger
 from typing import List
+from datetime import datetime
 import json
 
 class FlashcardService:
@@ -16,7 +17,24 @@ class FlashcardService:
         if not topic:
             raise ResourceNotFoundError(f"Topic with ID {topic_id} not found")
         return topic.flashcards
+    
 
+    def get_daily_reviews_by_topic(self, topic_id: int) -> List[Flashcard]:
+        topic = Topic.query.get(topic_id)
+        if not topic:
+            raise ResourceNotFoundError(f"Topic with ID {topic_id} not found")
+        current_date = datetime.now()
+        return Flashcard.query.filter((Flashcard.next_study_date <= current_date) & (Flashcard.topic_id == topic_id)).all()
+    
+
+    def get_flashcards_by_topic_and_status(self, topic_id: int, status: str) -> List[Flashcard]:
+        topic = Topic.query.get(topic_id)
+        if not topic:
+            raise ResourceNotFoundError(f"Topic with ID {topic_id} not found")
+        if status not in FlashcardStatus.__members__:
+            return ResourceNotFoundError(f"Statut non valide {status}")
+        flashcard_status = FlashcardStatus[status]
+        return Flashcard.query.filter((Flashcard.status == flashcard_status) & (Flashcard.topic_id == topic_id)).all()
 
     def create_flashcard(self, topic_id: int, flashcard: Flashcard) -> Flashcard:
         topic = Topic.query.get(topic_id)
