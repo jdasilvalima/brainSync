@@ -29,8 +29,8 @@ export default function FlashcardList() {
     fetchData();
   }, [topicId, getTopic]);
 
-  const handleStartClick = (id: string | null) => {
-    navigate(`/flashcard-details?id=${id}`)
+  const handleStartClick = () => {
+    navigate(`/flashcard-details?id=${topicId}&status=${filter}`)
   }
 
   const filteredFlashcards = filter === 'ALL' || filter === 'SPACED REPETITION'
@@ -44,7 +44,7 @@ export default function FlashcardList() {
           <h2 className="text-2xl font-bold">{selectedTopic?.flashcards.length} {selectedTopic?.name.toUpperCase()} FLASHCARDS</h2>
           <div className="flex space-x-4">
             <button
-              onClick={() => handleStartClick(topicId)}
+              onClick={() => handleStartClick()}
               className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition-colors"
             >
               START
@@ -57,7 +57,7 @@ export default function FlashcardList() {
               >
                 <option>SPACED REPETITION</option>
                 <option>ALL</option>
-                <option>NOT STUDIED</option>
+                <option>UNSTUDIED</option>
                 <option>AGAIN</option>
                 <option>HARD</option>
                 <option>GOOD</option>

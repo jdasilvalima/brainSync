@@ -4,6 +4,7 @@
 ![Flask](https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
 ![Llama3.2](https://img.shields.io/badge/Llama3.2-000000?style=for-the-badge&logo=ollama&logoColor=white)
+![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
 
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/jdasilvalima/brainSync?style=for-the-badge)
 [![GitHub last commit](https://img.shields.io/github/last-commit/jdasilvalima/brainSync?style=for-the-badge)](https://github.com/jdasilvalima/brainSync/commits)

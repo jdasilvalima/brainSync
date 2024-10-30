@@ -1,35 +1,45 @@
 import { useState, useEffect } from 'react'
-import { Lightbulb, Pen, Save, BookOpen } from 'lucide-react'
+import { Lightbulb, Pen, Save, BookOpen, ArrowLeft  } from 'lucide-react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { useTopics } from '../contexts/TopicContext';
 import { Flashcard, FlashcardStatus, useFlashcards } from '../contexts/FlashcardContext';
 
 
 export default function Flashcards() {
-  const { getTopic, selectedTopic } = useTopics();
-  const { updateFlashcard } = useFlashcards();
+  const { getTopic, selectedTopic } = useTopics()
+  const { flashcards, updateFlashcard, fetchFlashcardsByTopicIdAndStatus, fetchDailyReviewFlashcards } = useFlashcards()
   const [currentCardIndex, setCurrentCardIndex] = useState(0)
-  const [currentCard, setCurrentCard] = useState<Flashcard>({id:1, question: "Fake question?", answer: "Fake answer.", status: FlashcardStatus.UNSTUDIED, topic_id: 1})
+  const [currentCard, setCurrentCard] = useState<Flashcard | null>(null)
   const [showAnswer, setShowAnswer] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [editedText, setEditedText] = useState('')
   const [showHint, setShowHint] = useState(false)
-  const [searchParams] = useSearchParams();
+  const [searchParams] = useSearchParams()
+  const topicId = searchParams.get('id')
+  const statusFilter = searchParams.get('status')
   const navigate = useNavigate()
-  const topicId = searchParams.get('id');
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (topicId) {
+    const initializeFlashcards = async () => {
+      if (topicId && statusFilter) {
         await getTopic(parseInt(topicId));
-
-        if(selectedTopic?.flashcards && selectedTopic?.flashcards.length > 0)
-          setCurrentCard(selectedTopic.flashcards[currentCardIndex]);
+  
+        if(statusFilter === 'SPACED REPETITION') {
+          await fetchDailyReviewFlashcards(parseInt(topicId));
+        } else {
+          await fetchFlashcardsByTopicIdAndStatus(parseInt(topicId), statusFilter);
+        }
       }
     };
-
-    fetchData();
-  }, [topicId, getTopic]);
+  
+    initializeFlashcards();
+  }, [topicId, statusFilter]);
+  
+  useEffect(() => {
+    if (flashcards.length > 0) {
+      setCurrentCard(flashcards[currentCardIndex]);
+    }
+  }, [flashcards, currentCardIndex]);
 
   const handleCardClick = () => {
     if (!isEditing) {
@@ -60,12 +70,12 @@ export default function Flashcards() {
       status: FlashcardStatus[difficulty as keyof typeof FlashcardStatus]
     }
     await updateFlashcard(cardToUpdate)
-    if (currentCardIndex === selectedTopic?.flashcards?.length - 1) {
+    if (currentCardIndex === flashcards.length - 1) {
       navigate(`/flashcards-topic?setId=${topicId}`)
     } 
     else {
       setCurrentCardIndex((prevIndex) => prevIndex + 1)
-      setCurrentCard(selectedTopic?.flashcards[currentCardIndex]);
+      setCurrentCard(flashcards[currentCardIndex]);
       setShowAnswer(false)
       setShowHint(false)
       setIsEditing(false)
@@ -81,8 +91,21 @@ export default function Flashcards() {
     return words.slice(0, 3).join(' ') + '...'
   }
 
-  if (!selectedTopic?.flashcards || !currentCard) {
-    return <div>Flashcards not found</div>
+  if (flashcards.length <= 0 || !currentCard) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen gap-4">
+        <div className="text-xl font-semibold text-gray-600">
+          Flashcards not found
+        </div>
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-2 px-4 py-2 text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors"
+        >
+          <ArrowLeft size={20} />
+          Go Back
+        </button>
+      </div>
+    );
   }
 
   return (
@@ -142,7 +165,7 @@ export default function Flashcards() {
       <footer className="bg-gray-200 p-4 w-full">
         <div className="flex justify-between items-center max-w-2xl mx-auto">
           <div className="text-lg font-semibold text-gray-700">
-            {currentCardIndex + 1} / {selectedTopic?.flashcards.length}
+            {currentCardIndex + 1} / {flashcards.length}
           </div>
           <div className="flex">
             <button onClick={() => handleDifficultyClick('AGAIN')} className="px-6 py-4 bg-red-500 text-white rounded-l hover:bg-red-600 transition-colors duration-300">
