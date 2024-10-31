@@ -1,0 +1,20 @@
+meta {
+  name: Chat with model
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:11434/api/generate
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "model": "llama3.2",
+    "prompt": "You are an expert on the topic: JavaScript. Generate 1 flashcard as JSON related to the topic: JavaScript. The JSON should be an array of objects, where each object contains \"question\" and \"answer\" fields. In the answer you can introduce some code examples. Please use \"flashcards\" as a root key for the json.",
+    "stream": false,
+    "format": "json"
+  }
+}

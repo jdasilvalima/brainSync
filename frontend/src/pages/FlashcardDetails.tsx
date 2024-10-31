@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Lightbulb, Pen, Save, BookOpen, ArrowLeft  } from 'lucide-react'
+import SyntaxHighlighter from 'react-syntax-highlighter';
+import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { useTopics } from '../contexts/TopicContext';
 import { Flashcard, FlashcardStatus, useFlashcards } from '../contexts/FlashcardContext';
@@ -88,14 +90,14 @@ export default function Flashcards() {
 
   const getHint = (answer: string): string => {
     const words = answer.split(' ')
-    return words.slice(0, 3).join(' ') + '...'
+    return words.slice(0, 13).join(' ') + '...'
   }
 
   if (flashcards.length <= 0 || !currentCard) {
     return (
       <div className="flex flex-col items-center justify-center h-screen gap-4">
         <div className="text-xl font-semibold text-gray-600">
-          Flashcards not found
+          No flashcards to study
         </div>
         <button
           onClick={() => navigate(-1)}
@@ -147,8 +149,21 @@ export default function Flashcards() {
                 onClick={(e) => e.stopPropagation()}
               />
             ) : (
-              <div className="flex-grow text-2xl font-semibold overflow-auto">
-                {showAnswer ? currentCard.answer : currentCard.question}
+              <div className="">
+                {showAnswer ? (
+                  <>
+                    <div className="flex-grow text-xl font-semibold overflow-auto mb-5">{currentCard.answer}</div>
+                    {currentCard.example && (
+                      <SyntaxHighlighter style={docco} wrapLines="true" wrapLongLines="true">
+                        {currentCard.example}
+                      </SyntaxHighlighter>
+                    )}
+                  </>
+                ) : (
+                  <div className="flex-grow text-2xl font-semibold overflow-auto">
+                    {currentCard.question}
+                  </div>
+                )}
               </div>
             )}
             {showHint && !showAnswer && (

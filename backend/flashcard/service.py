@@ -74,11 +74,13 @@ class FlashcardService:
         for fc in flashcard_data:
             question = fc.get('question')
             answer = fc.get('answer')
+            example = fc.get('example')
             
             if question and answer:
                 new_flashcard = Flashcard(
                     question=question,
                     answer=answer,
+                    example=example,
                     status=FlashcardStatus.UNSTUDIED,
                     topic_id=topic_id
                 )
@@ -102,8 +104,9 @@ class FlashcardService:
         # )
         query = (
             f"You are an expert on the topic: {topic_name}. "
-            f"Generate 15 flashcards as JSON related to the topic: {topic_name}. "
-            "The JSON should be an array of 15 objects, where each object contains \"question\" and \"answer\" fields."
+            f"Generate 10 flashcards as JSON related to the topic: {topic_name}. "
+            "The JSON should be an array of 10 objects, where each object contains \"question\", \"answer\", and \"example\" fields. "
+            "Each \"example\" should be a relevant code snippet or practical demonstration related to the flashcard's question, when applicable. "
             "Please use \"flashcards\" as a root key for the json."
         )
         response = cached_llm.invoke(query)

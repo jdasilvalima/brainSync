@@ -37,6 +37,19 @@ export default function FlashcardList() {
     ? selectedTopic?.flashcards 
     : selectedTopic?.flashcards.filter(card => card.status === filter)
 
+  if (!selectedTopic?.flashcards || selectedTopic.flashcards.length <= 0) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen">
+        <h2 className="text-2xl font-bold mb-8 text-gray-700">Flashcards are baking...</h2>
+        <img 
+          src="https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExMnhrc2Jobjk0czJjbTM1NWV4NHFoN3YwMDJrcXNpNzM0dzB1amFsNyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/demgpwJ6rs2DS/giphy.gif"
+          alt="Person baking"
+          className="rounded-lg max-w-sm"
+        />
+      </div>
+    )
+  }
+
   return (
     <div className="mt-16">
       <main className="container mx-auto px-4 py-8 w-full max-w-2xl">

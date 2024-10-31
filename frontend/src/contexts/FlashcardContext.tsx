@@ -13,6 +13,7 @@ export interface Flashcard {
   id: number;
   question: string;
   answer: string;
+  example: string;
   status: FlashcardStatus;
   topic_id: number
 }
