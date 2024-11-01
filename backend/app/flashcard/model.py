@@ -22,7 +22,7 @@ class Flashcard(db.Model):
     next_study_date = db.Column(db.Date, nullable=False, default=func.now())
     repetitions = db.Column(db.Integer, nullable=False, default=0)
     interval_days = db.Column(db.Integer, nullable=False, default=1)
-    topic_id = db.Column(db.Integer, db.ForeignKey('topic.id'), nullable=False)
+     
 
     def __repr__(self):
         return f"<Flashcard id={self.id}, question={self.question}, answer={self.answer}, status={self.status}, next_study_date={self.next_study_date}>"
