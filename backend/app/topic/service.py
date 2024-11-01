@@ -1,6 +1,6 @@
 from .model import Topic
-from utils.exceptions import ResourceNotFoundError
-from extensions import db
+from ..utils.exceptions import ResourceNotFoundError
+from ..extensions import db
 from typing import List
 
 class TopicService:

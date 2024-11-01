@@ -24,12 +24,12 @@ dist-ssr
 *.sw?
 *.env
 *.venv
+*venv
 
 *.pyc
 __pycache__/
 
 /backend-test
-/frontend-test
 /api_collection-test
 
 note.md

@@ -6,3 +6,4 @@ flask-cors
 psycopg2-binary
 langchain_ollama
 python-dotenv
+pytest

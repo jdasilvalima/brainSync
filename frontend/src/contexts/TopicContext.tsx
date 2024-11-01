@@ -30,7 +30,7 @@ export const TopicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const fetchTopics = useCallback(async () => {
       try {
         setLoading(true);
-        const response = await axios.get('http://127.0.0.1:5000/api/topics');
+        const response = await axios.get('http://127.0.0.1:5000/api/v1/topics');
         setTopics(response.data);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Error fetching data');
@@ -41,7 +41,7 @@ export const TopicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   
     const createTopic = async (name: string): Promise<Topic> => {
       try {
-        const responseTopic = await axios.post('http://127.0.0.1:5000/api/topics', { name });
+        const responseTopic = await axios.post('http://127.0.0.1:5000/api/v1/topics', { name });
         const newTopic: Topic = {
           id: responseTopic.data.id,
           name: name,
@@ -57,7 +57,7 @@ export const TopicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   
     const getTopic = useCallback(async (topicId: number): Promise<Topic> => {
       try {
-        const responseTopic = await axios.get(`http://127.0.0.1:5000/api/topics/${topicId}`);
+        const responseTopic = await axios.get(`http://127.0.0.1:5000/api/v1/topics/${topicId}`);
         setSelectedTopic(responseTopic.data);
         return responseTopic.data;
       } catch (error) {

@@ -1,5 +1,5 @@
 from enum import Enum
-from extensions import db, ma
+from ..extensions import db, ma
 from marshmallow import fields
 from sqlalchemy import func
 
@@ -15,9 +15,9 @@ class FlashcardStatus(Enum):
 class Flashcard(db.Model):
     __tablename__ = 'flashcard'
     id = db.Column(db.Integer, primary_key=True)
-    question = db.Column(db.String(200), nullable=False)
-    answer = db.Column(db.String(200), nullable=False)
-    example = db.Column(db.String(500), nullable=True)
+    question = db.Column(db.String(500), nullable=False)
+    answer = db.Column(db.String(500), nullable=False)
+    example = db.Column(db.String(700), nullable=True)
     status = db.Column(db.Enum(FlashcardStatus), default=FlashcardStatus.UNSTUDIED, nullable=False)
     next_study_date = db.Column(db.Date, nullable=False, default=func.now())
     repetitions = db.Column(db.Integer, nullable=False, default=0)

@@ -1,8 +1,8 @@
 from .model import Flashcard, FlashcardStatus
 from .reviewService import FlashcardReviewService
-from topic.model import Topic
-from utils.exceptions import ResourceNotFoundError
-from extensions import db, cached_llm, logger
+from ..topic.model import Topic
+from ..utils.exceptions import ResourceNotFoundError
+from ..extensions import db, cached_llm, logger
 from typing import List
 from datetime import datetime
 import json
@@ -107,6 +107,7 @@ class FlashcardService:
             f"Generate 10 flashcards as JSON related to the topic: {topic_name}. "
             "The JSON should be an array of 10 objects, where each object contains \"question\", \"answer\", and \"example\" fields. "
             "Each \"example\" should be a relevant code snippet or practical demonstration related to the flashcard's question, when applicable. "
+            "Snippet of code will be formatted with \t for tabs and \n for new lines as needed. "
             "Please use \"flashcards\" as a root key for the json."
         )
         response = cached_llm.invoke(query)

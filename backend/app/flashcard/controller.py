@@ -1,9 +1,9 @@
 from flask import Blueprint, jsonify, request
 from .service import FlashcardService
 from .model import FlashcardSchema
-from utils.exceptions import ResourceNotFoundError, ValidationError
-from extensions import logger, db
-from utils.decorators import measure_time
+from ..utils.exceptions import ResourceNotFoundError, ValidationError
+from ..extensions import logger, db
+from ..utils.decorators import measure_time
 
 
 flashcard_bp = Blueprint('flashcard', __name__)

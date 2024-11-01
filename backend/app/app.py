@@ -1,8 +1,8 @@
 from flask import Flask
-from extensions import db, ma, cors
-from config import Config
-from flashcard.controller import flashcard_bp
-from topic.controller import topic_bp
+from .extensions import db, ma, cors
+from .config import Config
+from .flashcard.controller import flashcard_bp
+from .topic.controller import topic_bp
 
 
 def create_app():
@@ -30,8 +30,8 @@ def register_extensions(app):
 
 
 def register_blueprints(app):
-    app.register_blueprint(topic_bp, url_prefix='/api/topics')
-    app.register_blueprint(flashcard_bp, url_prefix='/api/flashcards')
+    app.register_blueprint(topic_bp, url_prefix='/api/v1/topics')
+    app.register_blueprint(flashcard_bp, url_prefix='/api/v1/flashcards')
 
 
 app = create_app()

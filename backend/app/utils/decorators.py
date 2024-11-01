@@ -1,6 +1,6 @@
 from functools import wraps
 import time
-from extensions import logger
+from ..extensions import logger
 
 
 def measure_time(func):

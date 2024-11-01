@@ -5,11 +5,11 @@ meta {
 }
 
 get {
-  url: http://127.0.0.1:5000/api/topics/{{topic_id}}
+  url: http://127.0.0.1:5000/api/v1/topics/{{topic_id}}
   body: none
   auth: none
 }
 
 vars:pre-request {
-  topic_id: 1
+  topic_id: 3
 }

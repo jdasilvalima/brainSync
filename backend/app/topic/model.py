@@ -1,5 +1,5 @@
-from extensions import db, ma
-from flashcard.model import FlashcardSchema
+from ..extensions import db, ma
+from ..flashcard.model import FlashcardSchema
 
 
 class Topic(db.Model):

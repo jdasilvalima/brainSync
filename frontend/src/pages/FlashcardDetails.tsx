@@ -154,9 +154,11 @@ export default function Flashcards() {
                   <>
                     <div className="flex-grow text-xl font-semibold overflow-auto mb-5">{currentCard.answer}</div>
                     {currentCard.example && (
-                      <SyntaxHighlighter style={docco} wrapLines="true" wrapLongLines="true">
-                        {currentCard.example}
-                      </SyntaxHighlighter>
+                      <div className="mt-4 max-h-[200px] overflow-auto">
+                        <SyntaxHighlighter style={docco} wrapLines="true" wrapLongLines="true">
+                          {currentCard.example}
+                        </SyntaxHighlighter>
+                      </div>
                     )}
                   </>
                 ) : (

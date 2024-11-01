@@ -1,8 +1,8 @@
 from flask import Blueprint, jsonify, request
 from .service import TopicService
 from .model import TopicSchema
-from utils.exceptions import ResourceNotFoundError, ValidationError
-from extensions import logger
+from ..utils.exceptions import ResourceNotFoundError, ValidationError
+from ..extensions import logger
 
 
 topic_bp = Blueprint('topic', __name__)
