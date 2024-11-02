@@ -120,12 +120,9 @@ class FlashcardService:
         flashcard = Flashcard.query.get(flashcard_id)
         if not flashcard:
             raise ResourceNotFoundError(f"Flashcard with ID {flashcard_id} not found")
-        logger.info(f"before updated_flashcard")
         updated_flashcard = self.review_service.review_flashcard(flashcard, updates)
-        logger.info(f"after updated_flashcard : {updated_flashcard}")
         flashcard = updated_flashcard
         db.session.commit()
-        logger.info(f"flashcard : {flashcard}")
         return flashcard
 
 
