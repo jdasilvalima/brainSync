@@ -81,9 +81,7 @@ def create_flashcards_ai(topic_id):
 def update_flashcard(flashcard_id):
     try:
         data = flashcard_schema.load(request.json, session=db.session)
-        logger.info(f"data update_flashcard : {data}")
         updated_flashcard = flashcard_service.update_flashcard(flashcard_id, data)
-        logger.info(f"Working updated_flashcard : {updated_flashcard}")
         return jsonify(flashcard_schema.dump(updated_flashcard)), 200
     except ResourceNotFoundError as e:
         return jsonify({"error": str(e)}), 404
