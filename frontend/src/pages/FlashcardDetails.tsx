@@ -7,7 +7,7 @@ import { useTopics } from '../contexts/TopicContext';
 import { Flashcard, FlashcardStatus, useFlashcards } from '../contexts/FlashcardContext';
 
 
-export default function Flashcards() {
+export default function FlashcardDetails() {
   const { getTopic, selectedTopic } = useTopics()
   const { flashcards, updateFlashcard, fetchFlashcardsByTopicIdAndStatus, fetchDailyReviewFlashcards } = useFlashcards()
   const [currentCardIndex, setCurrentCardIndex] = useState(0)

@@ -12,20 +12,18 @@ post {
 
 body:json {
   {
-    "type": "SINGLE_CHOICE",
-    "question": "Which of the following are programming languages?",
-    "answer": "Python",
+    "type": "TRUE_FALSE",
+    "question": "CSS can be used to control the layout of multiple web pages at once.",
+    "answer": "True",
     "options": [
-      "Python",
-      "HTML",
-      "CSS",
-      "MySQL"
+      "True",
+      "False"
     ],
-    "explanation": "Python is a programming language, while HTML and CSS are markup and style languages, respectively.",
-    "topic_id": 1
+    "explanation": "CSS allows styles to be applied across multiple pages, making it easier to maintain consistent design.",
+    "topic_id": 2
   }
 }
 
 vars:pre-request {
-  topicId: 1
+  topicId: 2
 }

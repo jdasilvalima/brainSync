@@ -37,7 +37,6 @@ export const FlashcardProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // ToDo to redo for setFlashcards
   const fetchFlashcardsByTopicId = async (topicId: number): Promise<void> => {
     try {
       setLoading(true);
@@ -68,7 +67,6 @@ export const FlashcardProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     }
   }, []);
 
-  // ToDo to redo for setFlashcards
   const createFlashcardsWithAi = async (topicId: number): Promise<Flashcard[]> => {
     try {
       const responseFlashcards = await axios.post(`http://127.0.0.1:5000/api/v1/flashcards/topic/${topicId}/ai`);

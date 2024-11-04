@@ -3,7 +3,6 @@ from ..extensions import db, ma
 from marshmallow import fields
 
 class QuizType(Enum):
-    MULTIPLE_CHOICE = "MULTIPLE_CHOICE"
     SINGLE_CHOICE = "SINGLE_CHOICE"
     TRUE_FALSE = "TRUE_FALSE"
 

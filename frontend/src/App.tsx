@@ -5,7 +5,9 @@ import FlashcardByTopic from './pages/FlashcardByTopic';
 import FlashcardDetails from './pages/FlashcardDetails';
 import FlashcardCollection from './pages/FlashcardCollection';
 import LearningPath from './pages/LearningPath';
-import Quiz from './pages/Quiz';
+import QuizCollection from './pages/QuizCollection';
+import QuizByTopic from './pages/QuizByTopic';
+import QuizDetails from './pages/QuizDetails';
 import NotFound from './pages/NotFound'
 import Layout from './layouts/Layout'
 
@@ -20,7 +22,9 @@ function App() {
               <Route path="/flashcards-topic" element={<FlashcardByTopic />} />
               <Route path="/flashcard-details" element={<FlashcardDetails />} />
               <Route path="/learning-path" element={<LearningPath />} />
-              <Route path="/quiz" element={<Quiz />} />
+              <Route path="/quiz" element={<QuizCollection />} />
+              <Route path="/quizzes-topic" element={<QuizByTopic />} />
+              <Route path="/quiz-details" element={<QuizDetails />} />
               <Route path="*" element={<NotFound />} />
             </Route>
           </Routes>

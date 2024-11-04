@@ -1,11 +1,13 @@
 import React, { createContext, useState, useContext, useCallback } from 'react';
 import axios from 'axios';
 import { Flashcard } from './FlashcardContext.tsx';
+import { Quiz } from './QuizContext.tsx';
 
 export interface Topic {
     id: number;
     name: string;
     flashcards: Flashcard[];
+    quizzes: Quiz[];
 }
 
 interface TopicContextType {
@@ -45,7 +47,8 @@ export const TopicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         const newTopic: Topic = {
           id: responseTopic.data.id,
           name: name,
-          flashcards: []
+          flashcards: [],
+          quizzes: []
         };
         setTopics(prevTopics => [...prevTopics, newTopic]);
         return newTopic;
