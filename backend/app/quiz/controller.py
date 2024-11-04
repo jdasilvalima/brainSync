@@ -17,19 +17,23 @@ def get_quizzes_by_topic(topic_id):
         return jsonify(quiz_schema.dump(quizzes, many=True)), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    
+
 
 @quiz_bp.route('/topic/<int:topic_id>', methods=['POST'])
 def create_quiz(topic_id):
     try:
+        logger.info(f"request.json : {request.json}")
         data = quiz_schema.load(request.json)
+        logger.info(f"data : {data}")
         new_quiz = quiz_service.create_quiz(topic_id, data)
         return jsonify(quiz_schema.dump(new_quiz)), 201
     except ResourceNotFoundError as e:
         return jsonify({"error": str(e)}), 400
-    
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
-@quiz_bp.route('/<int:flashcard_id>', methods=['PUT'])
+
+@quiz_bp.route('/<int:quiz_id>', methods=['PUT'])
 def update_quiz(quiz_id):
     try:
         data = quiz_schema.load(request.json, session=db.session)

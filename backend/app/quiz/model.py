@@ -3,9 +3,9 @@ from ..extensions import db, ma
 from marshmallow import fields
 
 class QuizType(Enum):
-    MULTIPLE_CHOICE = "multiple choice"
-    SINGLE_CHOICE = "single choice"
-    TRUE_FALSE = "true/false"
+    MULTIPLE_CHOICE = "MULTIPLE_CHOICE"
+    SINGLE_CHOICE = "SINGLE_CHOICE"
+    TRUE_FALSE = "TRUE_FALSE"
 
 class Quiz(db.Model):
     __tablename__ = 'quiz'
@@ -20,9 +20,12 @@ class Quiz(db.Model):
     topic_id = db.Column(db.Integer, db.ForeignKey('topic.id'), nullable=False)
 
     def __repr__(self):
-        return f'<Quiz {self.questions}>'
+        return f'<Quiz {self.question}, answer={self.answer}>'
 
 class QuizSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Quiz
         load_instance = True
+    
+    type = fields.Enum(QuizType)
+    topic_id = ma.auto_field()

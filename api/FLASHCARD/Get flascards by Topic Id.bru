@@ -1,11 +1,11 @@
 meta {
-  name: Get flascards by Topic Id
+  name: Get flascards by topic Id
   type: http
   seq: 1
 }
 
 get {
-  url: http://127.0.0.1:5000/api/v1/flashcards/topic/{{topicId}}
+  url: {{BASE_URL}}/v1/flashcards/topic/{{topicId}}
   body: none
   auth: none
 }

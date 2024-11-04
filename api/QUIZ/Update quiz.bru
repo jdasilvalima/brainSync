@@ -1,0 +1,33 @@
+meta {
+  name: Update quiz
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{BASE_URL}}/v1/quizzes/{{quizId}}
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "answer": "Python",
+    "explanation": "Python is a programming language, while HTML and CSS are markup and style languages, respectively.",
+    "id": 1,
+    "is_correct": false,
+    "options": [
+      "Python",
+      "HTML",
+      "CSS",
+      "MySQL"
+    ],
+    "question": "Which of the following are programming languages?",
+    "topic_id": 1,
+    "type": "SINGLE_CHOICE"
+  }
+}
+
+vars:pre-request {
+  quizId: 1
+}

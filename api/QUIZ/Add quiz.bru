@@ -1,0 +1,31 @@
+meta {
+  name: Add quiz
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{BASE_URL}}/v1/quizzes/topic/{{topicId}}
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "type": "SINGLE_CHOICE",
+    "question": "Which of the following are programming languages?",
+    "answer": "Python",
+    "options": [
+      "Python",
+      "HTML",
+      "CSS",
+      "MySQL"
+    ],
+    "explanation": "Python is a programming language, while HTML and CSS are markup and style languages, respectively.",
+    "topic_id": 1
+  }
+}
+
+vars:pre-request {
+  topicId: 1
+}
