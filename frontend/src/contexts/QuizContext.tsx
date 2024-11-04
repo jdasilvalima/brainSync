@@ -58,7 +58,7 @@ export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const updateQuiz = async (quiz: Quiz): Promise<Quiz> => {
     try {
-      const responseQuiz = await axios.put(`http://127.0.0.1:5000/api/v1/flashcards/${quiz.id}`, quiz);
+      const responseQuiz = await axios.put(`http://127.0.0.1:5000/api/v1/quizzes/${quiz.id}`, quiz);
       return responseQuiz.data; 
     } catch (error) {
       console.error('Error updating quiz :', error);

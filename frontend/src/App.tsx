@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { TopicProvider } from './contexts/TopicContext';
 import { FlashcardProvider } from './contexts/FlashcardContext';
+import { QuizProvider } from './contexts/QuizContext';
 import FlashcardByTopic from './pages/FlashcardByTopic';
 import FlashcardDetails from './pages/FlashcardDetails';
 import FlashcardCollection from './pages/FlashcardCollection';
@@ -15,20 +16,22 @@ function App() {
   return (
     <TopicProvider>
       <FlashcardProvider>
-        <Router>
-          <Routes>
-            <Route element={<Layout />}>
-              <Route path="/" element={<FlashcardCollection />} />
-              <Route path="/flashcards-topic" element={<FlashcardByTopic />} />
-              <Route path="/flashcard-details" element={<FlashcardDetails />} />
-              <Route path="/learning-path" element={<LearningPath />} />
-              <Route path="/quiz" element={<QuizCollection />} />
-              <Route path="/quizzes-topic" element={<QuizByTopic />} />
-              <Route path="/quiz-details" element={<QuizDetails />} />
-              <Route path="*" element={<NotFound />} />
-            </Route>
-          </Routes>
-        </Router>
+        <QuizProvider>
+          <Router>
+            <Routes>
+              <Route element={<Layout />}>
+                <Route path="/" element={<FlashcardCollection />} />
+                <Route path="/flashcards-topic" element={<FlashcardByTopic />} />
+                <Route path="/flashcard-details" element={<FlashcardDetails />} />
+                <Route path="/learning-path" element={<LearningPath />} />
+                <Route path="/quiz" element={<QuizCollection />} />
+                <Route path="/quizzes-topic" element={<QuizByTopic />} />
+                <Route path="/quiz-details" element={<QuizDetails />} />
+                <Route path="*" element={<NotFound />} />
+              </Route>
+            </Routes>
+          </Router>
+        </QuizProvider>
       </FlashcardProvider>
     </TopicProvider>
   );

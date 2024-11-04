@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTopics } from '../contexts/TopicContext'
-import { Quiz } from '../contexts/QuizContext'
+import { Quiz, useQuizzes } from '../contexts/QuizContext'
 import { ChevronRight } from 'lucide-react'
 
 export default function QuizDetails() {
   const { getTopic, selectedTopic } = useTopics()
+  const { updateQuiz } = useQuizzes()
   const [currentQuizIndex, setCurrentQuizIndex] = useState(0)
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null)
   const [isAnswered, setIsAnswered] = useState(false)
@@ -32,7 +33,14 @@ export default function QuizDetails() {
     }
   }
 
-  const handleNextQuiz = () => {
+  const handleNextQuiz = async () => {
+    const userAnswer = selectedAnswer === currentQuiz?.answer
+    const quizToUpdate = {
+      ...currentQuiz,
+      is_correct: userAnswer
+    }
+    console.log('quizToUpdate ', quizToUpdate)
+    await updateQuiz(quizToUpdate);
     if (currentQuizIndex < (selectedTopic?.quizzes.length || 0) - 1) {
       setCurrentQuizIndex(currentQuizIndex + 1)
       setSelectedAnswer(null)
