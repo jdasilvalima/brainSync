@@ -10,10 +10,10 @@ export interface Quiz {
   id: number;
   type: QuizType;
   question: string;
-  answer: string;
+  answer: number;
   options: [string];
   is_correct: boolean | null;
-  explanation: string;
+  explanation: string | null;
   topic_id: number
 }
 

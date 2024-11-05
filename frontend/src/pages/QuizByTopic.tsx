@@ -104,7 +104,7 @@ export default function QuizByTopic() {
             >
               <div className="flex-1 pr-4">
                 <h3 className="font-semibold text-lg mb-2">{quiz.question}</h3>
-                <p className="text-gray-600">{quiz.answer}</p>
+                <p className="text-gray-600">{quiz.options[quiz.answer]}</p>
               </div>
               <div className="flex-shrink-0">
                 {getStatusIcon(quiz.is_correct)}

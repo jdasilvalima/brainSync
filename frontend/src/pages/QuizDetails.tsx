@@ -8,7 +8,7 @@ export default function QuizDetails() {
   const { getTopic, selectedTopic } = useTopics()
   const { updateQuiz } = useQuizzes()
   const [currentQuizIndex, setCurrentQuizIndex] = useState(0)
-  const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null)
+  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null)
   const [isAnswered, setIsAnswered] = useState(false)
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
@@ -26,9 +26,9 @@ export default function QuizDetails() {
 
   const currentQuiz = selectedTopic?.quizzes[currentQuizIndex] as Quiz | undefined
 
-  const handleAnswerSelect = (answer: string) => {
+  const handleAnswerSelect = (index: number) => {
     if (!isAnswered) {
-      setSelectedAnswer(answer)
+      setSelectedAnswer(index)
       setIsAnswered(true)
     }
   }
@@ -69,16 +69,16 @@ export default function QuizDetails() {
                   key={index}
                   className={`w-full text-left p-4 rounded-lg ${
                     isAnswered
-                      ? option === currentQuiz.answer
+                      ? index === currentQuiz.answer
                         ? 'bg-green-100 border-green-500'
-                        : option === selectedAnswer
+                        : index === selectedAnswer
                         ? 'bg-red-100 border-red-500'
                         : 'bg-gray-100'
                       : 'bg-gray-100 hover:bg-gray-200'
                   } border ${
-                    selectedAnswer === option ? 'border-indigo-500' : 'border-transparent'
+                    selectedAnswer === index ? 'border-indigo-500' : 'border-transparent'
                   } transition-colors`}
-                  onClick={() => handleAnswerSelect(option)}
+                  onClick={() => handleAnswerSelect(index)}
                   disabled={isAnswered}
                 >
                   {option}
@@ -92,7 +92,7 @@ export default function QuizDetails() {
                 } mb-2`}>
                   {selectedAnswer === currentQuiz.answer ? 'Correct!' : 'Incorrect'}
                 </p>
-                <p className="text-gray-700">{currentQuiz.explanation}</p>
+                <p className="text-gray-700">{currentQuiz?.explanation}</p>
               </div>
             )}
           </div>

@@ -12,7 +12,7 @@ class Quiz(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     type = db.Column(db.Enum(QuizType), nullable=False)
     question = db.Column(db.String(300), nullable=False)
-    answer = db.Column(db.String(300), nullable=False)
+    answer = db.Column(db.Integer, nullable=False)
     options = db.Column(db.ARRAY(db.String), nullable=True)
     is_correct = db.Column(db.Boolean, nullable=True, default=None)
     explanation = db.Column(db.Text, nullable=True, default=None)

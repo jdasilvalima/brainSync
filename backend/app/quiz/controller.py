@@ -3,6 +3,7 @@ from .service import QuizService
 from .model import QuizSchema
 from ..utils.exceptions import ResourceNotFoundError, ValidationError
 from ..extensions import logger, db
+from ..utils.decorators import measure_time
 
 
 quiz_bp = Blueprint('quiz', __name__)
@@ -30,6 +31,19 @@ def create_quiz(topic_id):
     except ResourceNotFoundError as e:
         return jsonify({"error": str(e)}), 400
     except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@quiz_bp.route('/topic/<int:topic_id>/ai', methods=['POST'])
+@measure_time
+def create_quizzes_ai(topic_id):
+    try:
+        new_quiz = quiz_service.create_quizzes_with_ai(topic_id)
+        return jsonify(quiz_schema.dump(new_quiz, many=True)), 201
+    except ResourceNotFoundError as e:
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        logger.error(f"error while calling method create_quizzes_ai : {e}")
         return jsonify({"error": str(e)}), 500
 
 
