@@ -58,10 +58,11 @@ class QuizService:
             f"You are an expert on the topic: {topic_name}. "
             f"Generate 10 quizzes as JSON related to the topic: {topic_name}. "
             "The JSON should be an array of 10 objects, where each object contains \"type\", \"question\", \"answer\", \"options\", and \"explanation\" fields. "
-            "\"type\" is an enum with possible values 'SINGLE_CHOICE' or 'TRUE_FALSE'. "
+            "\"type\" is a balanced mix between 'SINGLE_CHOICE' or 'TRUE_FALSE' values. "
             "For 'TRUE_FALSE' questions, the \"options\" field must contain exactly two values: \"true\" and \"false\". "
-            "For 'SINGLE_CHOICE' questions, include several plausible options in \"options\" with one correct answer. "
-            "Set \"answer\" to be the index (number) of the correct answer within the \"options\" array. "
+            "For 'SINGLE_CHOICE' questions, the \"options\" array should contain several plausible answers, one of which is correct.  "
+            "Set the \"answer\" to the index of the correct answer within the \"options\" array, making sure it correctly points to the correct option. "
+            "Each question should be followed by an informative \"explanation\" that clarifies why the answer is correct, and provides relevant details. "
             "Please use \"quizzes\" as a root key for the json."
         )
         logger.info(f"query {query}")
