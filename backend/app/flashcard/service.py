@@ -105,8 +105,8 @@ class FlashcardService:
         # )
         query = (
             f"You are an expert on the topic: {topic_name}. "
-            f"Generate 10 flashcards as JSON related to the topic: {topic_name}. "
-            "The JSON should be an array of 10 objects, where each object contains \"question\", \"answer\", and \"example\" fields. "
+            f"Generate 5 flashcards as JSON related to the topic: {topic_name}. "
+            "The JSON should be an array of 5 objects, where each object contains \"question\", \"answer\", and \"example\" fields. "
             "Each \"example\" should be a relevant code snippet or practical demonstration related to the flashcard's question, when applicable. "
             "Snippet of code will be formatted with \t for tabs and \n for new lines as needed. "
             "Please use \"flashcards\" as a root key for the json."

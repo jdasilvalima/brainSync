@@ -41,7 +41,6 @@ export default function QuizDetails() {
       ...currentQuiz,
       is_correct: userAnswer
     }
-    console.log(quizToUpdate)
     await updateQuiz(quizToUpdate);
     if (currentQuizIndex < (quizzes.length || 0) - 1) {
       setCurrentQuizIndex(currentQuizIndex + 1)

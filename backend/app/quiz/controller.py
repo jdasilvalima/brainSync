@@ -60,9 +60,7 @@ def create_quizzes_ai(topic_id):
 @quiz_bp.route('/<int:quiz_id>', methods=['PUT'])
 def update_quiz(quiz_id):
     try:
-        logger.info(f"request.json : {request.json}")
         data = quiz_schema.load(request.json, session=db.session)
-        logger.info(f"data : {data}")
         updated_quiz = quiz_service.update_quiz(quiz_id, data)
         return jsonify(quiz_schema.dump(updated_quiz)), 200
     except ResourceNotFoundError as e:
