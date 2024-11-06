@@ -2,10 +2,10 @@ import { useState, useEffect } from 'react'
 import { ChevronDown, Check, X } from 'lucide-react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTopics } from '../contexts/TopicContext'
-import { Quiz } from '../contexts/QuizContext'
+import { Quiz, QuizStatus } from '../contexts/QuizContext'
+
 
 type FilterStatus = 'ALL' | 'UNSTUDIED' | 'CORRECT' | 'INCORRECT'
-
 
 export default function QuizByTopic() {
   const { getTopic, selectedTopic } = useTopics()
@@ -28,13 +28,13 @@ export default function QuizByTopic() {
     navigate(`/quiz-details?id=${topicId}&status=${filter}`)
   }
 
-  const getStatusIcon = (isCorrect: boolean | null) => {
+  const getStatusIcon = (isCorrect: QuizStatus) => {
     switch (isCorrect) {
-      case true:
+      case QuizStatus.CORRECT:
         return <Check className="w-8 h-8 text-green-500" />
-      case false:
+      case QuizStatus.INCORRECT:
         return <X className="w-8 h-8 text-red-500" />
-      case null:
+      case QuizStatus.UNSTUDIED:
         return (
           <span className="px-3 py-1 text-sm font-semibold text-gray-600 bg-gray-200 rounded-full">
             UNSTUDIED
@@ -43,18 +43,11 @@ export default function QuizByTopic() {
     }
   }
 
-  const filteredQuizzes = selectedTopic?.quizzes.filter((quiz: Quiz) => {
-    switch (filter) {
-      case 'UNSTUDIED':
-        return quiz.is_correct === null
-      case 'CORRECT':
-        return quiz.is_correct === true
-      case 'INCORRECT':
-        return quiz.is_correct === false
-      default:
-        return true
-    }
-  })
+  const filteredQuizzes = filter === 'ALL'
+  ? selectedTopic?.quizzes 
+  : selectedTopic?.quizzes.filter(quiz => quiz.is_correct === filter)
+
+  const correctQuizzes = selectedTopic?.quizzes.filter((quiz: Quiz) => quiz.is_correct === QuizStatus.CORRECT).length || 0
 
   if (!selectedTopic?.quizzes || selectedTopic.quizzes.length <= 0) {
     return (
@@ -68,8 +61,11 @@ export default function QuizByTopic() {
     <div className="mt-16">
       <main className="container mx-auto px-4 py-8 w-full max-w-2xl">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold">
+        <h2 className="text-2xl font-bold">
             {selectedTopic.quizzes.length} {selectedTopic.name.toUpperCase()} QUIZZES
+            <span className="block text-lg font-normal text-gray-600 mt-1">
+              {correctQuizzes} / {selectedTopic.quizzes.length} Correct
+            </span>
           </h2>
           <div className="flex space-x-4">
             <button

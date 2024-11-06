@@ -6,13 +6,19 @@ export enum QuizType {
   TRUE_FALSE = "TRUE_FALSE"
 }
 
+export enum QuizStatus {
+  UNSTUDIED = "UNSTUDIED",
+  CORRECT = "CORRECT",
+  INCORRECT = "INCORRECT"
+}
+
 export interface Quiz {
   id: number;
   type: QuizType;
   question: string;
   answer: number;
   options: [string];
-  is_correct: boolean | null;
+  is_correct: QuizStatus;
   explanation: string | null;
   topic_id: number
 }
@@ -23,6 +29,7 @@ interface QuizContextType {
   loading: boolean;
   error: string | null;
   fetchQuizzesByTopicId: (topicId: number) => Promise<void>;
+  fetchQuizzesByTopicIdAndStatus: (topicId: number, status: string) => Promise<void>;
   updateQuiz: (quiz: Quiz) => Promise<Quiz>;
 }
 
@@ -45,7 +52,15 @@ export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  
+  const fetchQuizzesByTopicIdAndStatus = useCallback(async (topicId: number, status: string): Promise<void> => {
+    try {
+      const response = await axios.get(`http://127.0.0.1:5000/api/v1/quizzes/topic/${topicId}/status/${status}`);
+      setQuizzes(response.data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error fetching data');
+    }
+  }, []);
+
   // const createQuizzesWithAi = async (topicId: number): Promise<Flashcard[]> => {
   //   try {
   //     const responseFlashcards = await axios.post(`http://127.0.0.1:5000/api/v1/flashcards/topic/${topicId}/ai`);
@@ -72,6 +87,7 @@ export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children
       loading,
       error,
       fetchQuizzesByTopicId: fetchQuizzesByTopicId,
+      fetchQuizzesByTopicIdAndStatus: fetchQuizzesByTopicIdAndStatus,
       updateQuiz: updateQuiz
     }}>
       {children}

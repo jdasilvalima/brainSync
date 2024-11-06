@@ -25,16 +25,17 @@ class FlashcardService:
             raise ResourceNotFoundError(f"Topic with ID {topic_id} not found")
         current_date = datetime.now()
         return Flashcard.query.filter((Flashcard.next_study_date <= current_date) & (Flashcard.topic_id == topic_id)).all()
-    
+
 
     def get_flashcards_by_topic_and_status(self, topic_id: int, status: str) -> List[Flashcard]:
         topic = Topic.query.get(topic_id)
         if not topic:
             raise ResourceNotFoundError(f"Topic with ID {topic_id} not found")
         if status not in FlashcardStatus.__members__:
-            return ResourceNotFoundError(f"Statut non valide {status}")
+            return ResourceNotFoundError(f"Status not valid {status}")
         flashcard_status = FlashcardStatus[status]
         return Flashcard.query.filter((Flashcard.status == flashcard_status) & (Flashcard.topic_id == topic_id)).all()
+
 
     def create_flashcard(self, topic_id: int, flashcard: Flashcard) -> Flashcard:
         topic = Topic.query.get(topic_id)
@@ -43,7 +44,7 @@ class FlashcardService:
         db.session.add(flashcard)
         db.session.commit()
         return flashcard
-    
+
 
     def add_flashcard_list(self, topic_id: int, flashcards: List[Flashcard]) -> List[Flashcard]:
         topic = Topic.query.get(topic_id)

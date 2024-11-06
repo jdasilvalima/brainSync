@@ -20,12 +20,22 @@ def get_quizzes_by_topic(topic_id):
         return jsonify({"error": str(e)}), 500
 
 
+@quiz_bp.route('/topic/<int:topic_id>/status/<string:status>', methods=['GET'])
+def get_quizzes_by_topic_and_status(topic_id, status):
+    try:
+        if(status == 'ALL'):
+            quizzes = quiz_service.get_quizzes_by_topic(topic_id)
+        else:
+            quizzes = quiz_service.get_quizzes_by_topic_and_status(topic_id, status)
+        return jsonify(quiz_schema.dump(quizzes, many=True)), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @quiz_bp.route('/topic/<int:topic_id>', methods=['POST'])
 def create_quiz(topic_id):
     try:
-        logger.info(f"request.json : {request.json}")
         data = quiz_schema.load(request.json)
-        logger.info(f"data : {data}")
         new_quiz = quiz_service.create_quiz(topic_id, data)
         return jsonify(quiz_schema.dump(new_quiz)), 201
     except ResourceNotFoundError as e:
@@ -50,7 +60,9 @@ def create_quizzes_ai(topic_id):
 @quiz_bp.route('/<int:quiz_id>', methods=['PUT'])
 def update_quiz(quiz_id):
     try:
+        logger.info(f"request.json : {request.json}")
         data = quiz_schema.load(request.json, session=db.session)
+        logger.info(f"data : {data}")
         updated_quiz = quiz_service.update_quiz(quiz_id, data)
         return jsonify(quiz_schema.dump(updated_quiz)), 200
     except ResourceNotFoundError as e:

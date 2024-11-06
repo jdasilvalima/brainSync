@@ -1,30 +1,32 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTopics } from '../contexts/TopicContext'
-import { Quiz, useQuizzes } from '../contexts/QuizContext'
-import { ChevronRight } from 'lucide-react'
+import { Quiz, useQuizzes, QuizStatus } from '../contexts/QuizContext'
+import { ChevronRight, ArrowLeft } from 'lucide-react'
 
 export default function QuizDetails() {
   const { getTopic, selectedTopic } = useTopics()
-  const { updateQuiz } = useQuizzes()
+  const { quizzes, updateQuiz, fetchQuizzesByTopicIdAndStatus } = useQuizzes()
   const [currentQuizIndex, setCurrentQuizIndex] = useState(0)
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null)
   const [isAnswered, setIsAnswered] = useState(false)
-  const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const topicId = searchParams.get('id')
+  const statusFilter = searchParams.get('status')
+  const navigate = useNavigate()
 
   useEffect(() => {
     const fetchData = async () => {
-      if (topicId) {
+      if (topicId && statusFilter) {
         await getTopic(parseInt(topicId))
+        await fetchQuizzesByTopicIdAndStatus(parseInt(topicId), statusFilter);
       }
     }
 
     fetchData()
-  }, [topicId, getTopic])
+  }, [topicId, statusFilter])
 
-  const currentQuiz = selectedTopic?.quizzes[currentQuizIndex] as Quiz | undefined
+  const currentQuiz = quizzes[currentQuizIndex] as Quiz | undefined
 
   const handleAnswerSelect = (index: number) => {
     if (!isAnswered) {
@@ -34,14 +36,14 @@ export default function QuizDetails() {
   }
 
   const handleNextQuiz = async () => {
-    const userAnswer = selectedAnswer === currentQuiz?.answer
+    const userAnswer = getUserAnswer()
     const quizToUpdate = {
       ...currentQuiz,
       is_correct: userAnswer
     }
-    console.log('quizToUpdate ', quizToUpdate)
+    console.log(quizToUpdate)
     await updateQuiz(quizToUpdate);
-    if (currentQuizIndex < (selectedTopic?.quizzes.length || 0) - 1) {
+    if (currentQuizIndex < (quizzes.length || 0) - 1) {
       setCurrentQuizIndex(currentQuizIndex + 1)
       setSelectedAnswer(null)
       setIsAnswered(false)
@@ -50,8 +52,34 @@ export default function QuizDetails() {
     }
   }
 
-  if (!currentQuiz) {
-    return <div className="text-center mt-8">Loading quiz...</div>
+  const getUserAnswer = (): QuizStatus => 
+  {
+    const userAnswer = selectedAnswer === currentQuiz?.answer
+    switch (userAnswer) {
+      case true:
+        return QuizStatus.CORRECT;
+      case false:
+        return QuizStatus.INCORRECT;
+      default:
+        return QuizStatus.UNSTUDIED;
+    }
+  }
+
+  if (quizzes.length <= 0 || !currentQuiz) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen gap-4">
+        <div className="text-xl font-semibold text-gray-600">
+          No quizzes to study
+        </div>
+        <button
+          onClick={() => navigate(-1)}
+          className="flex items-center gap-2 px-4 py-2 text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors"
+        >
+          <ArrowLeft size={20} />
+          Go Back
+        </button>
+      </div>
+    );
   }
 
   return (
@@ -102,13 +130,13 @@ export default function QuizDetails() {
       <footer className="bg-gray-200 p-4 w-full mt-auto">
         <div className="flex justify-between items-center max-w-2xl mx-auto">
           <div className="text-lg font-semibold text-gray-700">
-            {currentQuizIndex + 1} / {selectedTopic?.quizzes.length}
+            {currentQuizIndex + 1} / {quizzes.length}
           </div>
           <button
             className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors flex items-center"
             onClick={handleNextQuiz}
           >
-            {currentQuizIndex < (selectedTopic?.quizzes.length || 0) - 1 ? (
+            {currentQuizIndex < (quizzes.length || 0) - 1 ? (
               <>
                 Next <ChevronRight className="ml-2" size={20} />
               </>

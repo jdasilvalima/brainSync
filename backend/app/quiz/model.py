@@ -6,6 +6,12 @@ class QuizType(Enum):
     SINGLE_CHOICE = "SINGLE_CHOICE"
     TRUE_FALSE = "TRUE_FALSE"
 
+class QuizStatus(Enum) :
+  UNSTUDIED = "UNSTUDIED"
+  CORRECT = "CORRECT"
+  INCORRECT = "INCORRECT"
+
+
 class Quiz(db.Model):
     __tablename__ = 'quiz'
 
@@ -14,7 +20,7 @@ class Quiz(db.Model):
     question = db.Column(db.String(300), nullable=False)
     answer = db.Column(db.Integer, nullable=False)
     options = db.Column(db.ARRAY(db.String), nullable=True)
-    is_correct = db.Column(db.Boolean, nullable=True, default=None)
+    is_correct = db.Column(db.Enum(QuizStatus), nullable=False, default=QuizStatus.UNSTUDIED)
     explanation = db.Column(db.Text, nullable=True, default=None)
     topic_id = db.Column(db.Integer, db.ForeignKey('topic.id'), nullable=False)
 
@@ -25,6 +31,13 @@ class QuizSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Quiz
         load_instance = True
+        include_fk = True
     
-    type = fields.Enum(QuizType)
+    id = ma.auto_field()
+    type = fields.Enum(QuizType, by_value=True)
+    question = ma.auto_field()
+    answer = ma.auto_field()
+    options = ma.auto_field()
+    is_correct = fields.Enum(QuizStatus, by_value=True)
+    explanation = ma.auto_field()
     topic_id = ma.auto_field()

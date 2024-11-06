@@ -21,7 +21,14 @@
 
 BrainSync’s mission is to make studying more efficient and impactful, supporting long-term knowledge retention for students and lifelong learners alike.
 
-### I.2 Web Application Overview
+### I.2 Goals
+This project is designed as a personal learning initiative with the following goals:
+
+- Deepen knowledge in Artificial Intelligence
+- Learn frontend development with React
+- Explore backend development using Python and Flask
+
+### I.3 Web Application Overview
 WIP
 
 ## II. PROJECT SETUP
