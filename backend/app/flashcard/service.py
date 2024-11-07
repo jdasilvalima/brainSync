@@ -60,10 +60,10 @@ class FlashcardService:
             )
             db.session.add(new_flashcard)
             new_flashcards.append(new_flashcard)
-        
+
         db.session.commit()
         return new_flashcards
-    
+
 
     def create_flashcards_with_ai(self, topic_id: int) -> List[Flashcard]:
         topic = Topic.query.get(topic_id)

@@ -29,6 +29,28 @@ class QuizService:
         return quiz
 
 
+    def add_quiz_list(self, topic_id: int, quizzes: List[Quiz]) -> List[Quiz]:
+        topic = Topic.query.get(topic_id)
+        if not topic:
+            raise ResourceNotFoundError(f"Topic with ID {topic_id} not found")
+        new_quizzes = []
+        for quiz in quizzes:
+            new_quiz = Quiz(
+                type=QuizType(quiz.type),
+                question=quiz.question,
+                answer=quiz.answer,
+                options=quiz.options,
+                is_correct=quiz.is_correct,
+                explanation=quiz.explanation,
+                topic_id=topic_id
+            )
+            db.session.add(new_quiz)
+            new_quizzes.append(new_quiz)
+
+        db.session.commit()
+        return new_quizzes
+
+
     def create_quizzes_with_ai(self, topic_id: int) -> List[Quiz]:
         topic = Topic.query.get(topic_id)
         if not topic:

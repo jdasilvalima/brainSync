@@ -44,6 +44,19 @@ def create_quiz(topic_id):
         return jsonify({"error": str(e)}), 500
 
 
+@quiz_bp.route('/topic/<int:topic_id>/bulk', methods=['POST'])
+def add_quiz_list(topic_id):
+    try:
+        quizzes_data = quiz_schema.load(request.json, many=True)
+        new_quizzes = quiz_service.add_quiz_list(topic_id, quizzes_data)
+        return jsonify(quiz_schema.dump(new_quizzes, many=True)), 201
+    except ResourceNotFoundError as e:
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        logger.error(f"error while calling method add_quiz_list : {e}")
+        return jsonify({"error": str(e)}), 500
+
+
 @quiz_bp.route('/topic/<int:topic_id>/ai', methods=['POST'])
 @measure_time
 def create_quizzes_ai(topic_id):

@@ -20,7 +20,7 @@ class Quiz(db.Model):
     question = db.Column(db.String(300), nullable=False)
     answer = db.Column(db.Integer, nullable=False)
     options = db.Column(db.ARRAY(db.String), nullable=True)
-    is_correct = db.Column(db.Text, nullable=False, default=QuizStatus.UNSTUDIED)
+    is_correct = db.Column(db.Text, nullable=False, default="UNSTUDIED")
     explanation = db.Column(db.Text, nullable=True, default=None)
     topic_id = db.Column(db.Integer, db.ForeignKey('topic.id'), nullable=False)
 
