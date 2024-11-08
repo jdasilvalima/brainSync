@@ -32,7 +32,7 @@ This project is designed as a personal learning initiative with the following go
 WIP
 
 ## II. PROJECT SETUP
-Requirements
+### II.1 Requirements
 - [Docker](https://www.docker.com/) neeeds to be installed
 - [Node.js](https://nodejs.org/en) and a package manager like 'npm'
 - Optional - [Bruno](https://www.usebruno.com/) can utilize the API collection located in the 'api' folder to make HTTP/HTTPS requests to the backend
@@ -43,7 +43,7 @@ Clone this project
   cd brainSync
   ```
 
-## II. BACKEND
+### II.2 BACKEND
 This project is using Flask + Python + PostgreSQL.
 There is an Ollama server using Llama3.2 model.
 
@@ -71,7 +71,7 @@ docker-compose up --build
 
 ![Backend Docker Containers](./readme-doc/backend-containers.png)
 
-## III. FRONTEND
+### II.3 FRONTEND
 This project is using React + TypeScript + Vite.
 
 To run locally :
@@ -81,10 +81,18 @@ npm install
 npm run dev
 ```
 
+## III. APPLICATION ARCHITECTURE
+### III.1 Database
+![Tables](./readme-doc/tables.png)
+
+### III.2 Backend
+WIP
+
+### III.1 Frontend
+WIP
 ![Frontend topic / flashcards presentation](./readme-doc/frontend-flashcards-topic.png)
 ![Flashcards presentation](./readme-doc/frontend-flashcards.png)
 
 ## IV. REFERENCES
-### IV.1 Spaced Repetition Learning
+**Spaced Repetition Learning**
 - [How to Remember Anything](https://rachel.fast.ai/posts/2023-02-21-anki/)
-- [Implementation of SM-2 in DART](https://github.com/thyagoluciano/sm2)

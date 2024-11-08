@@ -4,6 +4,7 @@ from .config import Config
 from .flashcard.controller import flashcard_bp
 from .quiz.controller import quiz_bp
 from .topic.controller import topic_bp
+from .learning_module.controller import learning_module_bp
 
 
 def create_app():
@@ -32,6 +33,7 @@ def register_extensions(app):
 
 def register_blueprints(app):
     app.register_blueprint(topic_bp, url_prefix='/api/v1/topics')
+    app.register_blueprint(learning_module_bp, url_prefix='/api/v1/modules')
     app.register_blueprint(flashcard_bp, url_prefix='/api/v1/flashcards')
     app.register_blueprint(quiz_bp, url_prefix='/api/v1/quizzes')
 

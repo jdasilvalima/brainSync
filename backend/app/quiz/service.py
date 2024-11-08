@@ -38,7 +38,7 @@ class QuizService:
             new_quiz = Quiz(
                 type=QuizType(quiz.type),
                 question=quiz.question,
-                answer=quiz.answer,
+                answer=quiz.answer-index,
                 options=quiz.options,
                 is_correct=quiz.is_correct,
                 explanation=quiz.explanation,
