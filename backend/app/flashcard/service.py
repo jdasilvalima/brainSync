@@ -1,6 +1,7 @@
 from .model import Flashcard, FlashcardStatus
 from .reviewService import FlashcardReviewService
 from ..topic.model import Topic
+from ..learning_module.model import LearningModule
 from ..utils.exceptions import ResourceNotFoundError
 from ..extensions import db, cached_llm, logger
 from typing import List
@@ -12,51 +13,65 @@ class FlashcardService:
         self.review_service = FlashcardReviewService()
 
 
-    def get_flashcards_by_topic(self, topic_id: int) -> List[Flashcard]:
-        topic = Topic.query.get(topic_id)
-        if not topic:
-            raise ResourceNotFoundError(f"Topic with ID {topic_id} not found")
-        return topic.flashcards
-    
-
-    def get_daily_reviews_by_topic(self, topic_id: int) -> List[Flashcard]:
-        topic = Topic.query.get(topic_id)
-        if not topic:
-            raise ResourceNotFoundError(f"Topic with ID {topic_id} not found")
-        current_date = datetime.now()
-        return Flashcard.query.filter((Flashcard.next_study_date <= current_date) & (Flashcard.topic_id == topic_id)).all()
+    @staticmethod
+    def _get_learning_module(learning_module_id: int) -> LearningModule:
+        learning_module = LearningModule.query.get(learning_module_id)
+        if not learning_module:
+            raise ResourceNotFoundError(f"LearningModule with ID {learning_module_id} not found")
+        return learning_module
 
 
-    def get_flashcards_by_topic_and_status(self, topic_id: int, status: str) -> List[Flashcard]:
-        topic = Topic.query.get(topic_id)
-        if not topic:
-            raise ResourceNotFoundError(f"Topic with ID {topic_id} not found")
+    @staticmethod
+    def get_flashcard_status(status: str) -> FlashcardStatus:
         if status not in FlashcardStatus.__members__:
-            return ResourceNotFoundError(f"Status not valid {status}")
-        flashcard_status = FlashcardStatus[status]
-        return Flashcard.query.filter((Flashcard.status == flashcard_status) & (Flashcard.topic_id == topic_id)).all()
+            raise ResourceNotFoundError(f"Status '{status}' is not a valid FlashcardStatus.")
+        return FlashcardStatus[status]
 
 
-    def create_flashcard(self, topic_id: int, flashcard: Flashcard) -> Flashcard:
-        topic = Topic.query.get(topic_id)
-        if not topic:
-            raise ResourceNotFoundError(f"Topic with ID {topic_id} not found")
+    @staticmethod
+    def get_flashcard(flashcard_id: int) -> Flashcard:
+        flashcard = Flashcard.query.get(flashcard_id)
+        if not flashcard:
+            raise ResourceNotFoundError(f"Flashcard with ID {flashcard_id} not found")
+        return flashcard
+
+
+    def get_flashcards_by_learning_module(self, learning_module_id: int) -> List[Flashcard]:
+        self._get_learning_module(learning_module_id)
+        return Flashcard.query.filter_by(learning_module_id=learning_module_id).all()
+
+
+    def get_daily_reviews_by_learning_module(self, learning_module_id: int) -> List[Flashcard]:
+        self._get_learning_module(learning_module_id)
+        current_date = datetime.now()
+        return Flashcard.query.filter(
+            (Flashcard.next_study_date <= current_date) & 
+            (Flashcard.learning_module_id == learning_module_id)
+        ).all()
+
+
+    def get_flashcards_by_learning_module_and_status(self, learning_module_id: int, status: str) -> List[Flashcard]:
+        self._get_learning_module(learning_module_id)
+        flashcard_status = self.get_flashcard_status(status)
+        return Flashcard.query.filter((Flashcard.study_status == flashcard_status) & (Flashcard.learning_module_id == learning_module_id)).all()
+
+
+    def create_flashcard(self, flashcard: Flashcard) -> Flashcard:
+        self._get_learning_module(flashcard.learning_module_id)
         db.session.add(flashcard)
         db.session.commit()
         return flashcard
 
 
-    def add_flashcard_list(self, topic_id: int, flashcards: List[Flashcard]) -> List[Flashcard]:
-        topic = Topic.query.get(topic_id)
-        if not topic:
-            raise ResourceNotFoundError(f"Topic with ID {topic_id} not found")
+    def add_flashcard_list(self, learning_module_id: int, flashcards: List[Flashcard]) -> List[Flashcard]:
+        self._get_learning_module(learning_module_id)
         new_flashcards = []
         for flashcard in flashcards:
             new_flashcard = Flashcard(
                 question=flashcard.question,
                 answer=flashcard.answer,
                 status=FlashcardStatus.UNSTUDIED,
-                topic_id=topic_id
+                learning_module_id=learning_module_id
             )
             db.session.add(new_flashcard)
             new_flashcards.append(new_flashcard)
@@ -65,12 +80,10 @@ class FlashcardService:
         return new_flashcards
 
 
-    def create_flashcards_with_ai(self, topic_id: int) -> List[Flashcard]:
-        topic = Topic.query.get(topic_id)
-        if not topic:
-            raise ResourceNotFoundError(f"Topic with ID {topic_id} not found")
+    def create_flashcards_with_ai(self, learning_module_id: int) -> List[Flashcard]:
+        learning_module = self._get_learning_module(learning_module_id)
 
-        flashcard_data = self._get_flashcards_json_from_ai(topic.name)
+        flashcard_data = self._get_flashcards_json_from_ai(learning_module.chapter)
         flashcards_to_add = []
         for fc in flashcard_data:
             question = fc.get('question')
@@ -83,7 +96,7 @@ class FlashcardService:
                     answer=answer,
                     example=example,
                     status=FlashcardStatus.UNSTUDIED,
-                    topic_id=topic_id
+                    learning_module_id=learning_module_id
                 )
                 flashcards_to_add.append(new_flashcard)
 
@@ -118,9 +131,7 @@ class FlashcardService:
 
 
     def update_flashcard(self, flashcard_id: int, updates: Flashcard) -> Flashcard:
-        flashcard = Flashcard.query.get(flashcard_id)
-        if not flashcard:
-            raise ResourceNotFoundError(f"Flashcard with ID {flashcard_id} not found")
+        flashcard = self.get_flashcard(flashcard_id)
         updated_flashcard = self.review_service.review_flashcard(flashcard, updates)
         flashcard = updated_flashcard
         db.session.commit()
@@ -128,8 +139,6 @@ class FlashcardService:
 
 
     def delete_flashcard(self, flashcard_id: int):
-        flashcard = Flashcard.query.get(flashcard_id)
-        if not flashcard:
-            raise ResourceNotFoundError(f"Flashcard with ID {flashcard_id} not found")
+        flashcard = self.get_flashcard(flashcard_id)
         db.session.delete(flashcard)
         db.session.commit()

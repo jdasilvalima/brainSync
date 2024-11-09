@@ -19,8 +19,6 @@
 - **Flashcards:** AI-created flashcards allow users to practice active recall, with options to manage and review them for better retention.
 - **Adaptive Quizzes:** AI-driven quizzes adapt to individual needs, reinforcing areas that require improvement.
 
-BrainSync’s mission is to make studying more efficient and impactful, supporting long-term knowledge retention for students and lifelong learners alike.
-
 ### I.2 Goals
 This project is designed as a personal learning initiative with the following goals:
 
@@ -35,7 +33,7 @@ WIP
 ### II.1 Requirements
 - [Docker](https://www.docker.com/) neeeds to be installed
 - [Node.js](https://nodejs.org/en) and a package manager like 'npm'
-- Optional - [Bruno](https://www.usebruno.com/) can utilize the API collection located in the 'api' folder to make HTTP/HTTPS requests to the backend
+- Optional - [Bruno](https://www.usebruno.com/) can utilize the API collection located in the 'api_collection' folder to make HTTP/HTTPS requests to the backend
 
 Clone this project
   ```sh
