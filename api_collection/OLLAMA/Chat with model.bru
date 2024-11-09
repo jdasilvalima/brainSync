@@ -1,0 +1,20 @@
+meta {
+  name: Chat with model
+  type: http
+  seq: 1
+}
+
+post {
+  url: http://localhost:11434/api/generate
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "model": "llama3.2",
+    "prompt": "You are an expert tutor specializing in accelerated learning. Create a comprehensive, expert-level study plan to master JavaScript. The JSON should contain 10 objects with: 'chapter: A title summarizing each key area of JavaScript from foundational to advanced topics. 'details': Clear learning objectives for developing expertise, covering foundational concepts, complex patterns, best practices, and advanced techniques. Structure the chapters to advance progressively, building from beginner to expert level. Please use \"chapters\" as a root key for the json.",
+    "stream": false,
+    "format": "json"
+  }
+}

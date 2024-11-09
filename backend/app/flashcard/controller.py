@@ -11,7 +11,7 @@ flashcard_service = FlashcardService()
 flashcard_schema = FlashcardSchema()
 
 
-@flashcard_bp.route('/topic/<int:learning_module_id>', methods=['GET'])
+@flashcard_bp.route('/learning_module/<int:learning_module_id>', methods=['GET'])
 def get_flashcards_by_learning_module(learning_module_id):
     try:
         flashcards = flashcard_service.get_flashcards_by_learning_module(learning_module_id)
@@ -20,7 +20,7 @@ def get_flashcards_by_learning_module(learning_module_id):
         return jsonify({"error": str(e)}), 500
 
 
-@flashcard_bp.route('/topic/<int:learning_module_id>/daily-reviews', methods=['GET'])
+@flashcard_bp.route('/learning_module/<int:learning_module_id>/daily-reviews', methods=['GET'])
 def get_daily_reviews_by_learning_module(learning_module_id):
     try:
         flashcards = flashcard_service.get_daily_reviews_by_learning_module(learning_module_id)
@@ -29,13 +29,13 @@ def get_daily_reviews_by_learning_module(learning_module_id):
         return jsonify({"error": str(e)}), 500
 
 
-@flashcard_bp.route('/topic/<int:topic_id>/status/<string:status>', methods=['GET'])
-def get_flashcards_by_learning_module_and_status(topic_id, status):
+@flashcard_bp.route('/learning_module/<int:learning_module_id>/status/<string:status>', methods=['GET'])
+def get_flashcards_by_learning_module_and_status(learning_module_id, status):
     try:
         if(status == 'ALL'):
-            flashcards = flashcard_service.get_flashcards_by_learning_module(topic_id)
+            flashcards = flashcard_service.get_flashcards_by_learning_module(learning_module_id)
         else:
-            flashcards = flashcard_service.get_flashcards_by_learning_module_and_status(topic_id, status)
+            flashcards = flashcard_service.get_flashcards_by_learning_module_and_status(learning_module_id, status)
         return jsonify(flashcard_schema.dump(flashcards, many=True)), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
@@ -51,11 +51,11 @@ def create_flashcard():
         return jsonify({"error": str(e)}), 400
     
 
-@flashcard_bp.route('/topic/<int:topic_id>/bulk', methods=['POST'])
-def add_flashcard_list(topic_id):
+@flashcard_bp.route('/learning_module/<int:learning_module_id>/bulk', methods=['POST'])
+def add_flashcard_list(learning_module_id):
     try:
         flashcards_data = flashcard_schema.load(request.json, many=True)
-        new_flashcards = flashcard_service.add_flashcard_list(topic_id, flashcards_data)
+        new_flashcards = flashcard_service.add_flashcard_list(learning_module_id, flashcards_data)
         return jsonify(flashcard_schema.dump(new_flashcards, many=True)), 201
     except ResourceNotFoundError as e:
         return jsonify({"error": str(e)}), 400
@@ -64,11 +64,11 @@ def add_flashcard_list(topic_id):
         return jsonify({"error": str(e)}), 500
 
 
-@flashcard_bp.route('/topic/<int:topic_id>/ai', methods=['POST'])
+@flashcard_bp.route('/learning_module/<int:learning_module_id>/ai', methods=['POST'])
 @measure_time
-def create_flashcards_ai(topic_id):
+def create_flashcards_ai(learning_module_id):
     try:
-        new_flashcard = flashcard_service.create_flashcards_with_ai(topic_id)
+        new_flashcard = flashcard_service.create_flashcards_with_ai(learning_module_id)
         return jsonify(flashcard_schema.dump(new_flashcard, many=True)), 201
     except ResourceNotFoundError as e:
         return jsonify({"error": str(e)}), 400

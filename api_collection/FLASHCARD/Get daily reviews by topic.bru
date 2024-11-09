@@ -1,0 +1,15 @@
+meta {
+  name: Get daily reviews by topic
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{BASE_URL}}/v1/flashcards/topic/{{topicId}}/daily-reviews
+  body: none
+  auth: none
+}
+
+vars:pre-request {
+  topicId: 2
+}

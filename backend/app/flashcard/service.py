@@ -1,6 +1,5 @@
 from .model import Flashcard, FlashcardStatus
 from .reviewService import FlashcardReviewService
-from ..topic.model import Topic
 from ..learning_module.model import LearningModule
 from ..utils.exceptions import ResourceNotFoundError
 from ..extensions import db, cached_llm, logger
@@ -105,7 +104,7 @@ class FlashcardService:
         return flashcards_to_add
 
     
-    def _get_flashcards_json_from_ai(self, topic_name: str) -> List[dict[str, str]]:
+    def _get_flashcards_json_from_ai(self, learning_module_chapter: str) -> List[dict[str, str]]:
         # query = (
         #     f"You are an expert on the topic: {topic_name}. "
         #     f"Generate 10 flashcards as JSON related to the topic: {topic_name}. "
@@ -117,8 +116,8 @@ class FlashcardService:
         #     "Be sure to close the JSON array properly to make it valid ]."
         # )
         query = (
-            f"You are an expert on the topic: {topic_name}. "
-            f"Generate 5 flashcards as JSON related to the topic: {topic_name}. "
+            f"You are an expert on the topic: {learning_module_chapter}. "
+            f"Generate 5 flashcards as JSON related to the topic: {learning_module_chapter}. "
             "The JSON should be an array of 5 objects, where each object contains \"question\", \"answer\", and \"example\" fields. "
             "Each \"example\" should be a relevant code snippet or practical demonstration related to the flashcard's question, when applicable. "
             "Snippet of code will be formatted with \t for tabs and \n for new lines as needed. "
