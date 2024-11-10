@@ -1,11 +1,11 @@
 meta {
   name: Add flashcard list
   type: http
-  seq: 4
+  seq: 5
 }
 
 post {
-  url: {{BASE_URL}}/v1/flashcards/topic/{{topic_id}}/bulk
+  url: {{BASE_URL}}/v1/flashcards/learning_module/{{learning_module_id}}/bulk
   body: json
   auth: none
 }
@@ -30,5 +30,5 @@ body:json {
 }
 
 vars:pre-request {
-  topic_id: 2
+  learning_module_id: 2
 }

@@ -5,11 +5,11 @@ meta {
 }
 
 post {
-  url: {{BASE_URL}}/v1/flashcards/topic/{{topic_id}}/ai
+  url: {{BASE_URL}}/v1/flashcards/learning_module/{{learning_module_id}}/ai
   body: none
   auth: none
 }
 
 vars:pre-request {
-  topic_id: 289
+  learning_module_id: 1
 }

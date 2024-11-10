@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: {{BASE_URL}}/v1/quizzes/topic/{{topicId}}/bulk
+  url: {{BASE_URL}}/v1/quizzes/learning_module/{{learning_module_id}}/bulk
   body: json
   auth: none
 }
@@ -77,5 +77,5 @@ body:json {
 }
 
 vars:pre-request {
-  topicId: 1
+  learning_module_id: 1
 }

@@ -19,7 +19,7 @@ class Flashcard(db.Model):
     answer = db.Column(db.String(500), nullable=False)
     example = db.Column(db.String(700), nullable=True)
     study_status = db.Column(db.Enum(FlashcardStatus), default=FlashcardStatus.UNSTUDIED, nullable=False)
-    next_study_date = db.Column(db.Date(timezone=True), nullable=False, default=func.now())
+    next_study_date = db.Column(db.Date, nullable=False, default=func.now())
     repetitions = db.Column(db.Integer, nullable=False, default=0)
     review_interval_days = db.Column(db.Integer, nullable=False, default=1)
     learning_module_id = db.Column(db.Integer, db.ForeignKey('learning_module.id'), nullable=False)

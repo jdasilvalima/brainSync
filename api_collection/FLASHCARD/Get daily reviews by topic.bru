@@ -5,11 +5,11 @@ meta {
 }
 
 get {
-  url: {{BASE_URL}}/v1/flashcards/topic/{{topicId}}/daily-reviews
+  url: {{BASE_URL}}/v1/flashcards/learning_module/{{learning_module_id}}/daily-reviews
   body: none
   auth: none
 }
 
 vars:pre-request {
-  topicId: 2
+  learning_module_id: 2
 }

@@ -1,11 +1,11 @@
 meta {
   name: Add flashcard
   type: http
-  seq: 5
+  seq: 4
 }
 
 post {
-  url: {{BASE_URL}}/v1/flashcards/topic/{{topic_id}}
+  url: {{BASE_URL}}/v1/flashcards/
   body: json
   auth: none
 }
@@ -18,8 +18,4 @@ body:json {
     "study_date": null,
     "topic_id": 2
   }
-}
-
-vars:pre-request {
-  topic_id: 2
 }

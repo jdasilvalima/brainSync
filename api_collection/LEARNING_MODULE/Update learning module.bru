@@ -1,0 +1,25 @@
+meta {
+  name: Update learning module
+  type: http
+  seq: 3
+}
+
+put {
+  url: {{BASE_URL}}/v1/modules/{{learning_module_id}}
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "chapter": "Introduction to TypeScript",
+    "details": "This module covers the basics of TypeScript, including types, interfaces, and basic syntax!",
+    "flashcards": [],
+    "id": 1,
+    "topic_id": 1
+  }
+}
+
+vars:pre-request {
+  learning_module_id: 1
+}

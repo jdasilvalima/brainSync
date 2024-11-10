@@ -1,0 +1,23 @@
+meta {
+  name: Add learning module
+  type: http
+  seq: 2
+}
+
+post {
+  url: {{BASE_URL}}/v1/modules/
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "chapter": "Advanced TypeScript Features",
+    "details": "This module explores advanced TypeScript features, such as generics, decorators, and type inference.",
+    "topic_id": 1
+  }
+}
+
+vars:pre-request {
+  topic_id: 2
+}
