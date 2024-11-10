@@ -12,18 +12,21 @@ post {
 
 body:json {
   {
-    "type": "TRUE_FALSE",
-    "question": "CSS can be used to control the layout of multiple web pages at once.",
-    "answer": 0,
+    "type": "SINGLE_CHOICE",
+    "question": "What is TypeScript primarily used for?",
+    "answer_index": 2,
     "options": [
-      "True",
-      "False"
+      "Styling web pages",
+      "Creating server-side applications",
+      "Adding types to JavaScript",
+      "Handling databases"
     ],
-    "explanation": "CSS allows styles to be applied across multiple pages, making it easier to maintain consistent design.",
-    "topic_id": 2
+    "study_status": "UNSTUDIED",
+    "explanation": "TypeScript is mainly used to add static typing to JavaScript, making it easier to catch errors at compile time.",
+    "learning_module_id": 1
   }
 }
 
 vars:pre-request {
-  learning_module_id: 2
+  learning_module_id: 1
 }

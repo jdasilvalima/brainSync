@@ -41,7 +41,7 @@ class QuizService:
 
 
     def add_quiz_list(self, learning_module_id: int, quizzes: List[Quiz]) -> List[Quiz]:
-        self._get_learning_module(quiz.learning_module_id)
+        self._get_learning_module(learning_module_id)
         new_quizzes = []
         for quiz in quizzes:
             new_quiz = Quiz(

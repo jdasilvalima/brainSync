@@ -69,7 +69,7 @@ class FlashcardService:
             new_flashcard = Flashcard(
                 question=flashcard.question,
                 answer=flashcard.answer,
-                status=FlashcardStatus.UNSTUDIED,
+                study_status=FlashcardStatus.UNSTUDIED,
                 learning_module_id=learning_module_id
             )
             db.session.add(new_flashcard)
@@ -94,7 +94,7 @@ class FlashcardService:
                     question=question,
                     answer=answer,
                     example=example,
-                    status=FlashcardStatus.UNSTUDIED,
+                    study_status=FlashcardStatus.UNSTUDIED,
                     learning_module_id=learning_module_id
                 )
                 flashcards_to_add.append(new_flashcard)
