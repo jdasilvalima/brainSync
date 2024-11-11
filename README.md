@@ -92,5 +92,8 @@ WIP
 ![Flashcards presentation](./readme-doc/frontend-flashcards.png)
 
 ## IV. REFERENCES
+**Local LLMs**
+- [Everything I've learned so far about running local LLMs (EN)](https://nullprogram.com/blog/2024/11/10/)
+
 **Spaced Repetition Learning**
-- [How to Remember Anything](https://rachel.fast.ai/posts/2023-02-21-anki/)
+- [How to Remember Anything (EN)](https://rachel.fast.ai/posts/2023-02-21-anki/)
