@@ -16,11 +16,11 @@ export interface Quiz {
   id: number;
   type: QuizType;
   question: string;
-  answer: number;
+  answer_index: number;
   options: [string];
-  is_correct: QuizStatus;
+  study_status: QuizStatus;
   explanation: string | null;
-  topic_id: number
+  learning_module_id: number
 }
 
 

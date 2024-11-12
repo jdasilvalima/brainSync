@@ -3,13 +3,13 @@ import { Lightbulb, Pen, Save, BookOpen, ArrowLeft  } from 'lucide-react'
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import { useSearchParams, useNavigate } from 'react-router-dom'
-import { useTopics } from '../contexts/TopicContext';
+import { useLearningModules } from '../contexts/LearningModuleContext';
 import { Flashcard, FlashcardStatus, useFlashcards } from '../contexts/FlashcardContext';
 
 
 export default function FlashcardDetails() {
-  const { getTopic, selectedTopic } = useTopics()
-  const { flashcards, updateFlashcard, fetchFlashcardsByTopicIdAndStatus, fetchDailyReviewFlashcards } = useFlashcards()
+  const { getLearningModule, selectedLearningModule } = useLearningModules()
+  const { flashcards, updateFlashcard, fetchFlashcardsByLearningModuleIdIdAndStatus, fetchDailyReviewFlashcards } = useFlashcards()
   const [currentCardIndex, setCurrentCardIndex] = useState(0)
   const [currentCard, setCurrentCard] = useState<Flashcard | null>(null)
   const [showAnswer, setShowAnswer] = useState(false)
@@ -17,25 +17,25 @@ export default function FlashcardDetails() {
   const [editedText, setEditedText] = useState('')
   const [showHint, setShowHint] = useState(false)
   const [searchParams] = useSearchParams()
-  const topicId = searchParams.get('id')
+  const learningModuleId = searchParams.get('id')
   const statusFilter = searchParams.get('status')
   const navigate = useNavigate()
 
   useEffect(() => {
     const initializeFlashcards = async () => {
-      if (topicId && statusFilter) {
-        await getTopic(parseInt(topicId));
+      if (learningModuleId && statusFilter) {
+        await getLearningModule(parseInt(learningModuleId));
   
         if(statusFilter === 'SPACED REPETITION') {
-          await fetchDailyReviewFlashcards(parseInt(topicId));
+          await fetchDailyReviewFlashcards(parseInt(learningModuleId));
         } else {
-          await fetchFlashcardsByTopicIdAndStatus(parseInt(topicId), statusFilter);
+          await fetchFlashcardsByLearningModuleIdIdAndStatus(parseInt(learningModuleId), statusFilter);
         }
       }
     };
   
     initializeFlashcards();
-  }, [topicId, statusFilter]);
+  }, [learningModuleId, statusFilter]);
   
   useEffect(() => {
     if (flashcards.length > 0) {
@@ -69,11 +69,11 @@ export default function FlashcardDetails() {
   const handleDifficultyClick = async (difficulty: string) => {
     const cardToUpdate = {
       ...currentCard,
-      status: FlashcardStatus[difficulty as keyof typeof FlashcardStatus]
+      study_status: FlashcardStatus[difficulty as keyof typeof FlashcardStatus]
     }
     await updateFlashcard(cardToUpdate)
     if (currentCardIndex === flashcards.length - 1) {
-      navigate(`/flashcards-topic?setId=${topicId}`)
+      navigate(`/flashcards-module?setId=${learningModuleId}`)
     } 
     else {
       setCurrentCardIndex((prevIndex) => prevIndex + 1)
@@ -114,7 +114,7 @@ export default function FlashcardDetails() {
     <div className="flex flex-col h-screen">
       <main className="flex-grow flex items-center justify-center">
         <div className="w-full max-w-2xl">
-        <h2 className="text-2xl font-bold mb-5">{selectedTopic?.name.toUpperCase()} FLASHCARDS</h2>
+        <h2 className="text-2xl font-bold mb-5">{selectedLearningModule?.chapter} Flashcards</h2>
           <div 
             className={`rounded-xl shadow-lg p-8 w-full h-[400px] flex flex-col cursor-pointer ${
               showAnswer ? 'bg-indigo-50' : 'bg-white'

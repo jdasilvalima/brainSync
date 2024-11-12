@@ -35,7 +35,7 @@ export default function FlashcardList() {
 
   const filteredFlashcards = filter === 'ALL' || filter === 'SPACED REPETITION'
     ? selectedLearningModule?.flashcards 
-    : selectedLearningModule?.flashcards.filter(card => card.status === filter)
+    : selectedLearningModule?.flashcards.filter(card => card.study_status === filter)
 
   if (!selectedLearningModule?.flashcards || selectedLearningModule.flashcards.length <= 0) {
     return (
@@ -93,8 +93,8 @@ export default function FlashcardList() {
                 <h3 className="font-semibold text-lg mb-2">{card.question}</h3>
                 <p className="text-gray-600">{card.answer}</p>
               </div>
-              <span className={`${statusColors[card.status]} text-white text-sm font-bold py-1 px-3 rounded-full ml-4`}>
-                {card.status}
+              <span className={`${statusColors[card.study_status]} text-white text-sm font-bold py-1 px-3 rounded-full ml-4`}>
+                {card.study_status}
               </span>
             </div>
           ))}
