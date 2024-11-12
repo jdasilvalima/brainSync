@@ -11,6 +11,15 @@ learning_module_service = LearningModuleService()
 learning_module_schema = LearningModuleSchema()
 
 
+@learning_module_bp.route('/<int:learning_module_id>', methods=['GET'])
+def get_learning_modules_by_id(learning_module_id):
+    try:
+        learning_module = learning_module_service.get_learning_module_by_id(learning_module_id)
+        return jsonify(learning_module_schema.dump(learning_module)), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 @learning_module_bp.route('/topic/<int:topic_id>', methods=['GET'])
 def get_learning_modules_by_topic_id(topic_id):
     try:

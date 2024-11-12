@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react'
 import { ChevronDown } from 'lucide-react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { useTopics } from '../contexts/TopicContext';
+import { useLearningModules } from '../contexts/LearningModuleContext';
 
 
 export default function FlashcardList() {
-  const { getTopic, selectedTopic } = useTopics();
+  const { getLearningModule, selectedLearningModule } = useLearningModules();
   const [filter, setFilter] = useState<string>('SPACED REPETITION')
   const navigate = useNavigate()
   const [searchParams] = useSearchParams();
-  const topicId = searchParams.get('setId');
+  const learningModuleId = searchParams.get('setId');
 
   const statusColors = {
     'AGAIN': 'bg-red-500',
@@ -21,23 +21,23 @@ export default function FlashcardList() {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (topicId) {
-        await getTopic(parseInt(topicId));
+      if (learningModuleId) {
+        await getLearningModule(parseInt(learningModuleId));
       }
     };
 
     fetchData();
-  }, [topicId, getTopic]);
+  }, [learningModuleId, getLearningModule]);
 
   const handleStartClick = () => {
-    navigate(`/flashcard-details?id=${topicId}&status=${filter}`)
+    navigate(`/flashcard-details?id=${learningModuleId}&status=${filter}`)
   }
 
   const filteredFlashcards = filter === 'ALL' || filter === 'SPACED REPETITION'
-    ? selectedTopic?.flashcards 
-    : selectedTopic?.flashcards.filter(card => card.status === filter)
+    ? selectedLearningModule?.flashcards 
+    : selectedLearningModule?.flashcards.filter(card => card.status === filter)
 
-  if (!selectedTopic?.flashcards || selectedTopic.flashcards.length <= 0) {
+  if (!selectedLearningModule?.flashcards || selectedLearningModule.flashcards.length <= 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen">
         <h2 className="text-2xl font-bold mb-8 text-gray-700">Flashcards are baking...</h2>
@@ -54,7 +54,10 @@ export default function FlashcardList() {
     <div className="mt-16">
       <main className="container mx-auto px-4 py-8 w-full max-w-2xl">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold">{selectedTopic?.flashcards.length} {selectedTopic?.name.toUpperCase()} FLASHCARDS</h2>
+          <div>
+            <h2 className="text-2xl font-bold">{selectedLearningModule?.flashcards.length} FLASHCARDS</h2>
+            <h3 className="text-xl font-bold">{selectedLearningModule?.chapter}</h3>
+          </div>
           <div className="flex space-x-4">
             <button
               onClick={() => handleStartClick()}

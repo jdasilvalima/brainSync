@@ -34,7 +34,7 @@ export default function LearningModuleByTopic() {
   }
 
   const handleFlashcardsClick = (moduleId: number) => {
-    navigate(`/flashcards-topic?setId=${moduleId}`)
+    navigate(`/flashcards-module?setId=${moduleId}`)
   }
 
   if (!selectedTopic) {

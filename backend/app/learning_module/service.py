@@ -7,6 +7,12 @@ from typing import List
 class LearningModuleService:
     def get_all_learning_modules(self) -> List[LearningModule]:
         return LearningModule.query.all()
+    
+    def get_learning_module_by_id(self, learning_module_id: int) -> List[LearningModule]:
+        learning_module = LearningModule.query.get(learning_module_id)
+        if not learning_module:
+            raise ResourceNotFoundError(f"LearningModule with ID {learning_module_id} not found")
+        return learning_module
 
     def get_learning_modules_by_topic_id(self, topic_id: int) -> List[LearningModule]:
         topic = Topic.query.get(topic_id)

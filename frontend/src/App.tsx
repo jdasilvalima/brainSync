@@ -2,7 +2,8 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { TopicProvider } from './contexts/TopicContext';
 import { FlashcardProvider } from './contexts/FlashcardContext';
 import { QuizProvider } from './contexts/QuizContext';
-import FlashcardByTopic from './pages/FlashcardByTopic';
+import { LearningModuleProvider } from './contexts/LearningModuleContext';
+import FlashcardByLearningModule from './pages/FlashcardByLearningModule';
 import FlashcardDetails from './pages/FlashcardDetails';
 import FlashcardCollection from './pages/FlashcardCollection';
 import QuizCollection from './pages/QuizCollection';
@@ -18,21 +19,23 @@ function App() {
     <TopicProvider>
       <FlashcardProvider>
         <QuizProvider>
-          <Router>
-            <Routes>
-              <Route element={<Layout />}>
-                <Route path="/" element={<TopicCollection />} />
-                <Route path="/modules-topic" element={<LearningModuleByTopic />} />
-                <Route path="/flashcards" element={<FlashcardCollection />} />
-                <Route path="/flashcards-topic" element={<FlashcardByTopic />} />
-                <Route path="/flashcard-details" element={<FlashcardDetails />} />
-                <Route path="/quizzes" element={<QuizCollection />} />
-                <Route path="/quizzes-topic" element={<QuizByTopic />} />
-                <Route path="/quiz-details" element={<QuizDetails />} />
-                <Route path="*" element={<NotFound />} />
-              </Route>
-            </Routes>
-          </Router>
+          <LearningModuleProvider>
+            <Router>
+              <Routes>
+                <Route element={<Layout />}>
+                  <Route path="/" element={<TopicCollection />} />
+                  <Route path="/modules-topic" element={<LearningModuleByTopic />} />
+                  <Route path="/flashcards" element={<FlashcardCollection />} />
+                  <Route path="/flashcards-module" element={<FlashcardByLearningModule />} />
+                  <Route path="/flashcard-details" element={<FlashcardDetails />} />
+                  <Route path="/quizzes" element={<QuizCollection />} />
+                  <Route path="/quizzes-topic" element={<QuizByTopic />} />
+                  <Route path="/quiz-details" element={<QuizDetails />} />
+                  <Route path="*" element={<NotFound />} />
+                </Route>
+              </Routes>
+            </Router>
+          </LearningModuleProvider>
         </QuizProvider>
       </FlashcardProvider>
     </TopicProvider>
