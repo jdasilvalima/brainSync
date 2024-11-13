@@ -13,7 +13,6 @@ export default function FlashcardCollection() {
   useEffect(() => {
     const fetchData = async () => {
       await fetchTopics();
-      console.log('topics after fetching', topics);
     }
 
     fetchData()

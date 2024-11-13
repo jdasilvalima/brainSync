@@ -1,31 +1,31 @@
 import { useState, useEffect } from 'react'
 import { ChevronDown, Check, X } from 'lucide-react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { useTopics } from '../contexts/TopicContext'
+import { useLearningModules } from '../contexts/LearningModuleContext'
 import { Quiz, QuizStatus } from '../contexts/QuizContext'
 
 
 type FilterStatus = 'ALL' | 'UNSTUDIED' | 'CORRECT' | 'INCORRECT'
 
 export default function QuizByTopic() {
-  const { getTopic, selectedTopic } = useTopics()
+  const { getLearningModule, selectedLearningModule } = useLearningModules()
   const [filter, setFilter] = useState<FilterStatus>('ALL')
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const topicId = searchParams.get('setId')
+  const learningModuleId = searchParams.get('setId')
 
   useEffect(() => {
     const fetchData = async () => {
-      if (topicId) {
-        await getTopic(parseInt(topicId))
+      if (learningModuleId) {
+        await getLearningModule(parseInt(learningModuleId))
       }
     }
 
     fetchData()
-  }, [topicId, getTopic])
+  }, [learningModuleId, getLearningModule])
 
   const handleStartClick = () => {
-    navigate(`/quiz-details?id=${topicId}&status=${filter}`)
+    navigate(`/quiz-details?id=${learningModuleId}&status=${filter}`)
   }
 
   const getStatusIcon = (isCorrect: QuizStatus) => {
@@ -44,12 +44,12 @@ export default function QuizByTopic() {
   }
 
   const filteredQuizzes = filter === 'ALL'
-  ? selectedTopic?.quizzes 
-  : selectedTopic?.quizzes.filter(quiz => quiz.is_correct === filter)
+  ? selectedLearningModule?.quizzes 
+  : selectedLearningModule?.quizzes.filter(quiz => quiz.study_status === filter)
 
-  const correctQuizzes = selectedTopic?.quizzes.filter((quiz: Quiz) => quiz.is_correct === QuizStatus.CORRECT).length || 0
+  const correctQuizzes = selectedLearningModule?.quizzes.filter((quiz: Quiz) => quiz.study_status === QuizStatus.CORRECT).length || 0
 
-  if (!selectedTopic?.quizzes || selectedTopic.quizzes.length <= 0) {
+  if (!selectedLearningModule?.quizzes || selectedLearningModule.quizzes.length <= 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen">
         <h2 className="text-2xl font-bold mb-8 text-gray-700">No quizzes available</h2>
@@ -61,12 +61,13 @@ export default function QuizByTopic() {
     <div className="mt-16">
       <main className="container mx-auto px-4 py-8 w-full max-w-2xl">
         <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">
-            {selectedTopic.quizzes.length} {selectedTopic.name.toUpperCase()} QUIZZES
+          <div>
+            <h2 className="text-2xl font-bold">{selectedLearningModule?.quizzes.length} QUIZZES</h2>
+            <h3 className="text-xl font-bold">{selectedLearningModule?.chapter}</h3>
             <span className="block text-lg font-normal text-gray-600 mt-1">
-              {correctQuizzes} / {selectedTopic.quizzes.length} Correct
+              {correctQuizzes} / {selectedLearningModule.quizzes.length} Correct
             </span>
-          </h2>
+          </div>
           <div className="flex space-x-4">
             <button
               onClick={handleStartClick}
@@ -100,10 +101,10 @@ export default function QuizByTopic() {
             >
               <div className="flex-1 pr-4">
                 <h3 className="font-semibold text-lg mb-2">{quiz.question}</h3>
-                <p className="text-gray-600">{quiz.options[quiz.answer]}</p>
+                <p className="text-gray-600">{quiz.options[quiz.answer_index]}</p>
               </div>
               <div className="flex-shrink-0">
-                {getStatusIcon(quiz.is_correct)}
+                {getStatusIcon(quiz.study_status)}
               </div>
             </div>
           ))}

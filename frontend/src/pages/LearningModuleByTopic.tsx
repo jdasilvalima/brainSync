@@ -30,7 +30,7 @@ export default function LearningModuleByTopic() {
   }, [topicId, getTopic])
 
   const handleQuizzesClick = (moduleId: number) => {
-    navigate(`/quiz-by-topic?setId=${moduleId}`)
+    navigate(`/quizzes-module?setId=${moduleId}`)
   }
 
   const handleFlashcardsClick = (moduleId: number) => {

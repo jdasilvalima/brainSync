@@ -1,30 +1,30 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { useTopics } from '../contexts/TopicContext'
+import { useLearningModules } from '../contexts/LearningModuleContext'
 import { Quiz, useQuizzes, QuizStatus } from '../contexts/QuizContext'
 import { ChevronRight, ArrowLeft } from 'lucide-react'
 
 export default function QuizDetails() {
-  const { getTopic, selectedTopic } = useTopics()
-  const { quizzes, updateQuiz, fetchQuizzesByTopicIdAndStatus } = useQuizzes()
+  const { getLearningModule, selectedLearningModule } = useLearningModules()
+  const { quizzes, updateQuiz, fetchQuizzesByLearningModuleIdAndStatus } = useQuizzes()
   const [currentQuizIndex, setCurrentQuizIndex] = useState(0)
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null)
   const [isAnswered, setIsAnswered] = useState(false)
   const [searchParams] = useSearchParams()
-  const topicId = searchParams.get('id')
+  const learningModuleId = searchParams.get('id')
   const statusFilter = searchParams.get('status')
   const navigate = useNavigate()
 
   useEffect(() => {
     const fetchData = async () => {
-      if (topicId && statusFilter) {
-        await getTopic(parseInt(topicId))
-        await fetchQuizzesByTopicIdAndStatus(parseInt(topicId), statusFilter);
+      if (learningModuleId && statusFilter) {
+        await getLearningModule(parseInt(learningModuleId))
+        await fetchQuizzesByLearningModuleIdAndStatus(parseInt(learningModuleId), statusFilter);
       }
     }
 
     fetchData()
-  }, [topicId, statusFilter])
+  }, [learningModuleId, statusFilter])
 
   const currentQuiz = quizzes[currentQuizIndex] as Quiz | undefined
 
@@ -39,7 +39,7 @@ export default function QuizDetails() {
     const userAnswer = getUserAnswer()
     const quizToUpdate = {
       ...currentQuiz,
-      is_correct: userAnswer
+      study_status: userAnswer
     }
     await updateQuiz(quizToUpdate);
     if (currentQuizIndex < (quizzes.length || 0) - 1) {
@@ -47,13 +47,13 @@ export default function QuizDetails() {
       setSelectedAnswer(null)
       setIsAnswered(false)
     } else {
-      navigate(`/quizzes-topic?setId=${topicId}`)
+      navigate(`/quizzes-module?setId=${learningModuleId}`)
     }
   }
 
   const getUserAnswer = (): QuizStatus => 
   {
-    const userAnswer = selectedAnswer === currentQuiz?.answer
+    const userAnswer = selectedAnswer === currentQuiz?.answer_index
     switch (userAnswer) {
       case true:
         return QuizStatus.CORRECT;
@@ -86,7 +86,7 @@ export default function QuizDetails() {
       <main className="flex-grow flex items-center justify-center px-4">
         <div className="w-full max-w-2xl">
           <h1 className="text-2xl font-bold mb-6">
-            {selectedTopic?.name.toUpperCase()} QUIZ
+            {selectedLearningModule?.chapter.toUpperCase()} QUIZ
           </h1>
           <div className="bg-white rounded-lg shadow-md p-6 min-h-[450px] flex flex-col">
             <h2 className="text-xl font-semibold mb-6">{currentQuiz.question}</h2>
@@ -96,7 +96,7 @@ export default function QuizDetails() {
                   key={index}
                   className={`w-full text-left p-4 rounded-lg ${
                     isAnswered
-                      ? index === currentQuiz.answer
+                      ? index === currentQuiz.answer_index
                         ? 'bg-green-100 border-green-500'
                         : index === selectedAnswer
                         ? 'bg-red-100 border-red-500'
@@ -115,9 +115,9 @@ export default function QuizDetails() {
             {isAnswered && (
               <div className="mt-4 pt-4 border-t border-gray-200">
                 <p className={`font-semibold ${
-                  selectedAnswer === currentQuiz.answer ? 'text-green-600' : 'text-red-600'
+                  selectedAnswer === currentQuiz.answer_index ? 'text-green-600' : 'text-red-600'
                 } mb-2`}>
-                  {selectedAnswer === currentQuiz.answer ? 'Correct!' : 'Incorrect'}
+                  {selectedAnswer === currentQuiz.answer_index ? 'Correct!' : 'Incorrect'}
                 </p>
                 <p className="text-gray-700">{currentQuiz?.explanation}</p>
               </div>
