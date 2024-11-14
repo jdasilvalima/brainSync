@@ -10,14 +10,11 @@ export default function Menu() {
             <span className="font-bold text-xl text-gray-800">BrainSync</span>
           </Link>
           <div className="flex items-center">
-            <Link to="/learning-modules" className="text-gray-600 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">
-              Learning Modules
+            <Link to="/" className="text-gray-600 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">
+              Home
             </Link>
-            <Link to="/flashcards" className="text-gray-600 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">
-              Flashcards
-            </Link>
-            <Link to="/quizzes" className="text-gray-600 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">
-              Quizzes
+            <Link to="/topics" className="text-gray-600 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">
+              Topics
             </Link>
           </div>
         </div>

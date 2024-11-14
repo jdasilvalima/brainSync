@@ -13,6 +13,7 @@ import LearningModuleByTopic from './pages/LearningModuleByTopic';
 import TopicCollection from './pages/TopicCollection';
 import NotFound from './pages/NotFound'
 import Layout from './layouts/Layout'
+import Home from './pages/Home'
 
 function App() {
   return (
@@ -23,7 +24,8 @@ function App() {
             <Router>
               <Routes>
                 <Route element={<Layout />}>
-                  <Route path="/" element={<TopicCollection />} />
+                  <Route path="/" element={<Home />} />
+                  <Route path="/topics" element={<TopicCollection />} />
                   <Route path="/modules-topic" element={<LearningModuleByTopic />} />
                   <Route path="/flashcards" element={<FlashcardCollection />} />
                   <Route path="/flashcards-module" element={<FlashcardByLearningModule />} />

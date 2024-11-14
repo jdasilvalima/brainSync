@@ -29,6 +29,9 @@ export default function LearningModuleByTopic() {
     fetchData()
   }, [topicId, getTopic])
 
+  const totalQuizzes = selectedTopic?.learning_modules.reduce((sum, module) => sum + module.quizzes.length, 0)
+  const totalFlashcards = selectedTopic?.learning_modules.reduce((sum, module) => sum + module.flashcards.length, 0)
+
   const handleQuizzesClick = (moduleId: number) => {
     navigate(`/quizzes-module?setId=${moduleId}`)
   }
@@ -46,10 +49,32 @@ export default function LearningModuleByTopic() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
+    <div className="container mx-auto px-4 py-8 max-w-4xl mt-20">
       <h1 className="text-3xl font-bold mb-8">
         TOPIC {selectedTopic.name.toUpperCase()}
       </h1>
+
+      <div className="grid md:grid-cols-2 gap-6 mb-12">
+        <button
+          onClick={() => handleQuizzesClick(0)}
+          className="bg-white rounded-lg shadow-md p-6 text-left hover:shadow-lg transition-shadow"
+        >
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">ALL QUIZZES</h3>
+          <p className="text-gray-600">
+            {totalQuizzes} {totalQuizzes === 1 ? 'item' : 'items'}
+          </p>
+        </button>
+
+        <button
+          onClick={() => handleFlashcardsClick(0)}
+          className="bg-white rounded-lg shadow-md p-6 text-left hover:shadow-lg transition-shadow"
+        >
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">ALL FLASHCARDS</h3>
+          <p className="text-gray-600">
+            {totalFlashcards} {totalFlashcards === 1 ? 'item' : 'items'}
+          </p>
+        </button>
+      </div>
       
       <div className="space-y-12">
         {selectedTopic.learning_modules
