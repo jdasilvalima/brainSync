@@ -23,6 +23,7 @@ interface FlashcardContextType {
   flashcards: Flashcard[],
   loading: boolean;
   error: string | null;
+  setFlashcards: React.Dispatch<React.SetStateAction<Flashcard[]>>;
   fetchFlashcardsByLearningModuleIdId: (topicId: number) => Promise<void>;
   createFlashcardsWithAi: (topicId: number) => Promise<Flashcard[]>;
   updateFlashcard: (flashcard: Flashcard) => Promise<Flashcard>;
@@ -92,6 +93,7 @@ export const FlashcardProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       flashcards: flashcards,
       loading,
       error,
+      setFlashcards: setFlashcards,
       fetchFlashcardsByLearningModuleIdId: fetchFlashcardsByLearningModuleIdId,
       fetchFlashcardsByLearningModuleIdIdAndStatus: fetchFlashcardsByLearningModuleIdIdAndStatus,
       fetchDailyReviewFlashcards: fetchDailyReviewFlashcards,

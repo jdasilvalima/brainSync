@@ -2,14 +2,17 @@ import { useState, useEffect } from 'react'
 import { ChevronDown } from 'lucide-react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useLearningModules } from '../contexts/LearningModuleContext';
+import { useFlashcards } from '../contexts/FlashcardContext';
 
 
 export default function FlashcardList() {
-  const { getLearningModule, selectedLearningModule } = useLearningModules();
+  const { getLearningModule, selectedLearningModule, getLearningModuleByTopicId } = useLearningModules();
+  const { setFlashcards, flashcards } = useFlashcards();
   const [filter, setFilter] = useState<string>('SPACED REPETITION')
   const navigate = useNavigate()
   const [searchParams] = useSearchParams();
-  const learningModuleId = searchParams.get('setId');
+  const learningModuleId = searchParams.get('moduleId');
+  const topicId = searchParams.get('topicId');
 
   const statusColors = {
     'AGAIN': 'bg-red-500',
@@ -21,8 +24,18 @@ export default function FlashcardList() {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (learningModuleId) {
-        await getLearningModule(parseInt(learningModuleId));
+      if (topicId) {
+        const topic = await getLearningModuleByTopicId(parseInt(topicId));
+        const allFlashcards = topic.reduce((flashcards, module) => {
+          if (module.flashcards && Array.isArray(module.flashcards)) {
+            return flashcards.concat(module.flashcards);
+          }
+          return flashcards;
+        }, []);
+        setFlashcards(allFlashcards);
+      } else if(learningModuleId) {
+        const module = await getLearningModule(parseInt(learningModuleId));
+        setFlashcards(module.flashcards);
       }
     };
 
@@ -34,10 +47,10 @@ export default function FlashcardList() {
   }
 
   const filteredFlashcards = filter === 'ALL' || filter === 'SPACED REPETITION'
-    ? selectedLearningModule?.flashcards 
-    : selectedLearningModule?.flashcards.filter(card => card.study_status === filter)
+    ? flashcards 
+    : flashcards.filter(card => card.study_status === filter)
 
-  if (!selectedLearningModule?.flashcards || selectedLearningModule.flashcards.length <= 0) {
+  if (!flashcards || flashcards.length <= 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen">
         <h2 className="text-2xl font-bold mb-8 text-gray-700">Flashcards are baking...</h2>
@@ -55,8 +68,10 @@ export default function FlashcardList() {
       <main className="container mx-auto px-4 py-8 w-full max-w-2xl">
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h2 className="text-2xl font-bold">{selectedLearningModule?.flashcards.length} FLASHCARDS</h2>
-            <h3 className="text-xl font-bold">{selectedLearningModule?.chapter}</h3>
+            <h2 className="text-2xl font-bold">{flashcards.length} FLASHCARDS</h2>
+            {!topicId && (
+              <h3 className="text-xl font-bold">{selectedLearningModule?.chapter}</h3>
+            )}
           </div>
           <div className="flex space-x-4">
             <button

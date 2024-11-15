@@ -32,12 +32,12 @@ export default function LearningModuleByTopic() {
   const totalQuizzes = selectedTopic?.learning_modules.reduce((sum, module) => sum + module.quizzes.length, 0)
   const totalFlashcards = selectedTopic?.learning_modules.reduce((sum, module) => sum + module.flashcards.length, 0)
 
-  const handleQuizzesClick = (moduleId: number) => {
-    navigate(`/quizzes-module?setId=${moduleId}`)
+  const handleQuizzesClick = (idType: string, moduleId: number) => {
+    navigate(`/quizzes-module?${idType}=${moduleId}`)
   }
 
-  const handleFlashcardsClick = (moduleId: number) => {
-    navigate(`/flashcards-module?setId=${moduleId}`)
+  const handleFlashcardsClick = (idType: string, moduleId: number) => {
+    navigate(`/flashcards-module?${idType}=${moduleId}`)
   }
 
   if (!selectedTopic) {
@@ -56,7 +56,7 @@ export default function LearningModuleByTopic() {
 
       <div className="grid md:grid-cols-2 gap-6 mb-12">
         <button
-          onClick={() => handleQuizzesClick(0)}
+          onClick={() => handleQuizzesClick('topicId', parseInt(topicId))}
           className="bg-white rounded-lg shadow-md p-6 text-left hover:shadow-lg transition-shadow"
         >
           <h3 className="text-lg font-semibold text-gray-900 mb-2">ALL QUIZZES</h3>
@@ -66,7 +66,7 @@ export default function LearningModuleByTopic() {
         </button>
 
         <button
-          onClick={() => handleFlashcardsClick(0)}
+          onClick={() => handleFlashcardsClick('topicId', parseInt(topicId))}
           className="bg-white rounded-lg shadow-md p-6 text-left hover:shadow-lg transition-shadow"
         >
           <h3 className="text-lg font-semibold text-gray-900 mb-2">ALL FLASHCARDS</h3>
@@ -87,7 +87,7 @@ export default function LearningModuleByTopic() {
               <p className="text-gray-600 mb-4">{module.details}</p>
               <div className="grid md:grid-cols-2 gap-6">
                 <button
-                  onClick={() => handleQuizzesClick(module.id)}
+                  onClick={() => handleQuizzesClick('moduleId', module.id)}
                   className="bg-white rounded-lg shadow-md p-6 text-left hover:shadow-lg transition-shadow"
                 >
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">QUIZZES</h3>
@@ -97,7 +97,7 @@ export default function LearningModuleByTopic() {
                 </button>
 
                 <button
-                  onClick={() => handleFlashcardsClick(module.id)}
+                  onClick={() => handleFlashcardsClick('moduleId', module.id)}
                   className="bg-white rounded-lg shadow-md p-6 text-left hover:shadow-lg transition-shadow"
                 >
                   <h3 className="text-lg font-semibold text-gray-900 mb-2">FLASHCARDS</h3>
