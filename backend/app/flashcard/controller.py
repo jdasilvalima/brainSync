@@ -20,10 +20,15 @@ def get_flashcards_by_learning_module(learning_module_id):
         return jsonify({"error": str(e)}), 500
 
 
-@flashcard_bp.route('/learning_module/<int:learning_module_id>/daily-reviews', methods=['GET'])
-def get_daily_reviews_by_learning_module(learning_module_id):
+@flashcard_bp.route('/daily-reviews', methods=['GET'])
+def get_daily_reviews_by_learning_module():
     try:
-        flashcards = flashcard_service.get_daily_reviews_by_learning_module(learning_module_id)
+        learning_module_ids = request.args.get('learning_module_ids', '')
+        learning_module_ids = [int(id) for id in learning_module_ids.split(',') if id]
+        logger.info(f"learning_module_ids : {learning_module_ids}")
+        if not learning_module_ids:
+            return jsonify({"error": "No learning_module_ids provided"}), 400
+        flashcards = flashcard_service.get_daily_reviews_by_learning_modules(learning_module_ids)
         return jsonify(flashcard_schema.dump(flashcards, many=True)), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500

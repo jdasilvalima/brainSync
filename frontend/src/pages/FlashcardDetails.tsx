@@ -27,7 +27,7 @@ export default function FlashcardDetails() {
         await getLearningModule(parseInt(learningModuleId));
   
         if(statusFilter === 'SPACED REPETITION') {
-          await fetchDailyReviewFlashcards(parseInt(learningModuleId));
+          await fetchDailyReviewFlashcards([parseInt(learningModuleId)]);
         } else {
           await fetchFlashcardsByLearningModuleIdIdAndStatus(parseInt(learningModuleId), statusFilter);
         }

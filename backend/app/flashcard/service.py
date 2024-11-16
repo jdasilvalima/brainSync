@@ -40,12 +40,13 @@ class FlashcardService:
         return Flashcard.query.filter_by(learning_module_id=learning_module_id).all()
 
 
-    def get_daily_reviews_by_learning_module(self, learning_module_id: int) -> List[Flashcard]:
-        self._get_learning_module(learning_module_id)
+    def get_daily_reviews_by_learning_modules(self, learning_module_ids: int) -> List[Flashcard]:
+        for module_id in learning_module_ids:
+            self._get_learning_module(module_id)
         current_date = datetime.now()
         return Flashcard.query.filter(
             (Flashcard.next_study_date <= current_date) & 
-            (Flashcard.learning_module_id == learning_module_id)
+            (Flashcard.learning_module_id.in_(learning_module_ids))
         ).all()
 
 
@@ -70,7 +71,8 @@ class FlashcardService:
                 question=flashcard.question,
                 answer=flashcard.answer,
                 study_status=FlashcardStatus.UNSTUDIED,
-                learning_module_id=learning_module_id
+                example= flashcard.example,
+                learning_module_id=learning_module_id,
             )
             db.session.add(new_flashcard)
             new_flashcards.append(new_flashcard)
