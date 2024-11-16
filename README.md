@@ -84,7 +84,15 @@ npm run dev
 ![Tables](./readme-doc/tables.png)
 
 ### III.2 Backend
-WIP
+The backend is structured as a modular Python application organized into distinct functional areas:
+
+![Backend Core Module](./readme-doc/core-modules.png)
+
+We are using a **Model-Controller-Service arhictecture**. Each module follows a three-layer architecture with controllers (handling HTTP requests), services (implementing business logic), and models (managing data).
+
+![Backend Architecture](./readme-doc/be-architecture.png)
+
+The application uses a utility layer for shared functionality like decorators and exception handling. 
 
 ### III.1 Frontend
 WIP
