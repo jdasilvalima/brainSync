@@ -32,39 +32,38 @@ WIP
 ## II. PROJECT SETUP
 ### II.1 Requirements
 - [Docker](https://www.docker.com/) neeeds to be installed
-- [Node.js](https://nodejs.org/en) and a package manager like 'npm'
 - Optional - [Bruno](https://www.usebruno.com/) can utilize the API collection located in the 'api_collection' folder to make HTTP/HTTPS requests to the backend
 
 Clone this project
   ```sh
-  git clone git@github.com:jdasilvalima/brainSync.git
-  cd brainSync
+    git clone git@github.com:jdasilvalima/brainSync.git
+    cd brainSync
   ```
 
 ### II.2 BACKEND
 This project is using Flask + Python + PostgreSQL.
 There is an Ollama server using Llama3.2 model.
 
-Create and set-up .env file :
-```sh
-cd .\backend\
+Create and set-up .env file in the backend folder :
 
-touch .env
-
-# PostgreSQL
-POSTGRES_USER=postgres_user
-POSTGRES_PASSWORD=postgres_password
-POSTGRES_DB=brainsync
-
-# Flask
-FLASK_ENV=development
-DATABASE_URL=postgresql://postgres_user:postgres_password@flask_db:5432/brainsync
+```bash
+  cd .\backend\
+```
+```bash
+  echo # PostgreSQL > .env2
+  echo POSTGRES_USER=postgres_user >> .env2
+  echo POSTGRES_PASSWORD=postgres_password >> .env2
+  echo POSTGRES_DB=brainsync >> .env2
+  echo. >> .env2
+  echo # Flask >> .env2
+  echo FLASK_ENV=development >> .env2
+  echo DATABASE_URL=postgresql://postgres_user:postgres_password@flask_db:5432/brainsync >> .env2
 ```
 
 Build and run locally :
-```sh
-cd brainSync
-docker-compose up --build
+```bash
+  cd brainSync
+  docker-compose up --build
 ```
 
 ![Backend Docker Containers](./readme-doc/backend-containers.png)
@@ -72,12 +71,9 @@ docker-compose up --build
 ### II.3 FRONTEND
 This project is using React + TypeScript + Vite.
 
-To run locally :
-```sh
-cd .\frontend\
-npm install
-npm run dev
-```
+The front-end container will be build with the previous command 'docker-compose up --build'.
+
+![FrontEnd Docker Containers](./readme-doc/frontend-containers.png)
 
 ## III. APPLICATION ARCHITECTURE
 ### III.1 Database
