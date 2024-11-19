@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { ChevronDown, Check, X } from 'lucide-react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { useLearningModules } from '../contexts/LearningModuleContext'
-import { Quiz, QuizStatus } from '../contexts/QuizContext'
+import { useLearningModules } from '../../contexts/LearningModuleContext'
+import { Quiz, QuizStatus } from '../../contexts/QuizContext'
 
 
 type FilterStatus = 'ALL' | 'UNSTUDIED' | 'CORRECT' | 'INCORRECT'

@@ -33,7 +33,7 @@ export default function FlashcardCollection() {
   };
 
   const handleSelectSet = (id: string) => {
-    navigate(`/modules-topic?setId=${id}`)
+    navigate(`/modules-topic?topicId=${id}`)
   }
 
   if (loading) return <div>Loading...</div>;

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { useLearningModules } from '../contexts/LearningModuleContext'
-import { Quiz, useQuizzes, QuizStatus } from '../contexts/QuizContext'
+import { useLearningModules } from '../../contexts/LearningModuleContext'
+import { Quiz, useQuizzes, QuizStatus } from '../../contexts/QuizContext'
 import { ChevronRight, ArrowLeft } from 'lucide-react'
 
 export default function QuizDetails() {

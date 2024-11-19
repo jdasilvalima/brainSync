@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { ChevronDown } from 'lucide-react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { useLearningModules } from '../contexts/LearningModuleContext';
-import { useFlashcards } from '../contexts/FlashcardContext';
+import { useLearningModules } from '../../contexts/LearningModuleContext';
+import { useFlashcards } from '../../contexts/FlashcardContext';
 
 
 export default function FlashcardList() {
@@ -11,8 +11,8 @@ export default function FlashcardList() {
   const [filter, setFilter] = useState<string>('SPACED REPETITION')
   const navigate = useNavigate()
   const [searchParams] = useSearchParams();
-  const learningModuleId = searchParams.get('moduleId');
-  const topicId = searchParams.get('topicId');
+  const id = searchParams.get('id');
+  const scope = searchParams.get('scope');
 
   const statusColors = {
     'AGAIN': 'bg-red-500',
@@ -24,8 +24,8 @@ export default function FlashcardList() {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (topicId) {
-        const topic = await getLearningModuleByTopicId(parseInt(topicId));
+      if (scope === 'topic') {
+        const topic = await getLearningModuleByTopicId(parseInt(id));
         const allFlashcards = topic.reduce((flashcards, module) => {
           if (module.flashcards && Array.isArray(module.flashcards)) {
             return flashcards.concat(module.flashcards);
@@ -33,17 +33,17 @@ export default function FlashcardList() {
           return flashcards;
         }, []);
         setFlashcards(allFlashcards);
-      } else if(learningModuleId) {
-        const module = await getLearningModule(parseInt(learningModuleId));
+      } else if(scope === 'module') {
+        const module = await getLearningModule(parseInt(id));
         setFlashcards(module.flashcards);
       }
     };
 
     fetchData();
-  }, [learningModuleId, getLearningModule]);
+  }, [id, getLearningModule]);
 
   const handleStartClick = () => {
-    navigate(`/flashcard-details?id=${learningModuleId}&status=${filter}`)
+    navigate(`/flashcard-details?scope=${scope}&id=${id}&status=${filter}`)
   }
 
   const filteredFlashcards = filter === 'ALL' || filter === 'SPACED REPETITION'
@@ -69,7 +69,7 @@ export default function FlashcardList() {
         <div className="flex justify-between items-center mb-6">
           <div>
             <h2 className="text-2xl font-bold">{flashcards.length} FLASHCARDS</h2>
-            {!topicId && (
+            {scope==='module' && (
               <h3 className="text-xl font-bold">{selectedLearningModule?.chapter}</h3>
             )}
           </div>

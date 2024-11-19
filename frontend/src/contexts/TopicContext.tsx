@@ -1,6 +1,7 @@
 import React, { createContext, useState, useContext, useCallback } from 'react';
 import axios from 'axios';
 import { LearningModule } from './LearningModuleContext.tsx';
+import { Flashcard } from './FlashcardContext.tsx';
 
 export interface Topic {
   id: number;
@@ -17,6 +18,7 @@ interface TopicContextType {
   fetchTopics: () => Promise<void>;
   createTopic: (name: string) => Promise<Topic>;
   getTopic: (topicId: number) => Promise<Topic>;
+  fetchDailyReviewFlashcardsByTopic: (topicId: number) => Promise<Flashcard[]>;
 }
 
 const TopicContext = createContext<TopicContextType | undefined>(undefined);
@@ -66,6 +68,17 @@ export const TopicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   }, []);
 
+  const fetchDailyReviewFlashcardsByTopic = useCallback(async (topicId: number): Promise<Flashcard[]> => {
+    try {
+      const response = await axios.get(`http://127.0.0.1:5000/api/v1/topics/${topicId}/daily-reviews`);
+      const topic = response.data;
+      return topic.learning_modules.map((module: LearningModule) => module.flashcards).flat();
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Error fetching data');
+      throw error;
+    }
+  }, []);
+
 
   return (
     <TopicContext.Provider value={{
@@ -76,7 +89,8 @@ export const TopicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       setTopics: setTopics,
       fetchTopics: fetchTopics,
       createTopic: createTopic,
-      getTopic: getTopic
+      getTopic: getTopic,
+      fetchDailyReviewFlashcardsByTopic: fetchDailyReviewFlashcardsByTopic
     }}>
       {children}
     </TopicContext.Provider>

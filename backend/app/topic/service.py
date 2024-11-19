@@ -24,18 +24,14 @@ class TopicService:
             raise ResourceNotFoundError(f"Topic with ID {topic_id} not found")
         current_date = date.today()
         for module in topic.learning_modules:
-            filtered_flashcards = [
-                flashcard
-                for flashcard in module.flashcards
+            module.filtered_flashcards = [
+                flashcard for flashcard in module.flashcards 
                 if flashcard.next_study_date <= current_date
             ]
-            filtered_quizzes = [
-                quiz
-                for quiz in module.quizzes
+            module.filtered_quizzes = [
+                quiz for quiz in module.quizzes 
                 if quiz.study_status in {QuizStatus.INCORRECT.value, QuizStatus.UNSTUDIED.value}
             ]
-            module.flashcards = filtered_flashcards
-            module.quizzes = filtered_quizzes
         return topic
 
 
