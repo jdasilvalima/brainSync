@@ -25,6 +25,24 @@ def get_topic(topic_id):
         return jsonify({"error": str(e)}), 404
 
 
+@topic_bp.route('/<int:topic_id>/daily-reviews', methods=['GET'])
+def get_daily_reviews_by_topic(topic_id):
+    try:
+        topic = topic_service.get_daily_reviews_by_topic(topic_id)
+        return jsonify(topic_schema.dump(topic)), 200
+    except ResourceNotFoundError as e:
+        return jsonify({"error": str(e)}), 404
+
+
+@topic_bp.route('/all/daily-reviews', methods=['GET'])
+def get_all_daily_reviews():
+    try:
+        topics = topic_service.get_all_daily_reviews()
+        return jsonify(topic_schema.dump(topics, many=True)), 200
+    except ResourceNotFoundError as e:
+        return jsonify({"error": str(e)}), 404
+
+
 @topic_bp.route('', methods=['POST'])
 def create_topic():
     try:
@@ -34,7 +52,7 @@ def create_topic():
         return jsonify(topic_schema.dump(new_topic)), 201
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-    
+
 
 @topic_bp.route('/<int:topic_id>', methods=['PUT'])
 def update_topic(topic_id):

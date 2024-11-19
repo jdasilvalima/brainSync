@@ -50,7 +50,7 @@ services:
       - "5173:5173"
     volumes:
       - ./frontend:/app
-      - /app/node_modules
+      - react_nodemodule:/app/node_modules
     networks:
       - app_network
 
@@ -61,3 +61,4 @@ networks:
 volumes:
   postgres_data:
   ollama_data:
+  react_nodemodule:

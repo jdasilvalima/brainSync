@@ -1,0 +1,15 @@
+meta {
+  name: Get daily reviews by topic
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{BASE_URL}}/v1/topics/{{topic_id}}/daily-reviews
+  body: none
+  auth: none
+}
+
+vars:pre-request {
+  topic_id: 1
+}

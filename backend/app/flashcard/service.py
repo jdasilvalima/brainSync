@@ -21,14 +21,14 @@ class FlashcardService:
 
 
     @staticmethod
-    def get_flashcard_status(status: str) -> FlashcardStatus:
+    def _get_flashcard_status(status: str) -> FlashcardStatus:
         if status not in FlashcardStatus.__members__:
             raise ResourceNotFoundError(f"Status '{status}' is not a valid FlashcardStatus.")
         return FlashcardStatus[status]
 
 
     @staticmethod
-    def get_flashcard(flashcard_id: int) -> Flashcard:
+    def _get_flashcard(flashcard_id: int) -> Flashcard:
         flashcard = Flashcard.query.get(flashcard_id)
         if not flashcard:
             raise ResourceNotFoundError(f"Flashcard with ID {flashcard_id} not found")
@@ -40,19 +40,18 @@ class FlashcardService:
         return Flashcard.query.filter_by(learning_module_id=learning_module_id).all()
 
 
-    def get_daily_reviews_by_learning_modules(self, learning_module_ids: int) -> List[Flashcard]:
-        for module_id in learning_module_ids:
-            self._get_learning_module(module_id)
-        current_date = datetime.now()
+    def get_daily_reviews_by_learning_module(self, learning_module_id: int) -> List[Flashcard]:
+        self._get_learning_module(learning_module_id)
+        current_date = datetime.today()
         return Flashcard.query.filter(
             (Flashcard.next_study_date <= current_date) & 
-            (Flashcard.learning_module_id.in_(learning_module_ids))
+            (Flashcard.learning_module_id == learning_module_id)
         ).all()
 
 
     def get_flashcards_by_learning_module_and_status(self, learning_module_id: int, status: str) -> List[Flashcard]:
         self._get_learning_module(learning_module_id)
-        flashcard_status = self.get_flashcard_status(status)
+        flashcard_status = self._get_flashcard_status(status)
         return Flashcard.query.filter((Flashcard.study_status == flashcard_status) & (Flashcard.learning_module_id == learning_module_id)).all()
 
 
@@ -132,7 +131,7 @@ class FlashcardService:
 
 
     def update_flashcard(self, flashcard_id: int, updates: Flashcard) -> Flashcard:
-        flashcard = self.get_flashcard(flashcard_id)
+        flashcard = self._get_flashcard(flashcard_id)
         updated_flashcard = self.review_service.review_flashcard(flashcard, updates)
         flashcard = updated_flashcard
         db.session.commit()
@@ -140,6 +139,6 @@ class FlashcardService:
 
 
     def delete_flashcard(self, flashcard_id: int):
-        flashcard = self.get_flashcard(flashcard_id)
+        flashcard = self._get_flashcard(flashcard_id)
         db.session.delete(flashcard)
         db.session.commit()

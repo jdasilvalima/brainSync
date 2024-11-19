@@ -26,7 +26,7 @@ class Flashcard(db.Model):
      
 
     def __repr__(self):
-        return f"<Flashcard id={self.id}, question={self.question}, answer={self.answer}, status={self.status}, next_study_date={self.next_study_date}>"
+        return f"<Flashcard id={self.id}, question={self.question}, answer={self.answer}, study_status={self.study_status}, next_study_date={self.next_study_date}>"
 
 
 class FlashcardSchema(ma.SQLAlchemyAutoSchema):

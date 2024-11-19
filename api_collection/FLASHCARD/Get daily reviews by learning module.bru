@@ -5,13 +5,9 @@ meta {
 }
 
 get {
-  url: {{BASE_URL}}/v1/flashcards/daily-reviews?learning_module_ids=1,2
+  url: {{BASE_URL}}/v1/flashcards/learning_module/{{learning_module_id}}/daily-reviews
   body: none
   auth: none
-}
-
-params:query {
-  learning_module_ids: 1,2
 }
 
 body:json {
@@ -19,4 +15,8 @@ body:json {
     1,
     2
   ]
+}
+
+vars:pre-request {
+  learning_module_id: 1
 }
