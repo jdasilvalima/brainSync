@@ -2,29 +2,37 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useLearningModules } from '../../contexts/LearningModuleContext'
 import { Quiz, useQuizzes, QuizStatus } from '../../contexts/QuizContext'
+import { useTopics } from '../../contexts/TopicContext';
 import { ChevronRight, ArrowLeft } from 'lucide-react'
 
 export default function QuizDetails() {
   const { getLearningModule, selectedLearningModule } = useLearningModules()
-  const { quizzes, updateQuiz, fetchQuizzesByLearningModuleIdAndStatus } = useQuizzes()
+  const { quizzes, updateQuiz, fetchQuizzesByLearningModuleIdAndStatus, fetchQuizzesByTopicIdAndStatus } = useQuizzes()
+  const { getTopic } = useTopics()
   const [currentQuizIndex, setCurrentQuizIndex] = useState(0)
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null)
   const [isAnswered, setIsAnswered] = useState(false)
   const [searchParams] = useSearchParams()
-  const learningModuleId = searchParams.get('id')
+  const id = searchParams.get('id')
+  const scope = searchParams.get('scope');
   const statusFilter = searchParams.get('status')
   const navigate = useNavigate()
 
   useEffect(() => {
     const fetchData = async () => {
-      if (learningModuleId && statusFilter) {
-        await getLearningModule(parseInt(learningModuleId))
-        await fetchQuizzesByLearningModuleIdAndStatus(parseInt(learningModuleId), statusFilter);
+      if (scope === 'module' && id && statusFilter) {
+        await getLearningModule(parseInt(id))
+        await fetchQuizzesByLearningModuleIdAndStatus(parseInt(id), statusFilter);
+      }
+
+      if (scope === 'topic' && id && statusFilter) 
+      {
+        await fetchQuizzesByTopicIdAndStatus(parseInt(id), statusFilter);
       }
     }
 
     fetchData()
-  }, [learningModuleId, statusFilter])
+  }, [id, statusFilter])
 
   const currentQuiz = quizzes[currentQuizIndex] as Quiz | undefined
 
@@ -47,7 +55,7 @@ export default function QuizDetails() {
       setSelectedAnswer(null)
       setIsAnswered(false)
     } else {
-      navigate(`/quizzes-module?setId=${learningModuleId}`)
+      navigate(`/quizzes-module?scope=${scope}&id=${id}`)
     }
   }
 

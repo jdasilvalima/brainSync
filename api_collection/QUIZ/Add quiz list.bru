@@ -1,7 +1,7 @@
 meta {
   name: Add quiz list
   type: http
-  seq: 3
+  seq: 5
 }
 
 post {
@@ -24,7 +24,7 @@ body:json {
       ],
       "study_status": "UNSTUDIED",
       "explanation": "Le mot-clé 'type' permet de définir des types personnalisés en TypeScript.",
-      "learning_module_id": 1
+      "learning_module_id": 2
     },
     {
       "type": "TRUE_FALSE",
@@ -36,7 +36,7 @@ body:json {
       ],
       "study_status": "UNSTUDIED",
       "explanation": "TypeScript attrape les erreurs de type lors de la compilation, avant l'exécution du code.",
-      "learning_module_id": 1
+      "learning_module_id": 2
     },
     {
       "type": "SINGLE_CHOICE",
@@ -50,7 +50,7 @@ body:json {
       ],
       "study_status": "UNSTUDIED",
       "explanation": "TypeScript n'a pas de type 'character' distinct, les caractères sont des chaînes de longueur 1.",
-      "learning_module_id": 1
+      "learning_module_id": 2
     },
     {
       "type": "SINGLE_CHOICE",
@@ -64,7 +64,7 @@ body:json {
       ],
       "study_status": "UNSTUDIED",
       "explanation": "TypeScript est principalement utilisé pour ajouter un typage statique à JavaScript afin de détecter les erreurs avant l'exécution.",
-      "learning_module_id": 1
+      "learning_module_id": 2
     },
     {
       "type": "TRUE_FALSE",
@@ -76,11 +76,11 @@ body:json {
       ],
       "study_status": "UNSTUDIED",
       "explanation": "Les fichiers TypeScript utilisent l'extension '.ts'.",
-      "learning_module_id": 1
+      "learning_module_id": 2
     }
   ]
 }
 
 vars:pre-request {
-  learning_module_id: 1
+  learning_module_id: 2
 }

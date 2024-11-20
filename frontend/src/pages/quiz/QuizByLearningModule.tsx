@@ -2,30 +2,43 @@ import { useState, useEffect } from 'react'
 import { ChevronDown, Check, X } from 'lucide-react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useLearningModules } from '../../contexts/LearningModuleContext'
-import { Quiz, QuizStatus } from '../../contexts/QuizContext'
+import { Quiz, QuizStatus, useQuizzes } from '../../contexts/QuizContext'
 
 
 type FilterStatus = 'ALL' | 'UNSTUDIED' | 'CORRECT' | 'INCORRECT'
 
 export default function QuizByTopic() {
-  const { getLearningModule, selectedLearningModule } = useLearningModules()
+  const { getLearningModule, selectedLearningModule, getLearningModuleByTopicId } = useLearningModules()
+  const { setQuizzes, quizzes } = useQuizzes();
   const [filter, setFilter] = useState<FilterStatus>('ALL')
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
-  const learningModuleId = searchParams.get('setId')
+  const id = searchParams.get('id');
+  const scope = searchParams.get('scope');
 
   useEffect(() => {
     const fetchData = async () => {
-      if (learningModuleId) {
-        await getLearningModule(parseInt(learningModuleId))
+      if (scope === 'module') {
+        const module = await getLearningModule(parseInt(id))
+        setQuizzes(module.quizzes);
+      }
+      if (scope === 'topic') {
+        const topic = await getLearningModuleByTopicId(parseInt(id));
+        const allQuizzes = topic.reduce((quizzes, module) => {
+          if (module.quizzes && Array.isArray(module.quizzes)) {
+            return quizzes.concat(module.quizzes);
+          }
+          return quizzes;
+        }, []);
+        setQuizzes(allQuizzes);
       }
     }
 
     fetchData()
-  }, [learningModuleId, getLearningModule])
+  }, [id, getLearningModule])
 
   const handleStartClick = () => {
-    navigate(`/quiz-details?id=${learningModuleId}&status=${filter}`)
+    navigate(`/quiz-details?scope=${scope}&id=${id}&status=${filter}`)
   }
 
   const getStatusIcon = (isCorrect: QuizStatus) => {
@@ -44,12 +57,12 @@ export default function QuizByTopic() {
   }
 
   const filteredQuizzes = filter === 'ALL'
-  ? selectedLearningModule?.quizzes 
-  : selectedLearningModule?.quizzes.filter(quiz => quiz.study_status === filter)
+  ? quizzes 
+  : quizzes.filter(quiz => quiz.study_status === filter)
 
-  const correctQuizzes = selectedLearningModule?.quizzes.filter((quiz: Quiz) => quiz.study_status === QuizStatus.CORRECT).length || 0
+  const correctQuizzes = quizzes.filter((quiz: Quiz) => quiz.study_status === QuizStatus.CORRECT).length || 0
 
-  if (!selectedLearningModule?.quizzes || selectedLearningModule.quizzes.length <= 0) {
+  if (!quizzes || quizzes.length <= 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen">
         <h2 className="text-2xl font-bold mb-8 text-gray-700">No quizzes available</h2>
@@ -65,7 +78,7 @@ export default function QuizByTopic() {
             <h2 className="text-2xl font-bold">{selectedLearningModule?.quizzes.length} QUIZZES</h2>
             <h3 className="text-xl font-bold">{selectedLearningModule?.chapter}</h3>
             <span className="block text-lg font-normal text-gray-600 mt-1">
-              {correctQuizzes} / {selectedLearningModule.quizzes.length} Correct
+              {correctQuizzes} / {quizzes.length} Correct
             </span>
           </div>
           <div className="flex space-x-4">

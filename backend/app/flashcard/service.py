@@ -46,7 +46,7 @@ class FlashcardService:
         if not topic:
             raise ResourceNotFoundError(f"Topic with ID {topic_id} not found")
         learning_module_ids = [module.id for module in topic.learning_modules]
-        return Flashcard.query.filter_by(Flashcard.learning_module_id.in_(learning_module_ids)).all()
+        return Flashcard.query.filter(Flashcard.learning_module_id.in_(learning_module_ids)).all()
 
 
     def get_daily_reviews_by_learning_module(self, learning_module_id: int) -> List[Flashcard]:

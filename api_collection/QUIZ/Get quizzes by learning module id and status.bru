@@ -1,0 +1,16 @@
+meta {
+  name: Get quizzes by learning module id and status
+  type: http
+  seq: 2
+}
+
+get {
+  url: {{BASE_URL}}/v1/quizzes/learning_module/{{learning_module_id}}/status/{{status}}
+  body: none
+  auth: none
+}
+
+vars:pre-request {
+  learning_module_id: 1
+  status: INCORRECT
+}

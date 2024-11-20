@@ -1,4 +1,5 @@
-from .model import Quiz, QuizType, QuizStatus
+from .model import Quiz, QuizType
+from ..topic.model import Topic
 from ..learning_module.model import LearningModule
 from ..utils.exceptions import ResourceNotFoundError
 from ..extensions import db, cached_llm, logger
@@ -28,9 +29,28 @@ class QuizService:
         return Quiz.query.filter_by(learning_module_id=learning_module_id).all()
 
 
+    def get_quizzes_by_topic(self, topic_id: int) -> List[Quiz]:
+        topic = Topic.query.get(topic_id)
+        if not topic:
+            raise ResourceNotFoundError(f"Topic with ID {topic_id} not found")
+        learning_module_ids = [module.id for module in topic.learning_modules]
+        return Quiz.query.filter(Quiz.learning_module_id.in_(learning_module_ids)).all()
+
+
     def get_quizzes_by_learning_module_and_status(self, learning_module_id: int, status: str) -> List[Quiz]:
         self._get_learning_module(learning_module_id)
         return Quiz.query.filter((Quiz.study_status == status) & (Quiz.learning_module_id == learning_module_id)).all()
+
+
+    def get_quizzes_by_topic_and_status(self, topic_id: int, status: str) -> List[Quiz]:
+        topic = Topic.query.get(topic_id)
+        if not topic:
+            raise ResourceNotFoundError(f"Topic with ID {topic_id} not found")
+        learning_module_ids = [module.id for module in topic.learning_modules]
+        return Quiz.query.filter(
+            (Quiz.study_status == status) & 
+            (Quiz.learning_module_id.in_(learning_module_ids))
+        ).all()
 
 
     def create_quiz(self, quiz: Quiz) -> Quiz:

@@ -1,0 +1,16 @@
+meta {
+  name: Get quizzes by topic id and status
+  type: http
+  seq: 3
+}
+
+get {
+  url: {{BASE_URL}}/v1/quizzes/topic/{{topic_id}}/status/{{status}}
+  body: none
+  auth: none
+}
+
+vars:pre-request {
+  topic_id: 1
+  status: ALL
+}

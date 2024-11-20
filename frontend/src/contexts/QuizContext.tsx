@@ -28,8 +28,10 @@ interface QuizContextType {
   quizzes: Quiz[],
   loading: boolean;
   error: string | null;
+  setQuizzes: React.Dispatch<React.SetStateAction<Quiz[]>>;
   fetchQuizzesByLearningModuleId: (learningModuleId: number) => Promise<void>;
   fetchQuizzesByLearningModuleIdAndStatus: (learningModuleId: number, status: string) => Promise<void>;
+  fetchQuizzesByTopicIdAndStatus: (topicId: number, status: string) => Promise<void>;
   updateQuiz: (quiz: Quiz) => Promise<Quiz>;
 }
 
@@ -61,15 +63,14 @@ export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
-  // const createQuizzesWithAi = async (topicId: number): Promise<Flashcard[]> => {
-  //   try {
-  //     const responseFlashcards = await axios.post(`http://127.0.0.1:5000/api/v1/flashcards/topic/${learningModuleId}/ai`);
-  //     return responseFlashcards.data.flashcards;
-  //   } catch (error) {
-  //     console.error('Error creating topic:', error);
-  //     throw error;
-  //   }
-  // };
+  const fetchQuizzesByTopicIdAndStatus = useCallback(async (topicId: number, status: string): Promise<void> => {
+    try {
+      const response = await axios.get(`http://127.0.0.1:5000/api/v1/quizzes/topic/${topicId}/status/${status}`);
+      setQuizzes(response.data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error fetching data');
+    }
+  }, []);
 
   const updateQuiz = async (quiz: Quiz): Promise<Quiz> => {
     try {
@@ -86,8 +87,10 @@ export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children
       quizzes: quizzes,
       loading,
       error,
+      setQuizzes: setQuizzes,
       fetchQuizzesByLearningModuleId: fetchQuizzesByLearningModuleId,
       fetchQuizzesByLearningModuleIdAndStatus: fetchQuizzesByLearningModuleIdAndStatus,
+      fetchQuizzesByTopicIdAndStatus: fetchQuizzesByTopicIdAndStatus,
       updateQuiz: updateQuiz
     }}>
       {children}
