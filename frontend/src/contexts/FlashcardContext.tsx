@@ -28,6 +28,7 @@ interface FlashcardContextType {
   createFlashcardsWithAi: (topicId: number) => Promise<Flashcard[]>;
   updateFlashcard: (flashcard: Flashcard) => Promise<Flashcard>;
   fetchFlashcardsByLearningModuleIdIdAndStatus: (learningModuleId: number, status: string) => Promise<void>;
+  fetchFlashcardsByTopicIdIdAndStatus: (topicId: number, status: string) => Promise<void>;
   fetchDailyReviewFlashcards: (learningModuleId: number) => Promise<void>;
 }
 
@@ -53,6 +54,15 @@ export const FlashcardProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const fetchFlashcardsByLearningModuleIdIdAndStatus = useCallback(async (learningModuleId: number, status: string): Promise<void> => {
     try {
       const response = await axios.get(`http://127.0.0.1:5000/api/v1/flashcards/learning_module/${learningModuleId}/status/${status}`);
+      setFlashcards(response.data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Error fetching data');
+    }
+  }, []);
+
+  const fetchFlashcardsByTopicIdIdAndStatus = useCallback(async (topicId: number, status: string): Promise<void> => {
+    try {
+      const response = await axios.get(`http://127.0.0.1:5000/api/v1/flashcards/topic/${topicId}/status/${status}`);
       setFlashcards(response.data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error fetching data');
@@ -96,6 +106,7 @@ export const FlashcardProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       setFlashcards: setFlashcards,
       fetchFlashcardsByLearningModuleIdId: fetchFlashcardsByLearningModuleIdId,
       fetchFlashcardsByLearningModuleIdIdAndStatus: fetchFlashcardsByLearningModuleIdIdAndStatus,
+      fetchFlashcardsByTopicIdIdAndStatus: fetchFlashcardsByTopicIdIdAndStatus,
       fetchDailyReviewFlashcards: fetchDailyReviewFlashcards,
       createFlashcardsWithAi: createFlashcardsWithAi,
       updateFlashcard: updateFlashcard

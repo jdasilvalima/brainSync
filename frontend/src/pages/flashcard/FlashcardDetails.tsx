@@ -11,7 +11,7 @@ import { Flashcard, FlashcardStatus, useFlashcards } from '../../contexts/Flashc
 export default function FlashcardDetails() {
   const { getTopic, selectedTopic, fetchDailyReviewFlashcardsByTopic } = useTopics()
   const { getLearningModule, selectedLearningModule } = useLearningModules()
-  const { flashcards, updateFlashcard, fetchFlashcardsByLearningModuleIdIdAndStatus, fetchDailyReviewFlashcards, setFlashcards } = useFlashcards()
+  const { flashcards, updateFlashcard, fetchFlashcardsByLearningModuleIdIdAndStatus, fetchDailyReviewFlashcards, setFlashcards, fetchFlashcardsByTopicIdIdAndStatus } = useFlashcards()
   const [currentCardIndex, setCurrentCardIndex] = useState(0)
   const [currentCard, setCurrentCard] = useState<Flashcard | null>(null)
   const [showAnswer, setShowAnswer] = useState(false)
@@ -43,7 +43,7 @@ export default function FlashcardDetails() {
           const flashcards = await fetchDailyReviewFlashcardsByTopic(parseInt(id));
           setFlashcards(flashcards);
         } else {
-          //await fetchFlashcardsByLearningModuleIdIdAndStatus(parseInt(id), statusFilter);
+          await fetchFlashcardsByTopicIdIdAndStatus(parseInt(id), statusFilter);
         }
       }
     };
