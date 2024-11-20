@@ -23,35 +23,35 @@ class TopicService:
         if not topic:
             raise ResourceNotFoundError(f"Topic with ID {topic_id} not found")
         current_date = date.today()
-        for module in topic.learning_modules:
-            module.filtered_flashcards = [
-                flashcard for flashcard in module.flashcards 
-                if flashcard.next_study_date <= current_date
-            ]
-            module.filtered_quizzes = [
-                quiz for quiz in module.quizzes 
-                if quiz.study_status in {QuizStatus.INCORRECT.value, QuizStatus.UNSTUDIED.value}
-            ]
+        with db.session.no_autoflush:
+            for module in topic.learning_modules:
+                module.flashcards = [
+                    flashcard for flashcard in module.flashcards
+                    if flashcard.next_study_date <= current_date
+                ]
+                module.quizzes = [
+                    quiz for quiz in module.quizzes
+                    if quiz.study_status in {QuizStatus.INCORRECT.value, QuizStatus.UNSTUDIED.value}
+                ]
         return topic
 
 
     def get_all_daily_reviews(self) -> List[Topic]:
         topics = Topic.query.all()
         current_date = date.today()
-        for topic in topics:
-            for module in topic.learning_modules:
-                filtered_flashcards = [
-                    flashcard
-                    for flashcard in module.flashcards
-                    if flashcard.next_study_date <= current_date
-                ]
-                filtered_quizzes = [
-                    quiz
-                    for quiz in module.quizzes
-                    if quiz.study_status in {QuizStatus.INCORRECT.value, QuizStatus.UNSTUDIED.value}
-                ]
-                module.flashcards = filtered_flashcards
-                module.quizzes = filtered_quizzes
+        with db.session.no_autoflush:
+            for topic in topics:
+                for module in topic.learning_modules:
+                    module.flashcards = [
+                        flashcard
+                        for flashcard in module.flashcards
+                        if flashcard.next_study_date <= current_date
+                    ]
+                    module.quizzes = [
+                        quiz
+                        for quiz in module.quizzes
+                        if quiz.study_status in {QuizStatus.INCORRECT.value, QuizStatus.UNSTUDIED.value}
+                    ]
         return topics
 
 

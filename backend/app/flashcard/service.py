@@ -1,4 +1,5 @@
 from .model import Flashcard, FlashcardStatus
+from ..topic.model import Topic
 from .reviewService import FlashcardReviewService
 from ..learning_module.model import LearningModule
 from ..utils.exceptions import ResourceNotFoundError
@@ -40,6 +41,14 @@ class FlashcardService:
         return Flashcard.query.filter_by(learning_module_id=learning_module_id).all()
 
 
+    def get_flashcards_by_topic(self, topic_id: int) -> List[Flashcard]:
+        topic = Topic.query.get(topic_id)
+        if not topic:
+            raise ResourceNotFoundError(f"Topic with ID {topic_id} not found")
+        learning_module_ids = [module.id for module in topic.learning_modules]
+        return Flashcard.query.filter_by(Flashcard.learning_module_id.in_(learning_module_ids)).all()
+
+
     def get_daily_reviews_by_learning_module(self, learning_module_id: int) -> List[Flashcard]:
         self._get_learning_module(learning_module_id)
         current_date = datetime.today()
@@ -53,6 +62,18 @@ class FlashcardService:
         self._get_learning_module(learning_module_id)
         flashcard_status = self._get_flashcard_status(status)
         return Flashcard.query.filter((Flashcard.study_status == flashcard_status) & (Flashcard.learning_module_id == learning_module_id)).all()
+
+
+    def get_flashcards_by_topic_and_status(self, topic_id: int, status: str) -> List[Flashcard]:
+            topic = Topic.query.get(topic_id)
+            if not topic:
+                raise ResourceNotFoundError(f"Topic with ID {topic_id} not found")
+            flashcard_status = self._get_flashcard_status(status)
+            learning_module_ids = [module.id for module in topic.learning_modules]
+            return Flashcard.query.filter(
+                (Flashcard.study_status == flashcard_status) & 
+                Flashcard.learning_module_id.in_(learning_module_ids)
+            ).all()
 
 
     def create_flashcard(self, flashcard: Flashcard) -> Flashcard:

@@ -32,6 +32,8 @@ def get_daily_reviews_by_topic(topic_id):
         return jsonify(topic_schema.dump(topic)), 200
     except ResourceNotFoundError as e:
         return jsonify({"error": str(e)}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @topic_bp.route('/all/daily-reviews', methods=['GET'])
@@ -41,6 +43,8 @@ def get_all_daily_reviews():
         return jsonify(topic_schema.dump(topics, many=True)), 200
     except ResourceNotFoundError as e:
         return jsonify({"error": str(e)}), 404
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 @topic_bp.route('', methods=['POST'])
