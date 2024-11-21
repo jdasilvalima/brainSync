@@ -27,7 +27,7 @@ This project is designed as a personal learning initiative with the following go
 - Explore backend development using Python and Flask
 
 ### I.3 Web Application Overview
-WIP
+![Web App Presentation Video](./readme-doc/web-app-presentation.mp4)
 
 ## II. PROJECT SETUP
 ### II.1 Requirements
@@ -77,7 +77,9 @@ The front-end container will be build with the previous command 'docker-compose 
 
 ## III. APPLICATION ARCHITECTURE
 ### III.1 Database
-![Tables](./readme-doc/tables.png)
+<p align="center">
+  <img src="./readme-doc/tables.png" alt="Tables">
+</p>
 
 ### III.2 Backend
 The backend is structured as a modular Python application organized into distinct functional areas:
@@ -92,8 +94,7 @@ The application uses a utility layer for shared functionality like decorators an
 
 ### III.1 Frontend
 WIP
-![Frontend topic / flashcards presentation](./readme-doc/frontend-flashcards-topic.png)
-![Flashcards presentation](./readme-doc/frontend-flashcards.png)
+
 
 ## IV. REFERENCES
 **Local LLMs**
