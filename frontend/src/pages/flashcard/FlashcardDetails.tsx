@@ -9,7 +9,7 @@ import { Flashcard, FlashcardStatus, useFlashcards } from '../../contexts/Flashc
 
 
 export default function FlashcardDetails() {
-  const { getTopic, selectedTopic, fetchDailyReviewFlashcardsByTopic } = useTopics()
+  const { getTopic, selectedTopic, fetchDailyReviewFlashcardsByTopic, fetchAllDailyReviews } = useTopics()
   const { getLearningModule, selectedLearningModule } = useLearningModules()
   const { flashcards, updateFlashcard, fetchFlashcardsByLearningModuleIdIdAndStatus, fetchDailyReviewFlashcards, setFlashcards, fetchFlashcardsByTopicIdIdAndStatus } = useFlashcards()
   const [currentCardIndex, setCurrentCardIndex] = useState(0)
@@ -26,6 +26,11 @@ export default function FlashcardDetails() {
 
   useEffect(() => {
     const initializeFlashcards = async () => {
+      if (scope === 'all') {
+        const topics = await fetchAllDailyReviews();
+        getAllFlashcards(topics);
+      }
+
       if (scope === 'module' && statusFilter) {
         await getLearningModule(parseInt(id));
   
@@ -57,6 +62,16 @@ export default function FlashcardDetails() {
     }
   }, [flashcards, currentCardIndex]);
 
+  function getAllFlashcards(topics: Topic[]): void {
+    const allFlashcards = topics.reduce((allFlashcards, topic) => {
+      const flashcardsInTopic = topic.learning_modules.reduce((moduleFlashcards, module) => {
+        return moduleFlashcards.concat(module.flashcards);
+      }, [] as Flashcard[]);
+      return allFlashcards.concat(flashcardsInTopic);
+    }, [] as Flashcard[]);
+    setFlashcards(allFlashcards);
+  }
+
   const handleCardClick = () => {
     if (!isEditing) {
       setShowAnswer(!showAnswer)
@@ -86,9 +101,11 @@ export default function FlashcardDetails() {
       study_status: FlashcardStatus[difficulty as keyof typeof FlashcardStatus]
     }
     await updateFlashcard(cardToUpdate)
-    if (currentCardIndex === flashcards.length - 1) {
+    if (currentCardIndex === flashcards.length - 1 && id) {
       navigate(`/flashcards-module?scope=${scope}&id=${id}`)
-    } 
+    } else if (currentCardIndex === flashcards.length - 1) {
+      navigate(`/`)
+    }
     else {
       setCurrentCardIndex((prevIndex) => prevIndex + 1)
       setCurrentCard(flashcards[currentCardIndex]);

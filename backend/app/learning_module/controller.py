@@ -39,6 +39,16 @@ def create_learning_module():
         return jsonify({"error": str(e)}), 400
 
 
+@learning_module_bp.route('/bulk', methods=['POST'])
+def create_learning_modules():
+    try:
+        data = learning_module_schema.load(request.json, many=True)
+        new_learning_module = learning_module_service.add_learning_module_list(data)
+        return jsonify(learning_module_schema.dump(new_learning_module, many=True)), 201
+    except ResourceNotFoundError as e:
+        return jsonify({"error": str(e)}), 400
+
+
 @learning_module_bp.route('/<int:learning_module_id>', methods=['PUT'])
 def update_learning_module(learning_module_id):
     try:

@@ -33,7 +33,9 @@ export default function FlashcardList() {
           return flashcards;
         }, []);
         setFlashcards(allFlashcards);
-      } else if(scope === 'module') {
+      }
+      
+      if(scope === 'module') {
         const module = await getLearningModule(parseInt(id));
         setFlashcards(module.flashcards);
       }

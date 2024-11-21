@@ -1,0 +1,67 @@
+meta {
+  name: Add learning modules in bulk
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{BASE_URL}}/v1/modules/bulk
+  body: json
+  auth: none
+}
+
+body:json {
+  [
+    {
+      "chapter": "Introduction to HTML",
+      "details": "This module introduces the basics of HTML, including how to structure a webpage with HTML tags and elements.",
+      "topic_id": 9
+    },
+    {
+      "chapter": "HTML Elements and Attributes",
+      "details": "Learn about the different HTML elements and their attributes, including text elements, links, images, and forms.",
+      "topic_id": 9
+    },
+    {
+      "chapter": "HTML Document Structure",
+      "details": "Understand how to structure an HTML document, including the use of the `<html>`, `<head>`, and `<body>` tags.",
+      "topic_id": 9
+    },
+    {
+      "chapter": "HTML Forms",
+      "details": "Learn how to create forms in HTML, including input elements like text fields, checkboxes, radio buttons, and how to handle form submissions.",
+      "topic_id": 9
+    },
+    {
+      "chapter": "HTML Tables",
+      "details": "Explore how to create tables in HTML, including table elements like `<table>`, `<tr>`, `<th>`, and `<td>`, and how to style them.",
+      "topic_id": 9
+    },
+    {
+      "chapter": "HTML Semantics",
+      "details": "Learn about semantic HTML elements, such as `<header>`, `<footer>`, `<article>`, and `<section>`, and their role in improving accessibility and SEO.",
+      "topic_id": 9
+    },
+    {
+      "chapter": "HTML Multimedia",
+      "details": "Understand how to embed multimedia in HTML, such as images, audio, and video, using the appropriate tags like `<img>`, `<audio>`, and `<video>`.",
+      "topic_id": 9
+    },
+    {
+      "chapter": "HTML Links and Navigation",
+      "details": "Learn how to create hyperlinks in HTML using the `<a>` tag, and how to build navigation menus to structure your site.",
+      "topic_id": 9
+    },
+    {
+      "chapter": "HTML Meta Tags",
+      "details": "Explore the use of meta tags in HTML, including setting the character set, author information, viewport settings for mobile devices, and SEO metadata.",
+      "topic_id": 9
+    },
+    {
+      "chapter": "HTML Accessibility",
+      "details": "Learn how to make your HTML documents more accessible by using ARIA (Accessible Rich Internet Applications) attributes and semantic elements.",
+      "topic_id": 9
+    }
+  ]
+  
+}

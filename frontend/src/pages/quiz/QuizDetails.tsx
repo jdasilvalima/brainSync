@@ -2,13 +2,13 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useLearningModules } from '../../contexts/LearningModuleContext'
 import { Quiz, useQuizzes, QuizStatus } from '../../contexts/QuizContext'
-import { useTopics } from '../../contexts/TopicContext';
+import { useTopics, Topic } from '../../contexts/TopicContext';
 import { ChevronRight, ArrowLeft } from 'lucide-react'
 
 export default function QuizDetails() {
   const { getLearningModule, selectedLearningModule } = useLearningModules()
-  const { quizzes, updateQuiz, fetchQuizzesByLearningModuleIdAndStatus, fetchQuizzesByTopicIdAndStatus } = useQuizzes()
-  const { getTopic } = useTopics()
+  const { quizzes, updateQuiz, setQuizzes, fetchQuizzesByLearningModuleIdAndStatus, fetchQuizzesByTopicIdAndStatus } = useQuizzes()
+  const { fetchAllDailyReviews } = useTopics()
   const [currentQuizIndex, setCurrentQuizIndex] = useState(0)
   const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null)
   const [isAnswered, setIsAnswered] = useState(false)
@@ -20,6 +20,11 @@ export default function QuizDetails() {
 
   useEffect(() => {
     const fetchData = async () => {
+      if (scope === 'all') {
+        const topics = await fetchAllDailyReviews();
+        getAllQuizzes(topics);
+      }
+
       if (scope === 'module' && id && statusFilter) {
         await getLearningModule(parseInt(id))
         await fetchQuizzesByLearningModuleIdAndStatus(parseInt(id), statusFilter);
@@ -35,6 +40,16 @@ export default function QuizDetails() {
   }, [id, statusFilter])
 
   const currentQuiz = quizzes[currentQuizIndex] as Quiz | undefined
+
+  function getAllQuizzes(topics: Topic[]): void {
+    const allQuizzes = topics.reduce((allQuizzes, topic) => {
+      const quizzesInTopic = topic.learning_modules.reduce((moduleQuizzes, module) => {
+        return moduleQuizzes.concat(module.quizzes);
+      }, [] as Quiz[]);
+      return allQuizzes.concat(quizzesInTopic);
+    }, [] as Quiz[]);
+    setQuizzes(allQuizzes);
+  }
 
   const handleAnswerSelect = (index: number) => {
     if (!isAnswered) {
@@ -54,8 +69,10 @@ export default function QuizDetails() {
       setCurrentQuizIndex(currentQuizIndex + 1)
       setSelectedAnswer(null)
       setIsAnswered(false)
-    } else {
+    } else if (id) {
       navigate(`/quizzes-module?scope=${scope}&id=${id}`)
+    } else {
+      navigate(`/`)
     }
   }
 

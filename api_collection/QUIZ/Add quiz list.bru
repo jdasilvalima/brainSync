@@ -14,73 +14,138 @@ body:json {
   [
     {
       "type": "SINGLE_CHOICE",
-      "question": "Quel mot-clé permet de définir un type dans TypeScript ?",
-      "answer_index": 1,
+      "question": "Which method is used to select an element by its ID in JavaScript?",
+      "answer_index": 0,
       "options": [
-        "interface",
-        "type",
-        "define",
-        "typedef"
+        "getElementById()",
+        "querySelector()",
+        "getElementByClassName()",
+        "querySelectorAll()"
       ],
       "study_status": "UNSTUDIED",
-      "explanation": "Le mot-clé 'type' permet de définir des types personnalisés en TypeScript.",
-      "learning_module_id": 2
+      "explanation": "The method 'getElementById()' is used to select an element by its ID in JavaScript.",
+      "learning_module_id": 3
     },
     {
       "type": "TRUE_FALSE",
-      "question": "TypeScript permet d'attraper les erreurs de type au moment de l'exécution.",
+      "question": "The method 'getElementById()' can be used to select multiple elements.",
       "answer_index": 1,
       "options": [
         "True",
         "False"
       ],
       "study_status": "UNSTUDIED",
-      "explanation": "TypeScript attrape les erreurs de type lors de la compilation, avant l'exécution du code.",
-      "learning_module_id": 2
+      "explanation": "'getElementById()' selects only one element, the first element that matches the given ID.",
+      "learning_module_id": 3
     },
     {
       "type": "SINGLE_CHOICE",
-      "question": "Quel type de données n'existe pas en TypeScript ?",
+      "question": "Which method is used to change the content of an HTML element?",
+      "answer_index": 1,
+      "options": [
+        "setTextContent()",
+        "innerHTML",
+        "setInnerHTML()",
+        "setContent()"
+      ],
+      "study_status": "UNSTUDIED",
+      "explanation": "To change the content of an HTML element, you can use the 'innerHTML' property.",
+      "learning_module_id": 3
+    },
+    {
+      "type": "TRUE_FALSE",
+      "question": "The 'querySelector()' method can be used to select elements by their class name.",
+      "answer_index": 0,
+      "options": [
+        "True",
+        "False"
+      ],
+      "study_status": "UNSTUDIED",
+      "explanation": "'querySelector()' can be used to select an element by its CSS selector, including by class name.",
+      "learning_module_id": 3
+    },
+    {
+      "type": "SINGLE_CHOICE",
+      "question": "What does the 'addEventListener()' method do in JavaScript?",
+      "answer_index": 2,
+      "options": [
+        "It adds an element to the DOM",
+        "It removes an event listener",
+        "It attaches an event handler to an element",
+        "It triggers an event"
+      ],
+      "study_status": "UNSTUDIED",
+      "explanation": "The 'addEventListener()' method is used to attach an event handler to an element.",
+      "learning_module_id": 3
+    },
+    {
+      "type": "TRUE_FALSE",
+      "question": "In JavaScript, 'querySelector()' selects all elements matching the given selector.",
+      "answer_index": 1,
+      "options": [
+        "True",
+        "False"
+      ],
+      "study_status": "UNSTUDIED",
+      "explanation": "'querySelector()' selects only the first element that matches the given selector. Use 'querySelectorAll()' to select all matching elements.",
+      "learning_module_id": 3
+    },
+    {
+      "type": "SINGLE_CHOICE",
+      "question": "Which of the following methods is used to add a new element to the DOM?",
       "answer_index": 3,
       "options": [
-        "string",
-        "number",
-        "boolean",
-        "character"
+        "appendChild()",
+        "setElement()",
+        "addElement()",
+        "insertElement()"
       ],
       "study_status": "UNSTUDIED",
-      "explanation": "TypeScript n'a pas de type 'character' distinct, les caractères sont des chaînes de longueur 1.",
-      "learning_module_id": 2
-    },
-    {
-      "type": "SINGLE_CHOICE",
-      "question": "Quel est l'objectif principal de TypeScript ?",
-      "answer_index": 0,
-      "options": [
-        "Ajouter un typage statique à JavaScript",
-        "Créer des applications mobiles",
-        "Optimiser les performances des sites web",
-        "Gérer les bases de données"
-      ],
-      "study_status": "UNSTUDIED",
-      "explanation": "TypeScript est principalement utilisé pour ajouter un typage statique à JavaScript afin de détecter les erreurs avant l'exécution.",
-      "learning_module_id": 2
+      "explanation": "'appendChild()' is used to add a new child element to the DOM.",
+      "learning_module_id": 3
     },
     {
       "type": "TRUE_FALSE",
-      "question": "Un fichier TypeScript se termine généralement par l'extension .ts.",
+      "question": "The 'removeChild()' method is used to add an element to the DOM.",
+      "answer_index": 1,
+      "options": [
+        "True",
+        "False"
+      ],
+      "study_status": "UNSTUDIED",
+      "explanation": "'removeChild()' is used to remove an element from the DOM, not to add one.",
+      "learning_module_id": 3
+    },
+    {
+      "type": "SINGLE_CHOICE",
+      "question": "What is the purpose of the 'classList' property in JavaScript?",
+      "answer_index": 1,
+      "options": [
+        "It returns the list of all elements in the DOM",
+        "It provides access to the list of classes of an element",
+        "It adds a class to an element",
+        "It creates a new class"
+      ],
+      "study_status": "UNSTUDIED",
+      "explanation": "'classList' is used to access and modify the list of classes on an element.",
+      "learning_module_id": 3
+    },
+    {
+      "type": "TRUE_FALSE",
+      "question": "You can use 'style' to directly modify the CSS properties of an HTML element in JavaScript.",
       "answer_index": 0,
       "options": [
         "True",
         "False"
       ],
       "study_status": "UNSTUDIED",
-      "explanation": "Les fichiers TypeScript utilisent l'extension '.ts'.",
-      "learning_module_id": 2
+      "explanation": "'style' can be used to directly modify the inline CSS properties of an HTML element.",
+      "learning_module_id": 3
     }
   ]
+  
 }
 
 vars:pre-request {
-  learning_module_id: 2
+  learning_module_id: 3
 }

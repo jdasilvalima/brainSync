@@ -19,6 +19,7 @@ interface TopicContextType {
   createTopic: (name: string) => Promise<Topic>;
   getTopic: (topicId: number) => Promise<Topic>;
   fetchDailyReviewFlashcardsByTopic: (topicId: number) => Promise<Flashcard[]>;
+  fetchAllDailyReviews: () => Promise<Topic[]>;
 }
 
 const TopicContext = createContext<TopicContextType | undefined>(undefined);
@@ -79,6 +80,17 @@ export const TopicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }
   }, []);
 
+  const fetchAllDailyReviews = useCallback(async (): Promise<Topic[]> => {
+    try {
+      const response = await axios.get(`http://127.0.0.1:5000/api/v1/topics/all/daily-reviews`);
+      setTopics(response.data);
+      return response.data;
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Error fetching data');
+      throw error;
+    }
+  }, []);
+
 
   return (
     <TopicContext.Provider value={{
@@ -90,7 +102,8 @@ export const TopicProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       fetchTopics: fetchTopics,
       createTopic: createTopic,
       getTopic: getTopic,
-      fetchDailyReviewFlashcardsByTopic: fetchDailyReviewFlashcardsByTopic
+      fetchDailyReviewFlashcardsByTopic: fetchDailyReviewFlashcardsByTopic,
+      fetchAllDailyReviews: fetchAllDailyReviews
     }}>
       {children}
     </TopicContext.Provider>

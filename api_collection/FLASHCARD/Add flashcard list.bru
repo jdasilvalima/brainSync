@@ -13,71 +13,79 @@ post {
 body:json {
   [
     {
-      "question": "What are TypeScript generics?",
-      "answer": "Generics allow you to create reusable components that work with any data type while maintaining type safety.",
-      "example": "function identity<T>(arg: T): T { return arg; }",
-      "learning_module_id": 2,
-      "study_status": "UNSTUDIED"
+      "question": "What is the DOM?",
+      "answer": "The DOM (Document Object Model) is an interface that allows programming languages to interact with and manipulate HTML and XML documents.",
+      "example": "const element = document.getElementById('myElement');",
+      "study_status": "UNSTUDIED",
+      "learning_module_id": 3
     },
     {
-      "question": "What is a mapped type in TypeScript?",
-      "answer": "Mapped types allow you to transform the properties of an existing type to create a new type.",
-      "example": "type ReadOnly<T> = { readonly [K in keyof T]: T[K] };",
-      "learning_module_id": 2,
-      "study_status": "UNSTUDIED"
+      "question": "What does the `document.getElementById()` method do?",
+      "answer": "The `document.getElementById()` method returns the element with the specified id. If no element with the given id is found, it returns null.",
+      "example": "const header = document.getElementById('main-header');",
+      "study_status": "UNSTUDIED",
+      "learning_module_id": 3
     },
     {
-      "question": "What is a utility type in TypeScript?",
-      "answer": "Utility types are predefined generic types that help manipulate other types easily.",
-      "example": "type Partial<T> = { [P in keyof T]?: T[P] };",
-      "learning_module_id": 2,
-      "study_status": "UNSTUDIED"
+      "question": "What is the purpose of `document.querySelector()`?",
+      "answer": "The `document.querySelector()` method returns the first element that matches a specified CSS selector. It can select elements by id, class, or other attributes.",
+      "example": "const button = document.querySelector('.btn-primary');",
+      "study_status": "UNSTUDIED",
+      "learning_module_id": 3
     },
     {
-      "question": "How does TypeScript handle conditional types?",
-      "answer": "Conditional types allow you to create types based on a condition, using the `extends` keyword.",
-      "example": "type IsString<T> = T extends string ? true : false;",
-      "learning_module_id": 2,
-      "study_status": "UNSTUDIED"
+      "question": "How can you change the content of an HTML element using JavaScript?",
+      "answer": "You can change the content of an HTML element by modifying its `innerHTML` or `textContent` properties.",
+      "example": "const paragraph = document.getElementById('my-paragraph');\nparagraph.innerHTML = 'New content!';",
+      "study_status": "UNSTUDIED",
+      "learning_module_id": 3
     },
     {
-      "question": "What are TypeScript decorators?",
-      "answer": "Decorators are special declarations that attach metadata or modify behavior of classes, methods, or properties.",
-      "example": "@Component({ selector: 'app-root' })",
-      "learning_module_id": 2,
-      "study_status": "UNSTUDIED"
+      "question": "What is the `createElement()` method used for?",
+      "answer": "The `createElement()` method is used to create a new HTML element that can be added to the DOM.",
+      "example": "const newDiv = document.createElement('div');\nnewDiv.textContent = 'Hello, World!';",
+      "study_status": "UNSTUDIED",
+      "learning_module_id": 3
     },
     {
-      "question": "What is the 'keyof' operator in TypeScript?",
-      "answer": "The 'keyof' operator returns a union type of all keys of an object type.",
-      "example": "type Keys = keyof { name: string; age: number }; // 'name' | 'age'",
-      "learning_module_id": 2,
-      "study_status": "UNSTUDIED"
+      "question": "How do you append a new element to the DOM?",
+      "answer": "You can append a new element to the DOM using the `appendChild()` method, which adds a node as the last child of a parent element.",
+      "example": "const parent = document.getElementById('container');\nparent.appendChild(newDiv);",
+      "study_status": "UNSTUDIED",
+      "learning_module_id": 3
     },
     {
-      "question": "How do intersection types work in TypeScript?",
-      "answer": "Intersection types combine multiple types into one, requiring an object to satisfy all types.",
-      "example": "type Person = { name: string } & { age: number };",
-      "learning_module_id": 2,
-      "study_status": "UNSTUDIED"
+      "question": "What does the `removeChild()` method do?",
+      "answer": "The `removeChild()` method removes a specified child node from the DOM.",
+      "example": "const parent = document.getElementById('container');\nconst child = document.getElementById('child');\nparent.removeChild(child);",
+      "study_status": "UNSTUDIED",
+      "learning_module_id": 3
     },
     {
-      "question": "What is the 'unknown' type in TypeScript?",
-      "answer": "The 'unknown' type is a safer alternative to 'any', requiring type checks before usage.",
-      "example": "let value: unknown; if (typeof value === 'string') { console.log(value.toUpperCase()); }",
-      "learning_module_id": 2,
-      "study_status": "UNSTUDIED"
+      "question": "What is `addEventListener()` used for?",
+      "answer": "`addEventListener()` is used to attach an event handler to a DOM element. It allows you to specify the type of event and the function to call when the event occurs.",
+      "example": "const button = document.getElementById('myButton');\nbutton.addEventListener('click', function() { alert('Button clicked!'); });",
+      "study_status": "UNSTUDIED",
+      "learning_module_id": 3
     },
     {
-      "question": "What is a discriminated union in TypeScript?",
-      "answer": "A discriminated union is a pattern that uses a common property to differentiate between multiple types in a union.",
-      "example": "type Shape = | { kind: 'circle', radius: number } | { kind: 'square', side: number };",
-      "learning_module_id": 2,
-      "study_status": "UNSTUDIED"
+      "question": "What is the `classList` property used for?",
+      "answer": "The `classList` property provides methods to add, remove, and toggle classes on an element.",
+      "example": "const div = document.getElementById('myDiv');\ndiv.classList.add('new-class');\ndiv.classList.remove('old-class');",
+      "study_status": "UNSTUDIED",
+      "learning_module_id": 3
+    },
+    {
+      "question": "How can you modify an element's style using JavaScript?",
+      "answer": "You can modify an element's style by directly setting the properties of the `style` object.",
+      "example": "const element = document.getElementById('myElement');\nelement.style.backgroundColor = 'blue';",
+      "study_status": "UNSTUDIED",
+      "learning_module_id": 3
     }
   ]
+  
 }
 
 vars:pre-request {
-  learning_module_id: 2
+  learning_module_id: 3
 }
