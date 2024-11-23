@@ -12,36 +12,30 @@ export default function HomePage() {
   useEffect(() => {
     const fetchData = async () => {
       const topics = await fetchAllDailyReviews();
-      getTotalFlashcardsCount(topics)
-      getTotalQuizzesCount(topics);
+      const { flashcards, quizzes } = getTotalCounts(topics);
+      setFlashcardsCount(flashcards);
+      setQuizzesCount(quizzes);
     }
 
     fetchData()
   }, [])
 
-  function getTotalFlashcardsCount(topics: Topic[]): void {
-    const allFlashcards = topics.reduce((total, topic) => {
-      const flashcardsInTopic = topic.learning_modules.reduce((sum, module) => sum + module.flashcards.length, 0);
-      return total + flashcardsInTopic;
-    }, 0);
-    setFlashcardsCount(allFlashcards);
-  }
+  const getTotalCounts = (topics: Topic[]) => {
+    return topics.reduce(
+      (totals, topic) => {
+        topic.learning_modules.forEach((module) => {
+          totals.flashcards += module.flashcards.length;
+          totals.quizzes += module.quizzes.length;
+        });
+        return totals;
+      },
+      { flashcards: 0, quizzes: 0 }
+    );
+  };
 
-  function getTotalQuizzesCount(topics: Topic[]): void {
-    const allQuizzes = topics.reduce((total, topic) => {
-      const quizzesInTopic = topic.learning_modules.reduce((sum, module) => sum + module.quizzes.length, 0);
-      return total + quizzesInTopic;
-    }, 0);
-    setQuizzesCount(allQuizzes);
-  }
-
-  const handleFlashcardsClick = () => {
-    navigate(`/flashcard-details?scope=all`)
-  }
-
-  const handleQuizzesClick = () => {
-    navigate(`/quiz-details?scope=all`)
-  }
+  const handleNavigation = (path: string) => {
+    navigate(`/${path}-details?scope=all`);
+  };
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl mt-20">
@@ -56,7 +50,7 @@ export default function HomePage() {
               <span className="text-2xl font-bold">{flashcardsCount}</span>
             </div>
             <button 
-              onClick={handleFlashcardsClick}
+              onClick={() => handleNavigation('flashcard')}
               className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300"
             >
               Review Flashcards
@@ -72,7 +66,7 @@ export default function HomePage() {
               <span className="text-2xl font-bold">{quizzesCount}</span>
             </div>
             <button 
-              onClick={handleQuizzesClick}
+              onClick={() => handleNavigation('quiz')}
               className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded transition duration-300"
             >
               Take Quizzes

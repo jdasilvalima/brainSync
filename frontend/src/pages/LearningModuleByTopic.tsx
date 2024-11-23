@@ -10,7 +10,8 @@ function toRoman(num: number): string {
   if(num >= 9){ return "IX" + toRoman(num - 9);}
   if(num >= 5){ return "V" + toRoman(num - 5);}
   if(num >= 4){ return "IV" + toRoman(num - 4);}
-  if(num >= 1){ return "I" + toRoman(num - 1);} 
+  if(num >= 1){ return "I" + toRoman(num - 1);}
+  return "";
 }
 
 export default function LearningModuleByTopic() {
@@ -56,7 +57,7 @@ export default function LearningModuleByTopic() {
 
       <div className="grid md:grid-cols-2 gap-6 mb-12">
         <button
-          onClick={() => handleQuizzesClick('topic', parseInt(topicId))}
+          onClick={() => handleQuizzesClick('topic', Number(topicId))}
           className="bg-white rounded-lg shadow-md p-6 text-left hover:shadow-lg transition-shadow"
         >
           <h3 className="text-lg font-semibold text-gray-900 mb-2">ALL QUIZZES</h3>
@@ -66,7 +67,7 @@ export default function LearningModuleByTopic() {
         </button>
 
         <button
-          onClick={() => handleFlashcardsClick('topic', parseInt(topicId))}
+          onClick={() => handleFlashcardsClick('topic', Number(topicId))}
           className="bg-white rounded-lg shadow-md p-6 text-left hover:shadow-lg transition-shadow"
         >
           <h3 className="text-lg font-semibold text-gray-900 mb-2">ALL FLASHCARDS</h3>
