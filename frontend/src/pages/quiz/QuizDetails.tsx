@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useLearningModules } from '../../contexts/LearningModuleContext'
 import { Quiz, useQuizzes, QuizStatus } from '../../contexts/QuizContext'
@@ -22,7 +22,7 @@ export default function QuizDetails() {
     const fetchData = async () => {
       if (scope === 'all') {
         const topics = await fetchAllDailyReviews();
-        getAllQuizzes(topics);
+        setQuizzes(getAllQuizzesFromTopics(topics));
       }
 
       if (scope === 'module' && id && statusFilter) {
@@ -37,18 +37,14 @@ export default function QuizDetails() {
     }
 
     fetchData()
-  }, [id, statusFilter])
+  }, [id, scope, statusFilter])
 
-  const currentQuiz = quizzes[currentQuizIndex] as Quiz | undefined
+  const currentQuiz = useMemo(() => quizzes[currentQuizIndex], [quizzes, currentQuizIndex]);
 
-  function getAllQuizzes(topics: Topic[]): void {
-    const allQuizzes = topics.reduce((allQuizzes, topic) => {
-      const quizzesInTopic = topic.learning_modules.reduce((moduleQuizzes, module) => {
-        return moduleQuizzes.concat(module.quizzes);
-      }, [] as Quiz[]);
-      return allQuizzes.concat(quizzesInTopic);
-    }, [] as Quiz[]);
-    setQuizzes(allQuizzes);
+  function getAllQuizzesFromTopics (topics: Topic[]): Quiz[] {
+    return topics.flatMap(topic =>
+      topic.learning_modules.flatMap(module => module.quizzes)
+    );
   }
 
   const handleAnswerSelect = (index: number) => {
@@ -59,12 +55,9 @@ export default function QuizDetails() {
   }
 
   const handleNextQuiz = async () => {
-    const userAnswer = getUserAnswer()
-    const quizToUpdate = {
-      ...currentQuiz,
-      study_status: userAnswer
-    }
+    const quizToUpdate = {...currentQuiz, study_status: getUserAnswer()}
     await updateQuiz(quizToUpdate);
+    
     if (currentQuizIndex < (quizzes.length || 0) - 1) {
       setCurrentQuizIndex(currentQuizIndex + 1)
       setSelectedAnswer(null)
@@ -89,7 +82,7 @@ export default function QuizDetails() {
     }
   }
 
-  if (quizzes.length <= 0 || !currentQuiz) {
+  if (!quizzes.length || !currentQuiz) {
     return (
       <div className="flex flex-col items-center justify-center h-screen gap-4">
         <div className="text-xl font-semibold text-gray-600">

@@ -15,8 +15,6 @@ export interface LearningModule {
 
 interface LearningModuleContextType {
   selectedLearningModule: LearningModule | undefined;
-  loading: boolean;
-  error: string | null;
   getLearningModule: (learningModuleId: number) => Promise<LearningModule>;
   getLearningModuleByTopicId: (topicId: number) => Promise<LearningModule[]>;
 }
@@ -25,8 +23,6 @@ const LearningModuleContext = createContext<LearningModuleContextType | undefine
 
 export const LearningModuleProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [selectedLearningModule, setSelectedLearningModule] = useState<LearningModule>();
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   const getLearningModule = useCallback(async (learningModuleId: number): Promise<LearningModule> => {
     try {
@@ -52,8 +48,6 @@ export const LearningModuleProvider: React.FC<{ children: React.ReactNode }> = (
   return (
     <LearningModuleContext.Provider value={{
       selectedLearningModule: selectedLearningModule,
-      loading,
-      error,
       getLearningModule: getLearningModule,
       getLearningModuleByTopicId: getLearningModuleByTopicId
     }}>

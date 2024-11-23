@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { ChevronDown } from 'lucide-react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useLearningModules } from '../../contexts/LearningModuleContext';
-import { useFlashcards } from '../../contexts/FlashcardContext';
+import { useFlashcards, Flashcard } from '../../contexts/FlashcardContext';
 
 
 export default function FlashcardList() {
@@ -24,25 +24,22 @@ export default function FlashcardList() {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (scope === 'topic') {
+      if (scope === 'topic' && id) {
         const topic = await getLearningModuleByTopicId(parseInt(id));
-        const allFlashcards = topic.reduce((flashcards, module) => {
-          if (module.flashcards && Array.isArray(module.flashcards)) {
-            return flashcards.concat(module.flashcards);
-          }
-          return flashcards;
+        const allFlashcards = topic.reduce<Flashcard[]>((acc, module) => {
+          return module.flashcards ? acc.concat(module.flashcards) : acc;
         }, []);
         setFlashcards(allFlashcards);
       }
       
-      if(scope === 'module') {
+      if(scope === 'module' && id) {
         const module = await getLearningModule(parseInt(id));
         setFlashcards(module.flashcards);
       }
     };
 
     fetchData();
-  }, [id, getLearningModule]);
+  }, [id, scope, getLearningModule, getLearningModuleByTopicId, setFlashcards]);
 
   const handleStartClick = () => {
     navigate(`/flashcard-details?scope=${scope}&id=${id}&status=${filter}`)
@@ -52,7 +49,7 @@ export default function FlashcardList() {
     ? flashcards 
     : flashcards.filter(card => card.study_status === filter)
 
-  if (!flashcards || flashcards.length <= 0) {
+  if (!flashcards || flashcards.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen">
         <h2 className="text-2xl font-bold mb-8 text-gray-700">Flashcards are baking...</h2>

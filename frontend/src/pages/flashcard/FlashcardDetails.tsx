@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
-import { Lightbulb, Pen, Save, BookOpen, ArrowLeft  } from 'lucide-react'
+import { Lightbulb, BookOpen, ArrowLeft  } from 'lucide-react'
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 import { useSearchParams, useNavigate } from 'react-router-dom'
-import { useTopics } from '../../contexts/TopicContext';
+import { useTopics, Topic } from '../../contexts/TopicContext';
 import { useLearningModules } from '../../contexts/LearningModuleContext';
 import { Flashcard, FlashcardStatus, useFlashcards } from '../../contexts/FlashcardContext';
 
@@ -13,7 +13,7 @@ export default function FlashcardDetails() {
   const { getLearningModule, selectedLearningModule } = useLearningModules()
   const { flashcards, updateFlashcard, fetchFlashcardsByLearningModuleIdIdAndStatus, fetchDailyReviewFlashcards, setFlashcards, fetchFlashcardsByTopicIdIdAndStatus } = useFlashcards()
   const [currentCardIndex, setCurrentCardIndex] = useState(0)
-  const [currentCard, setCurrentCard] = useState<Flashcard | null>(null)
+  const [currentCard, setCurrentCard] = useState<Flashcard>()
   const [showAnswer, setShowAnswer] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [editedText, setEditedText] = useState('')
@@ -28,23 +28,19 @@ export default function FlashcardDetails() {
     const initializeFlashcards = async () => {
       if (scope === 'all') {
         const topics = await fetchAllDailyReviews();
-        getAllFlashcards(topics);
+        setFlashcards(getAllFlashcards(topics));
       }
-
-      if (scope === 'module' && statusFilter) {
+      if (scope === 'module' && statusFilter && id) {
         await getLearningModule(parseInt(id));
-  
-        if(statusFilter === 'SPACED REPETITION') {
+        if (statusFilter === 'SPACED REPETITION') {
           await fetchDailyReviewFlashcards(parseInt(id));
         } else {
           await fetchFlashcardsByLearningModuleIdIdAndStatus(parseInt(id), statusFilter);
         }
       }
-
-      if (scope === 'topic' && statusFilter) {
+      if (scope === 'topic' && statusFilter && id) {
         await getTopic(parseInt(id));
-  
-        if(statusFilter === 'SPACED REPETITION') {
+        if (statusFilter === 'SPACED REPETITION') {
           const flashcards = await fetchDailyReviewFlashcardsByTopic(parseInt(id));
           setFlashcards(flashcards);
         } else {
@@ -62,14 +58,13 @@ export default function FlashcardDetails() {
     }
   }, [flashcards, currentCardIndex]);
 
-  function getAllFlashcards(topics: Topic[]): void {
-    const allFlashcards = topics.reduce((allFlashcards, topic) => {
+  function getAllFlashcards(topics: Topic[]): Flashcard[] {
+    return topics.reduce((allFlashcards, topic) => {
       const flashcardsInTopic = topic.learning_modules.reduce((moduleFlashcards, module) => {
         return moduleFlashcards.concat(module.flashcards);
       }, [] as Flashcard[]);
       return allFlashcards.concat(flashcardsInTopic);
     }, [] as Flashcard[]);
-    setFlashcards(allFlashcards);
   }
 
   const handleCardClick = () => {
@@ -79,28 +74,14 @@ export default function FlashcardDetails() {
     }
   }
 
-  const handleEdit = () => {
-    setIsEditing(true)
-    setEditedText(showAnswer ? currentCard.answer : currentCard.question)
-  }
-
-  const handleSave = () => {
-    // ToDo
-    if (showAnswer) {
-      currentCard.answer = editedText
-    } else {
-      currentCard.question = editedText
-    }
-    setCurrentCard(currentCard)
-    setIsEditing(false)
-  }
-
   const handleDifficultyClick = async (difficulty: string) => {
-    const cardToUpdate = {
-      ...currentCard,
-      study_status: FlashcardStatus[difficulty as keyof typeof FlashcardStatus]
+    if (currentCard?.id !== undefined) {
+      const cardToUpdate = {
+        ...currentCard,
+        study_status: FlashcardStatus[difficulty as keyof typeof FlashcardStatus]
+      }
+      await updateFlashcard(cardToUpdate)
     }
-    await updateFlashcard(cardToUpdate)
     if (currentCardIndex === flashcards.length - 1 && id) {
       navigate(`/flashcards-module?scope=${scope}&id=${id}`)
     } else if (currentCardIndex === flashcards.length - 1) {
@@ -166,15 +147,6 @@ export default function FlashcardDetails() {
                 }}
               >
                 {showAnswer ? <BookOpen size={24} /> : <Lightbulb size={24} />}
-              </button>
-              <button 
-                className="text-indigo-600 hover:text-indigo-800"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  isEditing ? handleSave() : handleEdit()
-                }}
-              >
-                {isEditing ? <Save size={24} /> : <Pen size={24} />}
               </button>
             </div>
             {isEditing ? (

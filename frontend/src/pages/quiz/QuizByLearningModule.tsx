@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { ChevronDown, Check, X } from 'lucide-react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useLearningModules } from '../../contexts/LearningModuleContext'
@@ -18,24 +18,19 @@ export default function QuizByTopic() {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (scope === 'module') {
+      if (scope === 'module' && id) {
         const module = await getLearningModule(parseInt(id))
         setQuizzes(module.quizzes);
       }
-      if (scope === 'topic') {
+      if (scope === 'topic' && id) {
         const topic = await getLearningModuleByTopicId(parseInt(id));
-        const allQuizzes = topic.reduce((quizzes, module) => {
-          if (module.quizzes && Array.isArray(module.quizzes)) {
-            return quizzes.concat(module.quizzes);
-          }
-          return quizzes;
-        }, []);
+        const allQuizzes = topic.flatMap(module => module.quizzes || []);
         setQuizzes(allQuizzes);
       }
     }
 
     fetchData()
-  }, [id, getLearningModule])
+  }, [id, scope, getLearningModule, getLearningModuleByTopicId, setQuizzes])
 
   const handleStartClick = () => {
     navigate(`/quiz-details?scope=${scope}&id=${id}&status=${filter}`)
@@ -56,13 +51,17 @@ export default function QuizByTopic() {
     }
   }
 
-  const filteredQuizzes = filter === 'ALL'
-  ? quizzes 
-  : quizzes.filter(quiz => quiz.study_status === filter)
+  const filteredQuizzes = useMemo(() => {
+    return filter === 'ALL'
+      ? quizzes
+      : quizzes.filter(quiz => quiz.study_status === filter);
+  }, [quizzes, filter]);
 
-  const correctQuizzes = quizzes.filter((quiz: Quiz) => quiz.study_status === QuizStatus.CORRECT).length || 0
+  const correctQuizzesCount = useMemo(() => {
+    return quizzes.filter(quiz => quiz.study_status === QuizStatus.CORRECT).length;
+  }, [quizzes]);
 
-  if (!quizzes || quizzes.length <= 0) {
+  if (!quizzes.length) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen">
         <h2 className="text-2xl font-bold mb-8 text-gray-700">No quizzes available</h2>
@@ -78,7 +77,7 @@ export default function QuizByTopic() {
             <h2 className="text-2xl font-bold">{selectedLearningModule?.quizzes.length} QUIZZES</h2>
             <h3 className="text-xl font-bold">{selectedLearningModule?.chapter}</h3>
             <span className="block text-lg font-normal text-gray-600 mt-1">
-              {correctQuizzes} / {quizzes.length} Correct
+              {correctQuizzesCount} / {quizzes.length} Correct
             </span>
           </div>
           <div className="flex space-x-4">
