@@ -1,18 +1,8 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo, useCallback } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTopics } from '../contexts/TopicContext'
-
-
-function toRoman(num: number): string {
-  if(num < 1){ return "";}
-  if(num >= 40){ return "XL" + toRoman(num - 40);}
-  if(num >= 10){ return "X" + toRoman(num - 10);}
-  if(num >= 9){ return "IX" + toRoman(num - 9);}
-  if(num >= 5){ return "V" + toRoman(num - 5);}
-  if(num >= 4){ return "IV" + toRoman(num - 4);}
-  if(num >= 1){ return "I" + toRoman(num - 1);}
-  return "";
-}
+import { toRoman } from '../utils/romanNumerals';
+import ModuleCard from '../components/ModuleCard';
 
 export default function LearningModuleByTopic() {
   const { getTopic, selectedTopic } = useTopics()
@@ -30,16 +20,25 @@ export default function LearningModuleByTopic() {
     fetchData()
   }, [topicId, getTopic])
 
-  const totalQuizzes = selectedTopic?.learning_modules.reduce((sum, module) => sum + module.quizzes.length, 0)
-  const totalFlashcards = selectedTopic?.learning_modules.reduce((sum, module) => sum + module.flashcards.length, 0)
+  const totalCounts = useMemo(() => {
+    if (!selectedTopic) return { quizzes: 0, flashcards: 0 };
 
-  const handleQuizzesClick = (scope: string, id: number) => {
-    navigate(`/quizzes-module?scope=${scope}&id=${id}`)
-  }
+    return selectedTopic.learning_modules.reduce(
+      (totals, module) => {
+        totals.quizzes += module.quizzes.length;
+        totals.flashcards += module.flashcards.length;
+        return totals;
+      },
+      { quizzes: 0, flashcards: 0 }
+    );
+  }, [selectedTopic]);
 
-  const handleFlashcardsClick = (scope: string, id: number) => {
-    navigate(`/flashcards-module?scope=${scope}&id=${id}`)
-  }
+  const handleNavigate = useCallback(
+    (path: string, scope: string, id: number) => {
+      navigate(`/${path}?scope=${scope}&id=${id}`);
+    },
+    [navigate]
+  );
 
   if (!selectedTopic) {
     return (
@@ -51,32 +50,21 @@ export default function LearningModuleByTopic() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl mt-20">
-      <h1 className="text-3xl font-bold mb-8">
-        TOPIC {selectedTopic.name.toUpperCase()}
-      </h1>
+      <h1 className="text-3xl font-bold mb-8">TOPIC {selectedTopic.name.toUpperCase()}</h1>
 
       <div className="grid md:grid-cols-2 gap-6 mb-12">
-        <button
-          onClick={() => handleQuizzesClick('topic', Number(topicId))}
-          className="bg-white rounded-lg shadow-md p-6 text-left hover:shadow-lg transition-shadow"
-        >
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">ALL QUIZZES</h3>
-          <p className="text-gray-600">
-            {totalQuizzes} {totalQuizzes === 1 ? 'item' : 'items'}
-          </p>
-        </button>
-
-        <button
-          onClick={() => handleFlashcardsClick('topic', Number(topicId))}
-          className="bg-white rounded-lg shadow-md p-6 text-left hover:shadow-lg transition-shadow"
-        >
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">ALL FLASHCARDS</h3>
-          <p className="text-gray-600">
-            {totalFlashcards} {totalFlashcards === 1 ? 'item' : 'items'}
-          </p>
-        </button>
+        <ModuleCard
+          title="ALL QUIZZES"
+          count={totalCounts.quizzes}
+          onClick={() => handleNavigate("quizzes-module", "topic", Number(topicId))}
+        />
+        <ModuleCard
+          title="ALL FLASHCARDS"
+          count={totalCounts.flashcards}
+          onClick={() => handleNavigate("flashcards-module", "topic", Number(topicId))}
+        />
       </div>
-      
+
       <div className="space-y-12">
         {selectedTopic.learning_modules
           .sort((a, b) => a.id - b.id)
@@ -87,29 +75,20 @@ export default function LearningModuleByTopic() {
               </h2>
               <p className="text-gray-600 mb-4">{module.details}</p>
               <div className="grid md:grid-cols-2 gap-6">
-                <button
-                  onClick={() => handleQuizzesClick('module', module.id)}
-                  className="bg-white rounded-lg shadow-md p-6 text-left hover:shadow-lg transition-shadow"
-                >
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">QUIZZES</h3>
-                  <p className="text-gray-600">
-                    {module.quizzes.length} {module.quizzes.length === 1 ? 'item' : 'items'}
-                  </p>
-                </button>
-
-                <button
-                  onClick={() => handleFlashcardsClick('module', module.id)}
-                  className="bg-white rounded-lg shadow-md p-6 text-left hover:shadow-lg transition-shadow"
-                >
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">FLASHCARDS</h3>
-                  <p className="text-gray-600">
-                    {module.flashcards.length} {module.flashcards.length === 1 ? 'item' : 'items'}
-                  </p>
-                </button>
+                <ModuleCard
+                  title="QUIZZES"
+                  count={module.quizzes.length}
+                  onClick={() => handleNavigate("quizzes-module", "module", module.id)}
+                />
+                <ModuleCard
+                  title="FLASHCARDS"
+                  count={module.flashcards.length}
+                  onClick={() => handleNavigate("flashcards-module", "module", module.id)}
+                />
               </div>
             </div>
           ))}
       </div>
     </div>
-  )
+  );
 }
