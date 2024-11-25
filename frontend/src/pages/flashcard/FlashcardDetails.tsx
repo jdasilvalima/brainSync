@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Lightbulb, BookOpen, ArrowLeft  } from 'lucide-react'
 import SyntaxHighlighter from 'react-syntax-highlighter';
 import { docco } from 'react-syntax-highlighter/dist/esm/styles/hljs';
@@ -13,10 +13,7 @@ export default function FlashcardDetails() {
   const { getLearningModule, selectedLearningModule } = useLearningModules()
   const { flashcards, updateFlashcard, fetchFlashcardsByLearningModuleIdIdAndStatus, fetchDailyReviewFlashcards, setFlashcards, fetchFlashcardsByTopicIdIdAndStatus } = useFlashcards()
   const [currentCardIndex, setCurrentCardIndex] = useState(0)
-  const [currentCard, setCurrentCard] = useState<Flashcard>()
   const [showAnswer, setShowAnswer] = useState(false)
-  const [isEditing, setIsEditing] = useState(false)
-  const [editedText, setEditedText] = useState('')
   const [showHint, setShowHint] = useState(false)
   const [searchParams] = useSearchParams()
   const id = searchParams.get('id');
@@ -24,77 +21,76 @@ export default function FlashcardDetails() {
   const scope = searchParams.get('scope');
   const navigate = useNavigate()
 
-  useEffect(() => {
-    const initializeFlashcards = async () => {
-      if (scope === 'all') {
+  const initializeFlashcards = useCallback(async () => {
+    if (!id || !scope) return;
+
+    switch (scope) {
+      case 'all': {
         const topics = await fetchAllDailyReviews();
         setFlashcards(getAllFlashcards(topics));
+        break;
       }
-      if (scope === 'module' && statusFilter && id) {
+      case 'module': {
         await getLearningModule(parseInt(id));
-        if (statusFilter === 'SPACED REPETITION') {
-          await fetchDailyReviewFlashcards(parseInt(id));
-        } else {
-          await fetchFlashcardsByLearningModuleIdIdAndStatus(parseInt(id), statusFilter);
-        }
+        const fetchFunction =
+          statusFilter === 'SPACED REPETITION'
+            ? fetchDailyReviewFlashcards
+            : fetchFlashcardsByLearningModuleIdIdAndStatus;
+        await fetchFunction(parseInt(id), statusFilter);
+        break;
       }
-      if (scope === 'topic' && statusFilter && id) {
+      case 'topic': {
         await getTopic(parseInt(id));
-        if (statusFilter === 'SPACED REPETITION') {
-          const flashcards = await fetchDailyReviewFlashcardsByTopic(parseInt(id));
-          setFlashcards(flashcards);
-        } else {
-          await fetchFlashcardsByTopicIdIdAndStatus(parseInt(id), statusFilter);
-        }
+        const fetchFunction =
+          statusFilter === 'SPACED REPETITION'
+            ? fetchDailyReviewFlashcardsByTopic
+            : fetchFlashcardsByTopicIdIdAndStatus;
+        await fetchFunction(parseInt(id), statusFilter);
+        break;
       }
-    };
-  
+    }
+  }, [id, scope, statusFilter]);
+
+  useEffect(() => {
     initializeFlashcards();
-  }, [id, statusFilter]);
+  }, [initializeFlashcards]);
   
   useEffect(() => {
     if (flashcards.length > 0) {
-      setCurrentCard(flashcards[currentCardIndex]);
+      setCurrentCardIndex(0);
     }
-  }, [flashcards, currentCardIndex]);
+  }, [flashcards]);
 
   function getAllFlashcards(topics: Topic[]): Flashcard[] {
-    return topics.reduce((allFlashcards, topic) => {
-      const flashcardsInTopic = topic.learning_modules.reduce((moduleFlashcards, module) => {
-        return moduleFlashcards.concat(module.flashcards);
-      }, [] as Flashcard[]);
-      return allFlashcards.concat(flashcardsInTopic);
-    }, [] as Flashcard[]);
+    return topics.flatMap(topic =>
+      topic.learning_modules.flatMap(module => module.flashcards)
+    );
   }
 
-  const handleCardClick = () => {
-    if (!isEditing) {
-      setShowAnswer(!showAnswer)
-      setShowHint(false)
-    }
-  }
+  const handleCardClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowAnswer(prev => !prev);
+    setShowHint(false);
+  };
 
-  const handleDifficultyClick = async (difficulty: string) => {
-    if (currentCard?.id !== undefined) {
-      const cardToUpdate = {
-        ...currentCard,
-        study_status: FlashcardStatus[difficulty as keyof typeof FlashcardStatus]
-      }
-      await updateFlashcard(cardToUpdate)
+  const handleDifficultyClick = async (difficulty: keyof typeof FlashcardStatus) => {
+    if (!flashcards[currentCardIndex]) return;
+
+    const updatedCard = {
+      ...flashcards[currentCardIndex],
+      study_status: FlashcardStatus[difficulty],
+    };
+
+    await updateFlashcard(updatedCard);
+
+    if (currentCardIndex === flashcards.length - 1) {
+      navigate(scope === 'module' ? `/flashcards-module?scope=${scope}&id=${id}` : '/');
+    } else {
+      setCurrentCardIndex(prevIndex => prevIndex + 1);
+      setShowAnswer(false);
+      setShowHint(false);
     }
-    if (currentCardIndex === flashcards.length - 1 && id) {
-      navigate(`/flashcards-module?scope=${scope}&id=${id}`)
-    } else if (currentCardIndex === flashcards.length - 1) {
-      navigate(`/`)
-    }
-    else {
-      setCurrentCardIndex((prevIndex) => prevIndex + 1)
-      setCurrentCard(flashcards[currentCardIndex]);
-      setShowAnswer(false)
-      setShowHint(false)
-      setIsEditing(false)
-    }
-  }
+  };
 
   const handleHint = () => {
     setShowHint(!showHint)
@@ -105,7 +101,7 @@ export default function FlashcardDetails() {
     return words.slice(0, 13).join(' ') + '...'
   }
 
-  if (flashcards.length <= 0 || !currentCard) {
+  if (flashcards.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-screen gap-4">
         <div className="text-xl font-semibold text-gray-600">
@@ -122,16 +118,15 @@ export default function FlashcardDetails() {
     );
   }
 
+  const currentCard = flashcards[currentCardIndex];
+
   return (
     <div className="flex flex-col h-screen">
       <main className="flex-grow flex items-center justify-center">
         <div className="w-full max-w-2xl">
-        {scope==='topic' && (
-          <h2 className="text-2xl font-bold mb-5">{selectedTopic?.name} Flashcards</h2>
-        )}
-        {scope==='module' && (
-          <h2 className="text-2xl font-bold mb-5">{selectedLearningModule?.chapter} Flashcards</h2>
-        )}
+          <h2 className="text-2xl font-bold mb-5">
+            {scope === 'topic' ? `${selectedTopic?.name} Flashcards` : `${selectedLearningModule?.chapter} Flashcards` }
+          </h2>
           <div 
             className={`rounded-xl shadow-lg p-8 w-full h-[400px] flex flex-col cursor-pointer ${
               showAnswer ? 'bg-indigo-50' : 'bg-white'
@@ -149,14 +144,6 @@ export default function FlashcardDetails() {
                 {showAnswer ? <BookOpen size={24} /> : <Lightbulb size={24} />}
               </button>
             </div>
-            {isEditing ? (
-              <textarea
-                className="flex-grow text-2xl font-semibold resize-none border-none focus:outline-none bg-transparent"
-                value={editedText}
-                onChange={(e) => setEditedText(e.target.value)}
-                onClick={(e) => e.stopPropagation()}
-              />
-            ) : (
               <div className="">
                 {showAnswer ? (
                   <>
@@ -175,7 +162,6 @@ export default function FlashcardDetails() {
                   </div>
                 )}
               </div>
-            )}
             {showHint && !showAnswer && (
               <div className="bg-indigo-100 p-4 rounded w-full">
                 <span className="text-indigo-600 font-medium">
@@ -193,18 +179,23 @@ export default function FlashcardDetails() {
             {currentCardIndex + 1} / {flashcards.length}
           </div>
           <div className="flex">
-            <button onClick={() => handleDifficultyClick('AGAIN')} className="px-6 py-4 bg-red-500 text-white rounded-l hover:bg-red-600 transition-colors duration-300">
-              AGAIN
-            </button>
-            <button onClick={() => handleDifficultyClick('HARD')} className="px-6 py-4 bg-orange-500 text-white hover:bg-orange-600 transition-colors duration-300">
-              HARD
-            </button>
-            <button onClick={() => handleDifficultyClick('GOOD')} className="px-6 py-4 bg-green-500 text-white hover:bg-green-600 transition-colors duration-300">
-              GOOD
-            </button>
-            <button onClick={() => handleDifficultyClick('EASY')} className="px-6 py-4 bg-blue-500 text-white rounded-r hover:bg-blue-600 transition-colors duration-300">
-              EASY
-            </button>
+            {['AGAIN', 'HARD', 'GOOD', 'EASY'].map(level => (
+              <button
+                key={level}
+                onClick={() => handleDifficultyClick(level as keyof typeof FlashcardStatus)}
+                className={`px-6 py-4 text-white ${
+                  level === 'AGAIN'
+                    ? 'bg-red-500 hover:bg-red-600'
+                    : level === 'HARD'
+                    ? 'bg-orange-500 hover:bg-orange-600'
+                    : level === 'GOOD'
+                    ? 'bg-green-500 hover:bg-green-600'
+                    : 'bg-blue-500 hover:bg-blue-600'
+                } transition-colors duration-300`}
+              >
+                {level}
+              </button>
+            ))}
           </div>
         </div>
       </footer>

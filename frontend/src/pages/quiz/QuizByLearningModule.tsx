@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { ChevronDown, Check, X } from 'lucide-react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useLearningModules } from '../../contexts/LearningModuleContext'
@@ -7,7 +7,7 @@ import { Quiz, QuizStatus, useQuizzes } from '../../contexts/QuizContext'
 
 type FilterStatus = 'ALL' | 'UNSTUDIED' | 'CORRECT' | 'INCORRECT'
 
-export default function QuizByTopic() {
+export default function QuizByLearningModule() {
   const { getLearningModule, selectedLearningModule, getLearningModuleByTopicId } = useLearningModules()
   const { setQuizzes, quizzes } = useQuizzes();
   const [filter, setFilter] = useState<FilterStatus>('ALL')
@@ -16,50 +16,57 @@ export default function QuizByTopic() {
   const id = searchParams.get('id');
   const scope = searchParams.get('scope');
 
-  useEffect(() => {
-    const fetchData = async () => {
-      if (scope === 'module' && id) {
-        const module = await getLearningModule(parseInt(id))
-        setQuizzes(module.quizzes);
-      }
-      if (scope === 'topic' && id) {
+  const fetchData = useCallback(async () => {
+    if (!id || !scope) return;
+
+    try {
+      if (scope === 'module') {
+        const module = await getLearningModule(parseInt(id));
+        setQuizzes(module.quizzes || []);
+      } else if (scope === 'topic') {
         const topic = await getLearningModuleByTopicId(parseInt(id));
-        const allQuizzes = topic.flatMap(module => module.quizzes || []);
+        const allQuizzes = topic.flatMap((module) => module.quizzes || []);
         setQuizzes(allQuizzes);
       }
+    } catch (error) {
+      console.error('Error fetching quizzes:', error);
     }
+  }, [id, scope, getLearningModule, getLearningModuleByTopicId, setQuizzes]);
 
-    fetchData()
-  }, [id, scope, getLearningModule, getLearningModuleByTopicId, setQuizzes])
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const handleStartClick = () => {
     navigate(`/quiz-details?scope=${scope}&id=${id}&status=${filter}`)
   }
 
-  const getStatusIcon = (isCorrect: QuizStatus) => {
-    switch (isCorrect) {
+  const getStatusIcon = (status: QuizStatus) => {
+    switch (status) {
       case QuizStatus.CORRECT:
-        return <Check className="w-8 h-8 text-green-500" />
+        return <Check className="w-8 h-8 text-green-500" />;
       case QuizStatus.INCORRECT:
-        return <X className="w-8 h-8 text-red-500" />
+        return <X className="w-8 h-8 text-red-500" />;
       case QuizStatus.UNSTUDIED:
         return (
           <span className="px-3 py-1 text-sm font-semibold text-gray-600 bg-gray-200 rounded-full">
             UNSTUDIED
           </span>
-        )
+        );
+      default:
+        return <></>;
     }
-  }
+  };
 
   const filteredQuizzes = useMemo(() => {
-    return filter === 'ALL'
-      ? quizzes
-      : quizzes.filter(quiz => quiz.study_status === filter);
+    if (filter === 'ALL') return quizzes;
+    return quizzes.filter((quiz) => quiz.study_status === filter);
   }, [quizzes, filter]);
 
-  const correctQuizzesCount = useMemo(() => {
-    return quizzes.filter(quiz => quiz.study_status === QuizStatus.CORRECT).length;
-  }, [quizzes]);
+  const correctQuizzesCount = useMemo(
+    () => quizzes.filter((quiz) => quiz.study_status === QuizStatus.CORRECT).length,
+    [quizzes]
+  );
 
   if (!quizzes.length) {
     return (
@@ -72,10 +79,10 @@ export default function QuizByTopic() {
   return (
     <div className="mt-16">
       <main className="container mx-auto px-4 py-8 w-full max-w-2xl">
-        <div className="flex justify-between items-center mb-6">
+        <header className="flex justify-between items-center mb-6">
           <div>
-            <h2 className="text-2xl font-bold">{selectedLearningModule?.quizzes.length} QUIZZES</h2>
-            <h3 className="text-xl font-bold">{selectedLearningModule?.chapter}</h3>
+            <h2 className="text-2xl font-bold">{quizzes.length} QUIZZES</h2>
+            <h3 className="text-xl font-bold">{selectedLearningModule?.chapter || ''}</h3>
             <span className="block text-lg font-normal text-gray-600 mt-1">
               {correctQuizzesCount} / {quizzes.length} Correct
             </span>
@@ -87,41 +94,48 @@ export default function QuizByTopic() {
             >
               START
             </button>
-            <div className="relative">
-              <select 
-                className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 leading-tight focus:outline-none focus:border-[#6C5CE7] min-w-[120px]"
-                value={filter}
-                onChange={(e) => setFilter(e.target.value as FilterStatus)}
-              >
-                <option value="ALL">ALL</option>
-                <option value="UNSTUDIED">UNSTUDIED</option>
-                <option value="CORRECT">CORRECT</option>
-                <option value="INCORRECT">INCORRECT</option>
-              </select>
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
-                <ChevronDown size={20} />
-              </div>
-            </div>
+            <FilterDropdown filter={filter} setFilter={setFilter} />
           </div>
-        </div>
-        
-        <div className="space-y-4">
-          {filteredQuizzes?.map((quiz: Quiz) => (
-            <div 
-              key={quiz.id} 
-              className="bg-white rounded-lg shadow-md p-6 flex justify-between items-start"
-            >
-              <div className="flex-1 pr-4">
-                <h3 className="font-semibold text-lg mb-2">{quiz.question}</h3>
-                <p className="text-gray-600">{quiz.options[quiz.answer_index]}</p>
-              </div>
-              <div className="flex-shrink-0">
-                {getStatusIcon(quiz.study_status)}
-              </div>
-            </div>
-          ))}
-        </div>
+        </header>
+
+        <QuizList quizzes={filteredQuizzes} getStatusIcon={getStatusIcon} />
       </main>
     </div>
-  )
+  );
+}
+
+function FilterDropdown({ filter, setFilter }: { filter: FilterStatus; setFilter: (filter: FilterStatus) => void }) {
+  return (
+    <div className="relative">
+      <select
+        className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-8 leading-tight focus:outline-none focus:border-[#6C5CE7] min-w-[120px]"
+        value={filter}
+        onChange={(e) => setFilter(e.target.value as FilterStatus)}
+      >
+        <option value="ALL">ALL</option>
+        <option value="UNSTUDIED">UNSTUDIED</option>
+        <option value="CORRECT">CORRECT</option>
+        <option value="INCORRECT">INCORRECT</option>
+      </select>
+      <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+        <ChevronDown size={20} />
+      </div>
+    </div>
+  );
+}
+
+function QuizList({ quizzes, getStatusIcon }: { quizzes: Quiz[]; getStatusIcon: (status: QuizStatus) => JSX.Element }) {
+  return (
+    <div className="space-y-4">
+      {quizzes.map((quiz) => (
+        <div key={quiz.id} className="bg-white rounded-lg shadow-md p-6 flex justify-between items-start">
+          <div className="flex-1 pr-4">
+            <h3 className="font-semibold text-lg mb-2">{quiz.question}</h3>
+            <p className="text-gray-600">{quiz.options[quiz.answer_index]}</p>
+          </div>
+          <div className="flex-shrink-0">{getStatusIcon(quiz.study_status)}</div>
+        </div>
+      ))}
+    </div>
+  );
 }

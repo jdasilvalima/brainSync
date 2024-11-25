@@ -3,32 +3,48 @@ import { useTopics } from '../contexts/TopicContext';
 import { useFlashcards } from '../contexts/FlashcardContext';
 import { useNavigate } from 'react-router-dom'
 
-export default function FlashcardCollection() {
+export default function TopicCollection() {
   const [newTopic, setNewTopic] = useState('')
+  const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate()
   const { topics, loading, fetchTopics, createTopic } = useTopics();
   const { createFlashcardsWithAi } = useFlashcards();
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
-      await fetchTopics();
+      try {
+        await fetchTopics();
+      } catch (err) {
+        console.error('Error fetching topics:', err);
+        setError('Failed to load topics. Please try again later.');
+      }
     }
 
     fetchData()
   }, [fetchTopics]);
 
+  const validateTopic = (topic: string) => {
+    return topic.trim().length > 0;
+  };
+
   const handleCreate = async () => {
-    if (newTopic.trim()) {
-      try {
-        const topicCreated = await createTopic(newTopic.trim());
-        await createFlashcardsWithAi(topicCreated.id);
-        await fetchTopics();
-        setNewTopic('');
-      } catch (error) {
-        console.error('Error creating topic:', error);
-        setError(error instanceof Error ? error.message : 'Error creating topic with its flashcards by AI');
-      }
+    if (!validateTopic(newTopic)) {
+      setError('Topic name cannot be empty.');
+      return;
+    }
+    try {
+      setError(null);
+      const topicCreated = await createTopic(newTopic.trim());
+      await createFlashcardsWithAi(topicCreated.id);
+      await fetchTopics();
+      setNewTopic('');
+    } catch (err) {
+      console.error('Error creating topic:', err);
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'An error occurred while creating the topic and flashcards.'
+      );
     }
   };
 
@@ -36,8 +52,21 @@ export default function FlashcardCollection() {
     navigate(`/modules-topic?topicId=${id}`)
   }
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-lg font-semibold text-gray-600">Loading topics...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <p className="text-lg font-semibold text-red-600">Error: {error}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="mt-16">  

@@ -1,11 +1,18 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { ChevronDown } from 'lucide-react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useLearningModules } from '../../contexts/LearningModuleContext';
 import { useFlashcards, Flashcard } from '../../contexts/FlashcardContext';
 
+const statusColors: Record<string, string> = {
+  AGAIN: 'bg-red-500',
+  HARD: 'bg-orange-500',
+  GOOD: 'bg-green-500',
+  EASY: 'bg-blue-500',
+  UNSTUDIED: 'bg-gray-500',
+};
 
-export default function FlashcardList() {
+export default function FlashcardByLearningModule() {
   const { getLearningModule, selectedLearningModule, getLearningModuleByTopicId } = useLearningModules();
   const { setFlashcards, flashcards } = useFlashcards();
   const [filter, setFilter] = useState<string>('SPACED REPETITION')
@@ -14,40 +21,37 @@ export default function FlashcardList() {
   const id = searchParams.get('id');
   const scope = searchParams.get('scope');
 
-  const statusColors = {
-    'AGAIN': 'bg-red-500',
-    'HARD': 'bg-orange-500',
-    'GOOD': 'bg-green-500',
-    'EASY': 'bg-blue-500',
-    'UNSTUDIED': 'bg-gray-500'
-  }
-
   useEffect(() => {
-    const fetchData = async () => {
-      if (scope === 'topic' && id) {
-        const topic = await getLearningModuleByTopicId(parseInt(id));
-        const allFlashcards = topic.reduce<Flashcard[]>((acc, module) => {
-          return module.flashcards ? acc.concat(module.flashcards) : acc;
-        }, []);
-        setFlashcards(allFlashcards);
-      }
-      
-      if(scope === 'module' && id) {
-        const module = await getLearningModule(parseInt(id));
-        setFlashcards(module.flashcards);
+    const fetchFlashcards = async () => {
+      if (!id || !scope) return;
+
+      try {
+        if (scope === 'topic') {
+          const topic = await getLearningModuleByTopicId(parseInt(id));
+          const allFlashcards = topic.reduce<Flashcard[]>((acc, module) => {
+            return module.flashcards ? acc.concat(module.flashcards) : acc;
+          }, []);
+          setFlashcards(allFlashcards);
+        } else if (scope === 'module') {
+          const module = await getLearningModule(parseInt(id));
+          setFlashcards(module.flashcards || []);
+        }
+      } catch (error) {
+        console.error('Error fetching flashcards:', error);
       }
     };
 
-    fetchData();
+    fetchFlashcards();
   }, [id, scope, getLearningModule, getLearningModuleByTopicId, setFlashcards]);
 
   const handleStartClick = () => {
     navigate(`/flashcard-details?scope=${scope}&id=${id}&status=${filter}`)
   }
 
-  const filteredFlashcards = filter === 'ALL' || filter === 'SPACED REPETITION'
-    ? flashcards 
-    : flashcards.filter(card => card.study_status === filter)
+  const filteredFlashcards = useMemo(() => {
+    if (filter === 'ALL' || filter === 'SPACED REPETITION') return flashcards;
+    return flashcards.filter((card) => card.study_status === filter);
+  }, [flashcards, filter]);
 
   if (!flashcards || flashcards.length === 0) {
     return (
