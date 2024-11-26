@@ -22,7 +22,7 @@
 ### I.2 Goals
 This project is designed as a personal learning initiative with the following goals:
 
-- Deepen knowledge in Artificial Intelligence
+- Deepen knowledge in Artificial Intelligence, with a particular focus on developing localized solutions
 - Learn frontend development with React
 - Explore backend development using Python and Flask
 
@@ -83,6 +83,7 @@ The front-end container will be build with the previous command 'docker-compose 
 
 ## III. APPLICATION ARCHITECTURE
 ### III.1 Database
+Below is a schema illustrating the structure and relationships between the database tables.
 <p align="center">
   <img src="./readme-doc/tables.png" alt="Tables">
 </p>
@@ -96,10 +97,9 @@ We are using a **Model-Controller-Service arhictecture**. Each module follows a 
 
 ![Backend Architecture](./readme-doc/be-architecture.png)
 
-The application uses a utility layer for shared functionality like decorators and exception handling. 
-
 ### III.1 Frontend
-WIP
+The following schema illustrates how the pages in the application are interconnected, highlighting the navigation flow and their hierarchical relationships.
+![FrontEnd Architecture](./readme-doc/fe-architecture.png)
 
 
 ## IV. REFERENCES
