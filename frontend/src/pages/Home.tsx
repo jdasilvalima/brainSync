@@ -57,7 +57,7 @@ export default function HomePage() {
   ], [flashcardsCount, quizzesCount]);
 
   const handleNavigation = (path: string) => {
-    navigate(`/${path}-details?scope=all`);
+    navigate(`/${path}-details?scope=all&id=0`);
   };
 
   return (
