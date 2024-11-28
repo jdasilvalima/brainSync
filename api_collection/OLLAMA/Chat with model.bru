@@ -13,7 +13,7 @@ post {
 body:json {
   {
     "model": "llama3.2",
-    "prompt": "You are an expert on the topic: JavaScript. Generate a detailed learning curriculum with 10 structured learning modules in JSON format, specifically related to the topic: JavaScript. The JSON should be an array of 10 objects under the root key \"modules\", representing a study plan. Each object must include the fields \"chapter\" and \"details\". - The \"chapter\" field should provide a concise, descriptive title that covers foundational to advanced aspects of the topic in a logical sequence. - The \"details\" field should provide an in-depth explanation or overview of the content to be covered in the chapter.",
+    "prompt": "You are an expert on the topic: C++. Generate 10 flashcards as JSON related to this sub-topic: Variables and Data Types. Use the following information about the sub-topic for context: Learn about the different data types in C++, including integers, floats, characters, and strings. Understand how to declare and initialize variables, and learn about the different operators for comparing values. The JSON should be an array of 10 objects, where each object contains \"question\", \"answer\", and \"example\" fields. Each \"example\" should be a relevant code snippet or practical demonstration related to the flashcard's question, when applicable. Snippet of code will be formatted with \t for tabs and \n for new lines as needed. Please use \"flashcards\" as a root key for the json.",
     "stream": false,
     "format": "json"
   }

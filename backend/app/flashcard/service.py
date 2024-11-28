@@ -36,15 +36,21 @@ class FlashcardService:
         return flashcard
 
 
+    @staticmethod
+    def _get_topic(topic_id: int) -> Topic:
+        topic = Topic.query.get(topic_id)
+        if not topic:
+            raise ResourceNotFoundError(f"Topic with ID {topic_id} not found")
+        return topic
+
+
     def get_flashcards_by_learning_module(self, learning_module_id: int) -> List[Flashcard]:
         self._get_learning_module(learning_module_id)
         return Flashcard.query.filter_by(learning_module_id=learning_module_id).all()
 
 
     def get_flashcards_by_topic(self, topic_id: int) -> List[Flashcard]:
-        topic = Topic.query.get(topic_id)
-        if not topic:
-            raise ResourceNotFoundError(f"Topic with ID {topic_id} not found")
+        topic = self._get_topic(topic_id)
         learning_module_ids = [module.id for module in topic.learning_modules]
         return Flashcard.query.filter(Flashcard.learning_module_id.in_(learning_module_ids)).all()
 
@@ -103,8 +109,9 @@ class FlashcardService:
 
     def create_flashcards_with_ai(self, learning_module_id: int) -> List[Flashcard]:
         learning_module = self._get_learning_module(learning_module_id)
+        topic = self._get_topic(learning_module.topic_id)
 
-        flashcard_data = self._get_flashcards_json_from_ai(learning_module.chapter)
+        flashcard_data = self._get_flashcards_json_from_ai(topic.name, learning_module.chapter, learning_module.details)
         flashcards_to_add = []
         for fc in flashcard_data:
             question = fc.get('question')
@@ -126,21 +133,12 @@ class FlashcardService:
         return flashcards_to_add
 
     
-    def _get_flashcards_json_from_ai(self, learning_module_chapter: str) -> List[dict[str, str]]:
-        # query = (
-        #     f"You are an expert on the topic: {topic_name}. "
-        #     f"Generate 10 flashcards as JSON related to the topic: {topic_name}. "
-        #     "The JSON should be an array of objects, where each object contains 'question' and 'answer' fields."
-        #     "Ensure the JSON is valid and correctly formatted as an array of objects."
-        #     "The output must be a well-formed JSON array like this:\n"
-        #     "[{\"question\": \"Question 1 ?\", \"answer\": \"Answer 1\"}, {\"question\": \"Question 2 ?\", \"answer\": \"Answer 2\"}]"
-        #     "Return only the JSON array without any additional text, explanation, or examples."
-        #     "Be sure to close the JSON array properly to make it valid ]."
-        # )
+    def _get_flashcards_json_from_ai(self, topic_name: str, learning_module_chapter: str, learning_module_details: str) -> List[dict[str, str]]:
         query = (
-            f"You are an expert on the topic: {learning_module_chapter}. "
-            f"Generate 5 flashcards as JSON related to the topic: {learning_module_chapter}. "
-            "The JSON should be an array of 5 objects, where each object contains \"question\", \"answer\", and \"example\" fields. "
+            f"You are an expert on the topic: {topic_name}. "
+            f"Generate 10 flashcards as JSON related to this sub-topic: {learning_module_chapter}. "
+            f"Use the following information about the sub-topic for context: {learning_module_details}"
+            "The JSON should be an array of 10 objects, where each object contains \"question\", \"answer\", and \"example\" fields. "
             "Each \"example\" should be a relevant code snippet or practical demonstration related to the flashcard's question, when applicable. "
             "Snippet of code will be formatted with \t for tabs and \n for new lines as needed. "
             "Please use \"flashcards\" as a root key for the json."
