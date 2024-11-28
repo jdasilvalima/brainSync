@@ -1,0 +1,15 @@
+meta {
+  name: Create learning modules with AI
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{BASE_URL}}/v1/modules/topic/{{topic_id}}/ai
+  body: none
+  auth: none
+}
+
+vars:pre-request {
+  topic_id: 10
+}

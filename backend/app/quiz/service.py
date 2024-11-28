@@ -24,15 +24,21 @@ class QuizService:
         return quiz
 
 
+    @staticmethod
+    def _get_topic(topic_id: int) -> Topic:
+        topic = Topic.query.get(topic_id)
+        if not topic:
+            raise ResourceNotFoundError(f"Topic with ID {topic_id} not found")
+        return topic
+
+
     def get_quizzes_by_learning_module(self, learning_module_id: int) -> List[Quiz]:
         self._get_learning_module(learning_module_id)
         return Quiz.query.filter_by(learning_module_id=learning_module_id).all()
 
 
     def get_quizzes_by_topic(self, topic_id: int) -> List[Quiz]:
-        topic = Topic.query.get(topic_id)
-        if not topic:
-            raise ResourceNotFoundError(f"Topic with ID {topic_id} not found")
+        topic = self._get_topic(topic_id)
         learning_module_ids = [module.id for module in topic.learning_modules]
         return Quiz.query.filter(Quiz.learning_module_id.in_(learning_module_ids)).all()
 
@@ -43,9 +49,7 @@ class QuizService:
 
 
     def get_quizzes_by_topic_and_status(self, topic_id: int, status: str) -> List[Quiz]:
-        topic = Topic.query.get(topic_id)
-        if not topic:
-            raise ResourceNotFoundError(f"Topic with ID {topic_id} not found")
+        topic = self._get_topic(topic_id)
         learning_module_ids = [module.id for module in topic.learning_modules]
         return Quiz.query.filter(
             (Quiz.study_status == status) & 
@@ -82,43 +86,46 @@ class QuizService:
 
     def create_quizzes_with_ai(self, learning_module_id: int) -> List[Quiz]:
         learning_module = self._get_learning_module(learning_module_id)
+        topic = self._get_topic(learning_module.topic_id)
 
-        quiz_data = self._get_quizzes_json_from_ai(learning_module.chapter)
+        quiz_data = self._get_quizzes_json_from_ai(topic.name, learning_module.chapter, learning_module.details)
         quizzes_to_add = []
         for fc in quiz_data:
             type = fc.get('type')
             question = fc.get('question')
-            answer = fc.get('answer')
+            answer_index = fc.get('answer')
             options = fc.get('options')
             explanation = fc.get('explanation')
 
-            if question and answer:
+            if question and answer_index:
                 new_quiz = Quiz(
                     type=QuizType(type),
                     question=question,
-                    answer=answer,
+                    answer_index=answer_index,
                     options=options,
                     explanation=explanation,
                     learning_module_id=learning_module_id
                 )
                 quizzes_to_add.append(new_quiz)
-
+        logger.info(f"quizzes_to_add {quizzes_to_add}")
         db.session.bulk_save_objects(quizzes_to_add)
         db.session.commit()
         return quizzes_to_add
 
 
-    def _get_quizzes_json_from_ai(self, learning_module_chapter: str) -> List[dict[str, str]]:
+    def _get_quizzes_json_from_ai(self, topic_name: str, learning_module_chapter: str, learning_module_details: str) -> List[dict[str, str]]:
         query = (
-            f"You are an expert on the topic: {learning_module_chapter}. "
-            f"Generate 5 quizzes as JSON related to the topic: {learning_module_chapter}. "
-            "The JSON should be an array of 5 objects, where each object contains \"type\", \"question\", \"answer\", \"options\", and \"explanation\" fields. "
-            "\"type\" is a balanced mix between 'SINGLE_CHOICE' or 'TRUE_FALSE' values. "
-            "For 'TRUE_FALSE' questions, the \"options\" field must contain exactly two values: \"true\" and \"false\". "
-            "For 'SINGLE_CHOICE' questions, the \"options\" array should contain several plausible answers, one of which is correct.  "
-            "Set the \"answer\" to the index of the correct answer within the \"options\" array, making sure it correctly points to the correct option. "
-            "Each question should be followed by an informative \"explanation\" that clarifies why the answer is correct, and provides relevant details. "
-            "Please use \"quizzes\" as a root key for the json."
+            f"You are an expert on the topic: {topic_name}. "
+            f"Generate 10 quizzes as JSON related to the sub-topic: {learning_module_chapter}. "
+            f"Use the following details about the sub-topic as context: {learning_module_details}. "
+            "The JSON should be structured as an array of 10 objects under the root key \"quizzes\". Each object must include the following fields: "
+            "- \"type\": A value that indicates the quiz type, chosen between 'SINGLE_CHOICE' and 'TRUE_FALSE'. Ensure an even distribution of these types across the 10 quizzes. "
+            "- \"question\": A clear, engaging question related to the sub-topic, suitable for the quiz type. "
+            "\"options\": An array of possible answers. "
+            "   - For 'TRUE_FALSE' questions, include exactly two options: \"true\" and \"false\". "
+            "   - For 'SINGLE_CHOICE' questions, include 3–5 plausible options, with only one being correct."
+            "\"answer\": index of the correct option within the \"options\" array. "
+            "- \"explanation\": A detailed, informative explanation that clarifies why the chosen answer is correct and provides additional insights into the topic. "
         )
         response = cached_llm.invoke(query)
         logger.info(f"response {response}")

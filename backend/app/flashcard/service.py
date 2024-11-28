@@ -136,7 +136,7 @@ class FlashcardService:
     def _get_flashcards_json_from_ai(self, topic_name: str, learning_module_chapter: str, learning_module_details: str) -> List[dict[str, str]]:
         query = (
             f"You are an expert on the topic: {topic_name}. "
-            f"Generate 10 flashcards as JSON related to this sub-topic: {learning_module_chapter}. "
+            f"Generate 10 flashcards as JSON related to the sub-topic: {learning_module_chapter}. "
             f"Use the following information about the sub-topic for context: {learning_module_details}"
             "The JSON should be an array of 10 objects, where each object contains \"question\", \"answer\", and \"example\" fields. "
             "Each \"example\" should be a relevant code snippet or practical demonstration related to the flashcard's question, when applicable. "
