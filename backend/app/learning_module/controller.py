@@ -49,6 +49,18 @@ def create_learning_modules():
         return jsonify({"error": str(e)}), 400
 
 
+@learning_module_bp.route('/topic/<int:topic_id>/ai', methods=['POST'])
+def create_learning_module_with_ai(topic_id):
+    try:
+        new_learning_module = learning_module_service.create_learning_module_with_ai(topic_id)
+        return jsonify(learning_module_schema.dump(new_learning_module)), 201
+    except ResourceNotFoundError as e:
+        return jsonify({"error": str(e)}), 400
+    except Exception as e:
+        logger.error(f"error while calling method create_learning_module_with_ai : {e}")
+        return jsonify({"error": str(e)}), 500
+
+
 @learning_module_bp.route('/<int:learning_module_id>', methods=['PUT'])
 def update_learning_module(learning_module_id):
     try:
@@ -63,7 +75,6 @@ def update_learning_module(learning_module_id):
         return jsonify({"error": str(e)}), 500
 
 
-#ToDo : endpoint to verify
 @learning_module_bp.route('/<int:learning_module_id>', methods=['DELETE'])
 def delete_learning_module(learning_module_id):
     try:

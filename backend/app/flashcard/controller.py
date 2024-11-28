@@ -103,7 +103,6 @@ def update_flashcard(flashcard_id):
         return jsonify({"error": str(e)}), 500
 
 
-#ToDo : endpoint to verify
 @flashcard_bp.route('/<int:flashcard_id>', methods=['DELETE'])
 def delete_flashcard(flashcard_id):
     try:
