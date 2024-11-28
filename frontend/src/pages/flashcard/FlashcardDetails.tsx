@@ -34,8 +34,8 @@ export default function FlashcardDetails() {
         await getLearningModule(parseInt(id));
         const fetchFunction =
           statusFilter === 'SPACED REPETITION'
-            ? fetchDailyReviewFlashcards
-            : fetchFlashcardsByLearningModuleIdIdAndStatus;
+            ? await fetchDailyReviewFlashcards
+            : await fetchFlashcardsByLearningModuleIdIdAndStatus;
         await fetchFunction(parseInt(id), statusFilter);
         break;
       }
@@ -43,8 +43,8 @@ export default function FlashcardDetails() {
         await getTopic(parseInt(id));
         const fetchFunction =
           statusFilter === 'SPACED REPETITION'
-            ? fetchDailyReviewFlashcardsByTopic
-            : fetchFlashcardsByTopicIdIdAndStatus;
+            ? await fetchDailyReviewFlashcardsByTopic
+            : await fetchFlashcardsByTopicIdIdAndStatus;
         await fetchFunction(parseInt(id), statusFilter);
         break;
       }

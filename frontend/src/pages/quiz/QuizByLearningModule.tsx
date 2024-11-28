@@ -9,8 +9,9 @@ type FilterStatus = 'ALL' | 'UNSTUDIED' | 'CORRECT' | 'INCORRECT'
 
 export default function QuizByLearningModule() {
   const { getLearningModule, selectedLearningModule, getLearningModuleByTopicId } = useLearningModules()
-  const { setQuizzes, quizzes } = useQuizzes();
+  const { setQuizzes, quizzes, createQuizzesWithAi } = useQuizzes();
   const [filter, setFilter] = useState<FilterStatus>('ALL')
+  const [isCreatingQuizzes, setIsCreatingQuizzes] = useState(false)
   const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const id = searchParams.get('id');
@@ -41,6 +42,19 @@ export default function QuizByLearningModule() {
     navigate(`/quiz-details?scope=${scope}&id=${id}&status=${filter}`)
   }
 
+  const handleCreateQuizzesWithAi = async () => {
+    if (!id) return;
+    setIsCreatingQuizzes(true);
+    try {
+      const newQuizzes = await createQuizzesWithAi(parseInt(id));
+      setQuizzes(newQuizzes);
+    } catch (error) {
+      console.error('Error creating quizzes with AI:', error);
+    } finally {
+      setIsCreatingQuizzes(false);
+    }
+  }
+
   const getStatusIcon = (status: QuizStatus) => {
     switch (status) {
       case QuizStatus.CORRECT:
@@ -69,12 +83,39 @@ export default function QuizByLearningModule() {
   );
 
   if (!quizzes.length) {
+    if (scope === 'module') {
+      return (
+        <div className="flex flex-col items-center justify-center min-h-screen">
+          {isCreatingQuizzes ? (
+            <div className="flex flex-col items-center justify-center min-h-screen">
+              <h2 className="text-2xl font-bold mb-8 text-gray-700">Quizzes are baking...</h2>
+              <img
+                src="https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExMnhrc2Jobjk0czJjbTM1NWV4NHFoN3YwMDJrcXNpNzM0dzB1amFsNyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/demgpwJ6rs2DS/giphy.gif"
+                alt="Person baking"
+                className="rounded-lg max-w-sm"
+              />
+            </div>
+          ) : (
+            <>
+              <h2 className="text-2xl font-bold mb-8 text-gray-700">No quizzes available</h2>
+              <button
+                onClick={handleCreateQuizzesWithAi}
+                className="bg-indigo-600 text-white px-8 py-2 rounded-lg hover:bg-[#5A4BD5] transition-colors font-semibold"
+              >
+                Create quizzes with AI
+              </button>
+            </>
+          )}
+        </div>
+      )
+    }
     return (
       <div className="flex flex-col items-center justify-center min-h-screen">
         <h2 className="text-2xl font-bold mb-8 text-gray-700">No quizzes available</h2>
       </div>
     )
   }
+
 
   return (
     <div className="mt-16">

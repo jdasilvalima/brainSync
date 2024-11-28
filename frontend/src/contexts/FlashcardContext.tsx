@@ -81,7 +81,7 @@ export const FlashcardProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const createFlashcardsWithAi = async (learningModuleId: number): Promise<Flashcard[]> => {
     try {
       const responseFlashcards = await axios.post(`http://127.0.0.1:5000/api/v1/flashcards/learning_module/${learningModuleId}/ai`);
-      return responseFlashcards.data.flashcards;
+      return responseFlashcards.data;
     } catch (error) {
       console.error('Error creating topic:', error);
       throw error;

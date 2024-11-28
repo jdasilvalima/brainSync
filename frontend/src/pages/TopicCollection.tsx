@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTopics } from '../contexts/TopicContext';
-import { useFlashcards } from '../contexts/FlashcardContext';
+import { useLearningModules } from '../contexts/LearningModuleContext';
 import { useNavigate } from 'react-router-dom'
 
 export default function TopicCollection() {
@@ -8,7 +8,7 @@ export default function TopicCollection() {
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate()
   const { topics, loading, fetchTopics, createTopic } = useTopics();
-  const { createFlashcardsWithAi } = useFlashcards();
+  const { createModulesWithAi } = useLearningModules();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,7 +35,7 @@ export default function TopicCollection() {
     try {
       setError(null);
       const topicCreated = await createTopic(newTopic.trim());
-      await createFlashcardsWithAi(topicCreated.id);
+      await createModulesWithAi(topicCreated.id);
       await fetchTopics();
       setNewTopic('');
     } catch (err) {

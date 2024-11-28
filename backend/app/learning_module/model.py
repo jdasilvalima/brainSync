@@ -8,7 +8,7 @@ class LearningModule(db.Model):
     __tablename__ = 'learning_module'
     id = db.Column(db.Integer, primary_key=True)
     chapter = db.Column(db.String(150), nullable=False)
-    details = db.Column(db.String(300), nullable=False)
+    details = db.Column(db.String(600), nullable=False)
     flashcards = db.relationship('Flashcard', backref='learning_module', lazy=True)
     quizzes = db.relationship('Quiz', backref='learning_module', lazy=True)
     topic_id = db.Column(db.Integer, db.ForeignKey('topic.id'), nullable=False)

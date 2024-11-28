@@ -43,8 +43,8 @@ WIP
 
 Clone this project
   ```sh
+    mkdir brainSync
     git clone git@github.com:jdasilvalima/brainSync.git
-    cd brainSync
   ```
 
 ### II.2 BACKEND

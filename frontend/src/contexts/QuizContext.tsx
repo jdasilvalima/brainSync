@@ -32,6 +32,7 @@ interface QuizContextType {
   fetchQuizzesByLearningModuleId: (learningModuleId: number) => Promise<void>;
   fetchQuizzesByLearningModuleIdAndStatus: (learningModuleId: number, status: string) => Promise<void>;
   fetchQuizzesByTopicIdAndStatus: (topicId: number, status: string) => Promise<void>;
+  createQuizzesWithAi: (learningModuleId: number) => Promise<Quiz[]>;
   updateQuiz: (quiz: Quiz) => Promise<Quiz>;
 }
 
@@ -72,6 +73,16 @@ export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }, []);
 
+  const createQuizzesWithAi = async (learningModuleId: number): Promise<Quiz[]> => {
+    try {
+      const response = await axios.post(`http://127.0.0.1:5000/api/v1/quizzes/learning_module/${learningModuleId}/ai`);
+      return response.data;
+    } catch (error) {
+      console.error('Error creating topic:', error);
+      throw error;
+    }
+  };
+
   const updateQuiz = async (quiz: Quiz): Promise<Quiz> => {
     try {
       const responseQuiz = await axios.put(`http://127.0.0.1:5000/api/v1/quizzes/${quiz.id}`, quiz);
@@ -91,6 +102,7 @@ export const QuizProvider: React.FC<{ children: React.ReactNode }> = ({ children
       fetchQuizzesByLearningModuleId: fetchQuizzesByLearningModuleId,
       fetchQuizzesByLearningModuleIdAndStatus: fetchQuizzesByLearningModuleIdAndStatus,
       fetchQuizzesByTopicIdAndStatus: fetchQuizzesByTopicIdAndStatus,
+      createQuizzesWithAi: createQuizzesWithAi,
       updateQuiz: updateQuiz
     }}>
       {children}

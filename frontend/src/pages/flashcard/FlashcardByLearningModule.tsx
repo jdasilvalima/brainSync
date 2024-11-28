@@ -14,8 +14,9 @@ const statusColors: Record<string, string> = {
 
 export default function FlashcardByLearningModule() {
   const { getLearningModule, selectedLearningModule, getLearningModuleByTopicId } = useLearningModules();
-  const { setFlashcards, flashcards } = useFlashcards();
+  const { setFlashcards, flashcards, createFlashcardsWithAi } = useFlashcards();
   const [filter, setFilter] = useState<string>('SPACED REPETITION')
+  const [loadingAI, setLoadingAI] = useState<boolean>(false);
   const navigate = useNavigate()
   const [searchParams] = useSearchParams();
   const id = searchParams.get('id');
@@ -48,22 +49,52 @@ export default function FlashcardByLearningModule() {
     navigate(`/flashcard-details?scope=${scope}&id=${id}&status=${filter}`)
   }
 
+  const handleCreateFlashcardsWithAI = async () => {
+    if (!id) return;
+    setLoadingAI(true);
+    try {
+      await createFlashcardsWithAi(parseInt(id));
+      const module = await getLearningModule(parseInt(id));
+      setFlashcards(module.flashcards || []);
+    } catch (error) {
+      console.error('Error creating flashcards with AI:', error);
+    } finally {
+      setLoadingAI(false);
+    }
+  };
+
   const filteredFlashcards = useMemo(() => {
     if (filter === 'ALL' || filter === 'SPACED REPETITION') return flashcards;
     return flashcards.filter((card) => card.study_status === filter);
   }, [flashcards, filter]);
 
-  if (!flashcards || flashcards.length === 0) {
+  if (loadingAI) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen">
         <h2 className="text-2xl font-bold mb-8 text-gray-700">Flashcards are baking...</h2>
-        <img 
+        <img
           src="https://i.giphy.com/media/v1.Y2lkPTc5MGI3NjExMnhrc2Jobjk0czJjbTM1NWV4NHFoN3YwMDJrcXNpNzM0dzB1amFsNyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/demgpwJ6rs2DS/giphy.gif"
           alt="Person baking"
           className="rounded-lg max-w-sm"
         />
       </div>
-    )
+    );
+  }
+
+  if (!flashcards || flashcards.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen">
+        <h2 className="text-2xl font-bold mb-8 text-gray-700">No flashcards available.</h2>
+        {scope === 'module' && (
+          <button
+            onClick={handleCreateFlashcardsWithAI}
+            className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition-colors"
+          >
+            Create Flashcards with AI
+          </button>
+        )}
+      </div>
+    );
   }
 
   return (

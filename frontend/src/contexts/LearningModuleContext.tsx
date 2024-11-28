@@ -17,6 +17,7 @@ interface LearningModuleContextType {
   selectedLearningModule: LearningModule | undefined;
   getLearningModule: (learningModuleId: number) => Promise<LearningModule>;
   getLearningModuleByTopicId: (topicId: number) => Promise<LearningModule[]>;
+  createModulesWithAi: (topicId: number) => Promise<LearningModule[]>;
 }
 
 const LearningModuleContext = createContext<LearningModuleContextType | undefined>(undefined);
@@ -45,11 +46,22 @@ export const LearningModuleProvider: React.FC<{ children: React.ReactNode }> = (
     }
   }, []);
 
+  const createModulesWithAi = async (topicId: number): Promise<LearningModule[]> => {
+    try {
+      const responseModules = await axios.post(`http://127.0.0.1:5000/api/v1/modules/topic/${topicId}/ai`);
+      return responseModules.data;
+    } catch (error) {
+      console.error('Error creating topic:', error);
+      throw error;
+    }
+  };
+
   return (
     <LearningModuleContext.Provider value={{
       selectedLearningModule: selectedLearningModule,
       getLearningModule: getLearningModule,
-      getLearningModuleByTopicId: getLearningModuleByTopicId
+      getLearningModuleByTopicId: getLearningModuleByTopicId,
+      createModulesWithAi: createModulesWithAi
     }}>
       {children}
     </LearningModuleContext.Provider>
