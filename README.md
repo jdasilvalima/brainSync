@@ -27,13 +27,10 @@ This project is designed as a personal learning initiative with the following go
 - Explore backend development using Python and Flask
 
 ### I.3 Web Application Overview
-WIP
-<div style="text-align: center; margin-top: 0;">
-  <video width="620" height="340" controls>
-    <source src="./readme-doc/web-app-presentation.mp4" type="video/mp4">
-    Your browser does not support the video tag.
-  </video>
-</div>
+<p align="center">
+  <img src="./readme-doc/web-app-presentation.gif" alt="Web Application Presentation Gif" style="width: 50%;">
+</p>
+
 
 
 ## II. PROJECT SETUP
